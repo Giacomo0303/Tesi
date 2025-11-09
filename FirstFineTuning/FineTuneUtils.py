@@ -1,20 +1,6 @@
-from torch.utils.flop_counter import FlopCounterMode
 import torch
 from sklearn.metrics import balanced_accuracy_score, classification_report
 from tqdm import trange
-
-def count_flops(model, input, backward=False):
-    model.eval()
-    flop_counter = FlopCounterMode(display=False, depth=None)
-    with flop_counter:
-        if backward:
-            model(input).sum().backward()
-        else:
-            model(input)
-    flops = flop_counter.get_total_flops()
-    if model.training:
-        model.train()
-    return flops
 
 def save_model(net, current_epoch, path):
     torch.save({
