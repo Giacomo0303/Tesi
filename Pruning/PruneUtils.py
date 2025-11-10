@@ -1,6 +1,5 @@
 import torch
 
-
 def compute_grads(model, loss_fn, device, dataloader):
     model.zero_grad()
     n_batches = 0
@@ -23,10 +22,6 @@ def compute_grads(model, loss_fn, device, dataloader):
             params.grad /= n_batches
 
     return loss_value / n_batches
-
-
-def compute_obj(model, loss_fn, device, dataloader):
-    loss = compute_grads(model, loss_fn, device, dataloader)
 
 
 def importance_score(weights, grads):
