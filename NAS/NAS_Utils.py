@@ -1,6 +1,6 @@
 import torch
 import torch.nn.utils.prune as pruning
-from Pruning.PruneUtils import compute_grads
+from Pruning.PruneUtils import compute_grads, importance_score, head_alignment
 from math import log2
 
 
@@ -88,13 +88,71 @@ def count_parameters(model):
     n_params += torch.sum(model.cls_token_mask)
     n_params += torch.sum(model.pos_embed_mask)
 
-    return float(n_params/1e6)
+    return float(n_params / 1e6)
 
 
 def compute_obj(model, loss_fn, device, dataloader):
     loss = compute_grads(model, loss_fn, device, dataloader)
     params = count_parameters(model)
-    #attualmente uso soltanto loss e param
+    # attualmente uso soltanto loss e param
 
-    return -log2(loss)-log2(params)
+    return -log2(loss) - log2(params)
+
+
+def find_target_QK(model):
+    target = {
+        "position": (0, 0),  # (num_block, dim)
+        "importance": float("inf")
+    }
+
+    # calculate importances of every Q_i, K_i in every mhsa
+    for b, block in enumerate(model.blocks):
+        head_aligned = head_alignment(block.attn)
+        Q = head_aligned.Q
+        K = head_aligned.K
+
+        # get dimensions to prune
+        n_dims = Q.weight.shape[1]
+
+        for dim in range(n_dims):
+            # check if dim is already pruned
+            if Q.weight_mask[0, dim, 0].item() == 0.0:
+                continue
+
+            weights = [
+                Q.weight[:, dim, :],
+                Q.bias[:, dim],
+                K.weight[:, dim, :],
+                K.bias[:, dim]
+            ]
+
+            grads = [
+                Q.weight_grad[:, dim, :],
+                Q.bias_grad[:, dim],
+                K.weight_grad[:, dim, :],
+                K.bias_grad[:, dim]
+            ]
+
+            imp = importance_score(weights, grads)
+
+            if imp < target["importance"]:
+                target["importance"] = imp
+                target["position"] = (b, dim)
+
+    return target
+
+def apply_QK_Prune(model, target:dict) -> None:
+    block = target["position"][0]
+    dim = target["position"][1]
+
+    head_aligned = head_alignment(model.blocks[block].attn)
+    Q = head_aligned.Q
+    K = head_aligned.K
+
+    #apply pruning
+    Q.weight_mask[:, dim, :] = 0.0
+    Q.bias_mask[:, dim] = 0.0
+
+    K.weight_mask[:, dim, :] = 0.0
+    K.bias_mask[:, dim] = 0.0
 

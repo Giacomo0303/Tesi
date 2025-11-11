@@ -52,7 +52,13 @@ class HeadAligned():
         self.proj = proj
 
 
-def head_alignment(attn_block, n_heads, qk_dim, emb_in, v_dim, emb_out) -> HeadAligned:
+def head_alignment(attn_block) -> HeadAligned:
+    n_heads = attn_block.num_heads
+    qk_dim = attn_block.head_dim
+    v_dim = attn_block.head_dim
+    emb_in = attn_block.qkv.in_features
+    emb_out = attn_block.proj.out_features
+
     qkv = attn_block.qkv
     proj = attn_block.proj
 
