@@ -99,7 +99,9 @@ def compute_obj(model, loss_fn, device, dataloader):
     return -log2(loss) - log2(params)
 
 
-def find_target_QK(model):
+# QK PRUNING
+
+def find_target_QK(model) -> dict:
     target = {
         "position": (0, 0),  # (num_block, dim)
         "importance": float("inf")
@@ -115,8 +117,8 @@ def find_target_QK(model):
         n_dims = Q.weight.shape[1]
 
         for dim in range(n_dims):
-            # check if dim is already pruned
-            if Q.weight_mask[0, dim, 0].item() == 0.0:
+            # check if dim is already pruned using the bias
+            if torch.all(Q.bias_mask[:, dim] == 0.0):
                 continue
 
             weights = [
@@ -141,7 +143,8 @@ def find_target_QK(model):
 
     return target
 
-def apply_QK_Prune(model, target:dict) -> None:
+
+def apply_QK_Prune(model, target: dict) -> None:
     block = target["position"][0]
     dim = target["position"][1]
 
@@ -149,10 +152,183 @@ def apply_QK_Prune(model, target:dict) -> None:
     Q = head_aligned.Q
     K = head_aligned.K
 
-    #apply pruning
+    # apply pruning
     Q.weight_mask[:, dim, :] = 0.0
     Q.bias_mask[:, dim] = 0.0
 
     K.weight_mask[:, dim, :] = 0.0
     K.bias_mask[:, dim] = 0.0
+
+
+# V/PROJ PRUNING
+
+def find_target_V_proj(model) -> dict:
+    target = {
+        "position": (0, 0),  # (num_block, dim)
+        "importance": float("inf")
+    }
+
+    # calculate importances of every V_i and proj_i in every mhsa
+    for b, block in enumerate(model.blocks):
+        # head alignment
+        head_aligned = head_alignment(block.attn)
+        V = head_aligned.V
+        proj = head_aligned.proj
+
+        n_dims = V.weight.shape[1]
+
+        for dim in range(n_dims):
+            # checking already pruned dimensions
+            if torch.all(V.bias_mask[:, dim] == 0.0):
+                continue
+
+            weights = [
+                V.weight[:, dim, :],
+                V.bias[:, dim],
+                proj.weight[:, :, dim]  # prune input_size
+                # no need to prune proj bias because is applied on output, not on input
+            ]
+
+            grads = [
+                V.weight_grad[:, dim, :],
+                V.bias_grad[:, dim],
+                proj.weight_grad[:, :, dim]
+            ]
+
+            imp = importance_score(weights, grads)
+
+            if imp < target["importance"]:
+                target["importance"] = imp
+                target["position"] = (b, dim)
+
+    return target
+
+
+def apply_V_proj_Prune(model, target: dict) -> None:
+    block = target["position"][0]
+    dim = target["position"][1]
+    head_aligned = head_alignment(model.blocks[block].attn)
+    V = head_aligned.V
+    proj = head_aligned.proj
+
+    V.weight_mask[:, dim, :] = 0.0
+    V.bias_mask[:, dim] = 0.0
+
+    proj.weight_mask[:, :, dim] = 0.0
+
+
+# HEAD PRUNING
+
+def find_target_head(model) -> dict:
+    target = {
+        "position": (0, 0),  # (block, head_n)
+        "importance": float("inf")
+    }
+
+    for b, block in enumerate(model.blocks):
+        head_aligned = head_alignment(block.attn)
+        Q = head_aligned.Q
+        K = head_aligned.K
+        V = head_aligned.V
+        proj = head_aligned.proj
+
+        num_heads = Q.weight.shape[0]
+
+        for head in range(num_heads):
+            # if all Q an V bias of a head are zero then it is pruned
+            if torch.all(Q.bias_mask[head, :] == 0.0) and torch.all(V.bias_mask[head, :] == 0.0):
+                continue
+
+            weights = [
+                Q.weight[head, :, :],
+                Q.bias[head, :],
+                K.weight[head, :, :],
+                K.bias[head, :],
+                V.weight[head, :, :],
+                V.bias[head, :],
+                proj.weight[:, head, :]
+            ]
+
+            grads = [
+                Q.weight_grad[head, :, :],
+                Q.bias_grad[head, :],
+                K.weight_grad[head, :, :],
+                K.bias_grad[head, :],
+                V.weight_grad[head, :, :],
+                V.bias_grad[head, :],
+                proj.weight_grad[:, head, :]
+            ]
+
+            imp = importance_score(weights, grads)
+
+            if imp < target["importance"]:
+                target["importance"] = imp
+                target["position"] = (b, head)
+
+    return target
+
+
+def apply_head_Prune(model, target: dict) -> None:
+    block = target["position"][0]
+    head = target["position"][1]
+
+    head_aligned = head_alignment(model.blocks[block].attn)
+    Q = head_aligned.Q
+    K = head_aligned.K
+    V = head_aligned.V
+    proj = head_aligned.proj
+
+    Q.weight_mask[head, :, :] = 0.0
+    Q.bias_mask[head, :] = 0.0
+    K.weight_mask[head, :, :] = 0.0
+    K.bias_mask[head, :] = 0.0
+    V.weight_mask[head, :, :] = 0.0
+    V.bias_mask[head, :] = 0.0
+    proj.weight_mask[:, head, :] = 0.0
+
+
+# MLP PRUNING
+
+def find_target_mlp(model) -> dict:
+    target = {
+        "position": (0, 0),  # (block, dim)
+        "importance": float("inf")
+    }
+
+    # importance_score takes too much time, so parallelize to speed up
+    for b, block in enumerate(model.blocks):
+        mlp = block.mlp
+
+        # importance of fc1 neurons
+        imp_fc1_w = torch.sum(mlp.fc1.weight * mlp.fc1.weight_orig.grad, dim=1)
+        imp_fc1_b = mlp.fc1.bias * mlp.fc1.bias_orig.grad
+
+        # importance of fc2 input dims
+        imp_fc2_w = torch.sum(mlp.fc2.weight * mlp.fc2.weight_orig.grad, dim=0)
+
+        # final scores
+        total_imp_per_neuron = (imp_fc1_w + imp_fc1_b + imp_fc2_w) ** 2
+
+        # masking already pruned dims
+        total_imp_per_neuron[mlp.fc1.bias_mask == 0.0] = float('inf')
+
+        # finding best candidate
+        min_imp_block, min_dim_block = torch.min(total_imp_per_neuron, dim=0)
+
+        if min_imp_block < target["importance"]:
+            target["importance"] = min_imp_block.item()
+            target["position"] = (b, min_dim_block.item())
+
+    return target
+
+def apply_mlp_Prune(model, target: dict) -> None:
+    block = target["position"][0]
+    dim = target["position"][1]
+
+    mlp = model.blocks[block].mlp
+
+    mlp.fc1.weight_mask[dim, :] = 0.0
+    mlp.fc1.bias_mask[dim] = 0.0
+    mlp.fc2.weight_mask[:, dim] = 0.0
+
 
