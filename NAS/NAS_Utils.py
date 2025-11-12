@@ -321,6 +321,7 @@ def find_target_mlp(model) -> dict:
 
     return target
 
+
 def apply_mlp_Prune(model, target: dict) -> None:
     block = target["position"][0]
     dim = target["position"][1]
@@ -332,3 +333,64 @@ def apply_mlp_Prune(model, target: dict) -> None:
     mlp.fc2.weight_mask[:, dim] = 0.0
 
 
+# EMB PRUNING
+
+def find_target_emb(model) -> dict:
+    target = {
+        "position": 0,  # the embedding dim to prune
+        "importance": float("inf")
+    }
+
+    # like for mlp calculation takes too long so we got to parallelize
+
+    # contribution of cls token
+    pruned_cls_token = model.cls_token * model.cls_token_mask
+    total_dim_importances = torch.sum(pruned_cls_token * model.cls_token.grad, dim=(0, 1))
+
+    # contribution of positional embedding
+    pruned_pos_embed = model.pos_embed * model.pos_embed_mask
+    total_dim_importances += torch.sum(pruned_pos_embed * model.pos_embed.grad, dim=(0, 1))
+
+    # contribution of patch_embedding
+    total_dim_importances += torch.sum(model.patch_embed.proj.weight * model.patch_embed.proj.weight_orig.grad,
+                                       dim=(1, 2, 3))  # sum importances for every dim of conv
+    total_dim_importances += model.patch_embed.proj.bias * model.patch_embed.proj.bias_orig.grad  # bias are [384]
+
+    for block in model.blocks:
+        # contribution of LayerNorm1
+        total_dim_importances += block.norm1.weight * block.norm1.weight_orig.grad
+        total_dim_importances += block.norm1.bias * block.norm1.bias_orig.grad
+
+        # contribution of QKV
+        total_dim_importances += torch.sum(block.attn.qkv.weight * block.attn.qkv.weight_orig.grad, dim=0)
+
+        # contribution of Proj
+        total_dim_importances += torch.sum(block.attn.proj.weight * block.attn.proj.weight_orig.grad, dim=1)
+        total_dim_importances += block.attn.proj.bias * block.attn.proj.bias_orig.grad
+
+        # contribution of LayerNorm2
+        total_dim_importances += block.norm2.weight * block.norm2.weight_orig.grad
+        total_dim_importances += block.norm2.bias * block.norm2.bias_orig.grad
+
+        # contribution of FC
+        total_dim_importances += torch.sum(block.mlp.fc1.weight * block.mlp.fc1.weight_orig.grad, dim=0)
+        total_dim_importances += torch.sum(block.mlp.fc2.weight * block.mlp.fc2.weight_orig.grad, dim=1)
+        total_dim_importances += block.mlp.fc2.bias * block.mlp.fc2.bias_orig.grad
+
+    # contribution of last LayerNorm
+    total_dim_importances += model.norm.weight * model.norm.weight_orig.grad
+    total_dim_importances += model.norm.bias * model.norm.bias_orig.grad
+
+    # contribution of classification head
+    total_dim_importances += torch.sum(model.head.weight * model.head.weight_orig.grad, dim=0)
+
+    total_dim_importances = total_dim_importances ** 2
+    # mask dims that are already pruned
+    total_dim_importances[model.cls_token_mask[0, 0, :] == 0.0] = float('inf')
+
+    min_imp, dim = torch.min(total_dim_importances, dim=0)
+
+    target["importance"] = min_imp.item()
+    target["position"] = dim.item()
+
+    return target
