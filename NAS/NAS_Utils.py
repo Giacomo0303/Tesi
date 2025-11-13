@@ -43,8 +43,8 @@ def set_initial_masks(model):
     pruning.identity(model.head, name="bias")
 
     # masking of external parameters (cls token e position embed)
-    model.register_buffer("cls_token_mask", torch.ones_like(model.cls_token))
-    model.register_buffer("pos_embed_mask", torch.ones_like(model.pos_embed))
+    pruning.identity(model, name="cls_token")
+    pruning.identity(model, name="pos_embed")
 
 
 def count_parameters(model):
@@ -101,7 +101,7 @@ def compute_obj(model, loss_fn, device, dataloader):
 
 # QK PRUNING
 
-def find_target_QK(model) -> dict:
+def find_target_QK(model) -> tuple:
     target = {
         "position": (0, 0),  # (num_block, dim)
         "importance": float("inf")
@@ -141,7 +141,7 @@ def find_target_QK(model) -> dict:
                 target["importance"] = imp
                 target["position"] = (b, dim)
 
-    return target
+    return target["position"]
 
 
 def apply_QK_Prune(model, target: dict) -> None:
@@ -235,7 +235,7 @@ def find_target_head(model) -> dict:
         num_heads = Q.weight.shape[0]
 
         for head in range(num_heads):
-            # if all Q an V bias of a head are zero then it is pruned
+            # if all Q and V bias of a head are zero then it is pruned
             if torch.all(Q.bias_mask[head, :] == 0.0) and torch.all(V.bias_mask[head, :] == 0.0):
                 continue
 
@@ -345,11 +345,11 @@ def find_target_emb(model) -> dict:
 
     # contribution of cls token
     pruned_cls_token = model.cls_token * model.cls_token_mask
-    total_dim_importances = torch.sum(pruned_cls_token * model.cls_token.grad, dim=(0, 1))
+    total_dim_importances = torch.sum(pruned_cls_token * model.cls_token_orig.grad, dim=(0, 1))
 
     # contribution of positional embedding
     pruned_pos_embed = model.pos_embed * model.pos_embed_mask
-    total_dim_importances += torch.sum(pruned_pos_embed * model.pos_embed.grad, dim=(0, 1))
+    total_dim_importances += torch.sum(pruned_pos_embed * model.pos_embed_orig.grad, dim=(0, 1))
 
     # contribution of patch_embedding
     total_dim_importances += torch.sum(model.patch_embed.proj.weight * model.patch_embed.proj.weight_orig.grad,

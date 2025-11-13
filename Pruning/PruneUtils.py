@@ -85,20 +85,33 @@ def head_alignment(attn_block) -> HeadAligned:
     k_bias = qkv_bias_view[1]
     v_bias = qkv_bias_view[2]
 
-    qkv_grads_view = qkv.weight_orig.grad.reshape(qkv_shape)
-    q_weights_grad, k_weights_grad, v_weights_grad = qkv_grads_view[0], qkv_grads_view[1], qkv_grads_view[2]
+    q_weights_grad, k_weights_grad, v_weights_grad = None, None, None
+    q_bias_grad, k_bias_grad, v_bias_grad = None, None, None
+    proj_grad, proj_bias_grad = None, None
+
+    if qkv.weight_orig.grad is not None:
+        qkv_grads_view = qkv.weight_orig.grad.reshape(qkv_shape)
+        q_weights_grad, k_weights_grad, v_weights_grad = qkv_grads_view[0], qkv_grads_view[1], qkv_grads_view[2]
+
     qkv_weights_mask_view = qkv.weight_mask.reshape(qkv_shape)
     q_weights_mask, k_weights_mask, v_weights_mask = qkv_weights_mask_view[0], qkv_weights_mask_view[1], \
     qkv_weights_mask_view[2]
 
-    qkv_bias_grad_view = qkv.bias_orig.grad.reshape(qkv_bias_shape)
-    q_bias_grad, k_bias_grad, v_bias_grad = qkv_bias_grad_view[0], qkv_bias_grad_view[1], qkv_bias_grad_view[2]
+    if qkv.bias_orig.grad is not None:
+        qkv_bias_grad_view = qkv.bias_orig.grad.reshape(qkv_bias_shape)
+        q_bias_grad, k_bias_grad, v_bias_grad = qkv_bias_grad_view[0], qkv_bias_grad_view[1], qkv_bias_grad_view[2]
+
     qkv_bias_mask_view = qkv.bias_mask.reshape(qkv_bias_shape)
     q_bias_mask, k_bias_mask, v_bias_mask = qkv_bias_mask_view[0], qkv_bias_mask_view[1], qkv_bias_mask_view[2]
 
-    proj_grad = proj.weight_orig.grad.reshape(proj_shape)
+    if proj.weight_orig.grad is not None:
+        proj_grad = proj.weight_orig.grad.reshape(proj_shape)
+
     proj_weight_mask = proj.weight_mask.reshape(proj_shape)
-    proj_bias_grad = proj.bias_orig.grad
+
+    if proj.bias_orig.grad is not None:
+        proj_bias_grad = proj.bias_orig.grad
+
     proj_bias_mask = proj.bias_mask
 
     Q = WeightBias(q_weights, q_bias, q_weights_grad, q_bias_grad, q_weights_mask, q_bias_mask)
