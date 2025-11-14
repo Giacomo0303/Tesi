@@ -14,7 +14,7 @@ class HybridNAS:
         self.loss_fn = loss_fn
         self.device = device
         self.dataloader = search_loader
-        self.best_value = 0.0
+        self.best_value = -float("inf")
         self.best_state = None
         self.actions = [find_target_QK, find_target_V_proj, find_target_head, find_target_mlp, find_target_emb]
 
@@ -34,12 +34,14 @@ class HybridNAS:
             }
             start_state["blocks"].append(block_state)
 
-        start_state["obj_val"] = float("inf")
+        start_state["obj_val"] = -float("inf")
 
         return start_state
 
-    def bound(self, state, obj_val):
-        pass
+    def bound(self, state):
+        if state["obj_val"] + 0.05 < self.best_value:
+            return True
+        return False
 
     def branch(self, state, model) -> list[dict]:
         targets = []
@@ -47,8 +49,23 @@ class HybridNAS:
             targets.append(action(model))
 
         next_states = [deepcopy(state) for i in range(len(self.actions))]
-        #pruning QK
-        next_states[0]["blocks"][targets[0][0]]["qk_pruned_dims"].append(targets[0][1])
+        # pruning QK
+        block, dim = targets[0]
+        next_states[0]["blocks"][block]["qk_pruned_dims"].append(dim)
+        # pruning V/proj
+        block, dim = targets[1]
+        next_states[1]["blocks"][block]["v_proj_pruned_dims"].append(dim)
+        # head pruning
+        block, dim = targets[2]
+        next_states[2]["blocks"][block]["head_pruned_idx"].append(dim)
+        # mlp pruning
+        block, dim = targets[3]
+        next_states[3]["blocks"][block]["mlp_pruned_dims"].append(dim)
+        # embed pruning
+        dim = targets[4]
+        next_states[4]["embed_pruned_dims"].append(dim)
+
+        return next_states
 
     def apply_pruning(self, state):
         model = deepcopy(self.base_model)
@@ -122,49 +139,68 @@ class HybridNAS:
 
         return model
 
-    def eval_model(self, model, state):
-        obj_val = compute_obj(model, nn.CrossEntropyLoss(), device=self.device, dataloader=self.dataloader)
+    def eval_model(self, model, state, search_iter):
+        obj_val = compute_obj(model, self.loss_fn, device=self.device, dataloader=self.dataloader)
         state["obj_val"] = obj_val
-        if obj_val > self.best_value:
+        if search_iter > 0 and obj_val > self.best_value:
+            print(f"--- NUOVO BEST TROVATO! --- Valore: {obj_val:.4f} (Precedente: {self.best_value:.4f})")
             self.best_value = obj_val
             self.best_state = deepcopy(state)
 
-        return obj_val
-
     def search(self):
-        self.build_initial_state()
-        stack = [self.build_initial_state()]
+        start_state = self.build_initial_state()
+        stack = [start_state]
+
+        search_iterations = 0
+        pruned_branches = 0
+
+        print("--- Inizio Ricerca NAS ---")
 
         while len(stack) > 0:
             current_state = stack.pop()
             model = self.apply_pruning(current_state)
-            obj_val = self.eval_model(model, current_state)
-            next_states = self.branch(current_state, model)
+            self.eval_model(model, current_state, search_iterations)
 
-            for state in next_states:
-                if not (self.bound(state, obj_val)):
+            search_iterations += 1
+
+            print(
+                f"Iter: {search_iterations} | Stack: {len(stack)} | Pruned: {pruned_branches} | Curr Val: {current_state['obj_val']:.4f} | Best Val: {self.best_value:.4f}")
+
+            if not (self.bound(current_state)):
+                next_states = self.branch(current_state, model)
+                for state in next_states:
                     stack.append(state)
+            else:
+
+                pruned_branches += 1
+
+        print("--- Ricerca Completata ---")
+        print(f"Iterazioni totali: {search_iterations}")
+        print(f"Rami potati (pruned): {pruned_branches}")
+        print(f"Miglior Valore Trovato: {self.best_value:.4f}")
+
+        return self.best_state, self.best_value
 
 
 # TESTING
+if __name__ == '__main__':
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    num_classes = 204
+    model = timm.create_model("vit_small_patch16_224", pretrained=True, num_classes=num_classes).to(device)
+    checkpoint = torch.load("D:\\Tesi\\FirstFineTuning\\best_model.pth")
+    model.load_state_dict(checkpoint['model_state_dict'])
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
-num_classes = 204
-model = timm.create_model("vit_small_patch16_224", pretrained=True, num_classes=num_classes).to(device)
-checkpoint = torch.load("D:\\Tesi\\FirstFineTuning\\best_model.pth")
-model.load_state_dict(checkpoint['model_state_dict'])
+    data_config = timm.data.resolve_model_data_config(model)
+    imagenet_mean, imagenet_std = data_config["mean"], data_config["std"]
 
-data_config = timm.data.resolve_model_data_config(model)
-imagenet_mean, imagenet_std = data_config["mean"], data_config["std"]
+    search_transform = transforms.Compose(
+        [transforms.ToTensor(), transforms.Normalize(mean=imagenet_mean, std=imagenet_std)])
 
-search_transform = transforms.Compose(
-    [transforms.ToTensor(), transforms.Normalize(mean=imagenet_mean, std=imagenet_std)])
+    path = "D:\\Tesi\\Sets\\Set1\\search"
+    batch_size = 128
 
-path = "D:\\Tesi\\Sets\\Set1\\search"
-batch_size = 128
+    search_set = ImageFolder(root=path, transform=search_transform)
+    search_loader = torch.utils.data.DataLoader(search_set, batch_size=batch_size, shuffle=False, num_workers=1)
 
-search_set = ImageFolder(root=path, transform=search_transform)
-search_loader = torch.utils.data.DataLoader(search_set, batch_size=batch_size, shuffle=False, num_workers=1)
-
-nas = HybridNAS(model, loss_fn=nn.CrossEntropyLoss(), search_loader=search_loader, device=device)
-
+    nas = HybridNAS(model, loss_fn=nn.CrossEntropyLoss(), search_loader=search_loader, device=device)
+    nas.search()

@@ -144,7 +144,7 @@ def find_target_QK(model) -> tuple:
     return target["position"]
 
 
-def apply_QK_Prune(model, target: dict) -> None:
+def apply_QK_Prune(model, target: tuple) -> None:
     block = target["position"][0]
     dim = target["position"][1]
 
@@ -162,7 +162,7 @@ def apply_QK_Prune(model, target: dict) -> None:
 
 # V/PROJ PRUNING
 
-def find_target_V_proj(model) -> dict:
+def find_target_V_proj(model) -> tuple:
     target = {
         "position": (0, 0),  # (num_block, dim)
         "importance": float("inf")
@@ -201,10 +201,10 @@ def find_target_V_proj(model) -> dict:
                 target["importance"] = imp
                 target["position"] = (b, dim)
 
-    return target
+    return target["position"]
 
 
-def apply_V_proj_Prune(model, target: dict) -> None:
+def apply_V_proj_Prune(model, target: tuple) -> None:
     block = target["position"][0]
     dim = target["position"][1]
     head_aligned = head_alignment(model.blocks[block].attn)
@@ -219,7 +219,7 @@ def apply_V_proj_Prune(model, target: dict) -> None:
 
 # HEAD PRUNING
 
-def find_target_head(model) -> dict:
+def find_target_head(model) -> tuple:
     target = {
         "position": (0, 0),  # (block, head_n)
         "importance": float("inf")
@@ -265,10 +265,10 @@ def find_target_head(model) -> dict:
                 target["importance"] = imp
                 target["position"] = (b, head)
 
-    return target
+    return target["position"]
 
 
-def apply_head_Prune(model, target: dict) -> None:
+def apply_head_Prune(model, target: tuple) -> None:
     block = target["position"][0]
     head = target["position"][1]
 
@@ -289,7 +289,7 @@ def apply_head_Prune(model, target: dict) -> None:
 
 # MLP PRUNING
 
-def find_target_mlp(model) -> dict:
+def find_target_mlp(model) -> tuple:
     target = {
         "position": (0, 0),  # (block, dim)
         "importance": float("inf")
@@ -319,10 +319,10 @@ def find_target_mlp(model) -> dict:
             target["importance"] = min_imp_block.item()
             target["position"] = (b, min_dim_block.item())
 
-    return target
+    return target["position"]
 
 
-def apply_mlp_Prune(model, target: dict) -> None:
+def apply_mlp_Prune(model, target: tuple) -> None:
     block = target["position"][0]
     dim = target["position"][1]
 
@@ -335,7 +335,7 @@ def apply_mlp_Prune(model, target: dict) -> None:
 
 # EMB PRUNING
 
-def find_target_emb(model) -> dict:
+def find_target_emb(model) -> int:
     target = {
         "position": 0,  # the embedding dim to prune
         "importance": float("inf")
@@ -393,4 +393,4 @@ def find_target_emb(model) -> dict:
     target["importance"] = min_imp.item()
     target["position"] = dim.item()
 
-    return target
+    return target["position"]
