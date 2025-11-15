@@ -8,7 +8,7 @@ path = "D:\\Tesi\\Sets\\Set1"
 classes = os.listdir(os.path.join(path, "val"))
 rmtree(os.path.join(path, "search"))
 os.makedirs(os.path.join(path, "search"), exist_ok=True)
-images_per_class = 16
+images_per_class = 10
 
 for cl in tqdm(classes):
     os.makedirs(os.path.join(path, "search", cl), exist_ok=True)

@@ -1,17 +1,22 @@
 import torch
+from sklearn.metrics import accuracy_score
 
 def compute_grads(model, loss_fn, device, dataloader):
     model.zero_grad()
     n_batches = 0
     loss_value = 0.0
+    y_true, y_pred = [], []
 
     for (x, y) in dataloader:
         x, y = x.to(device), y.to(device)
         n_batches += 1
+        y_true.append(y)
 
         with torch.amp.autocast(device_type=device, dtype=torch.float16):
             logits = model(x)
             loss = loss_fn(logits, y)
+            y_pred.append(torch.argmax(logits, dim=-1))
+
         # accumula i gradienti nei .grad
         loss.float().backward()
         loss_value += loss.item()
@@ -21,7 +26,12 @@ def compute_grads(model, loss_fn, device, dataloader):
         if params.grad is not None:
             params.grad /= n_batches
 
-    return loss_value / n_batches
+    y_true = torch.cat(y_true)
+    y_pred = torch.cat(y_pred)
+
+    accuracy = accuracy_score(y_true.cpu(), y_pred.cpu())
+
+    return loss_value / n_batches, accuracy
 
 
 def importance_score(weights, grads):
