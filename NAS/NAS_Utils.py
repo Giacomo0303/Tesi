@@ -96,7 +96,7 @@ def compute_obj(model, loss_fn, device, dataloader):
     params = count_parameters(model)
     # attualmente uso soltanto loss e param
 
-    return  log2(100*accuracy) - log2(params)
+    return  log2(100*accuracy) - 3.0 * log2(params)
 
 
 # QK PRUNING

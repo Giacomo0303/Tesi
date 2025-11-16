@@ -168,6 +168,7 @@ class HybridNAS:
             print(
                 f"Iter: {search_iterations} | Stack: {len(stack)} | Pruned: {pruned_branches} | Curr Val: {current_state['obj_val']:.4f} | Best Val: {self.best_value:.4f}")
 
+            # è fondamentale che il pruning venga fatto sullo stato corrente e non sui figli, così da garantire che il confronto sia fatto con il best value attuale
             if not (self.bound(current_state)):
                 next_states = self.branch(current_state, model)
                 for state in next_states:
@@ -218,7 +219,7 @@ if __name__ == '__main__':
         final_params = count_parameters(final_pruned_model)
 
         print(f"Accuracy: {final_accuracy:.4f}")
-        print(f"Parametri (Milioni): {final_params:.2f}M")
+        print(f"Parametri (Milioni): {final_params:.4f}M")
 
         # 4. Salva il dizionario 'state' nel file JSON
         output_filename = "D:\\Tesi\\NAS\\best_architecture.json"
@@ -231,4 +232,3 @@ if __name__ == '__main__':
 
     else:
         print("Ricerca completata senza trovare un best_state valido.")
-
