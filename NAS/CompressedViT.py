@@ -10,7 +10,8 @@ class PatchEmbed(nn.Module):
         self.weight_tensor = weight_tensor
         self.bias_tensor = bias_tensor
 
-        self.patch_embed = nn.Conv2d(in_channels=img_size[0], out_channels=self.bias_tensor.shape[0],
+        in_channels = self.weight_tensor.shape[1]
+        self.patch_embed = nn.Conv2d(in_channels=in_channels, out_channels=self.bias_tensor.shape[0],
                                      kernel_size=self.patch_size, stride=self.patch_size)
 
         with torch.no_grad():
@@ -42,7 +43,8 @@ class PositionalEncoding(nn.Module):
 
 
 class MultiHeadSelfAttention(nn.Module):
-    def __init__(self, qkv_weights, qkv_bias, proj_weights, proj_bias, qk_dim: int, v_dim: int, num_heads: int):
+    def __init__(self, qkv_weights, qkv_bias, proj_weights, proj_bias, original_qk_dim:int, qk_dim: int, v_dim: int,
+                 num_heads: int):
         super().__init__()
         self.qkv_weights = qkv_weights
         self.qkv_bias = qkv_bias
@@ -53,7 +55,7 @@ class MultiHeadSelfAttention(nn.Module):
         self.num_heads = num_heads
         self.total_qk = self.num_heads * self.qk_dim
         self.total_v = self.num_heads * self.v_dim
-        self.scale = self.qk_dim ** (-0.5)
+        self.scale = original_qk_dim ** (-0.5)
 
         self.qkv = nn.Linear(in_features=qkv_weights.shape[1], out_features=qkv_weights.shape[0])
         self.proj = nn.Linear(in_features=proj_weights.shape[1], out_features=proj_weights.shape[0])
@@ -82,7 +84,7 @@ class MultiHeadSelfAttention(nn.Module):
         x = attn @ V
 
         # [B, H, N, v_dim] -> [B, N, H*v_dim]
-        x = x.permute(0, 2, 1, 3).reshape(x.shape[0], x.shape[1], self.num_heads * self.v_dim)
+        x = x.permute(0, 2, 1, 3).flatten(2)
         x = self.proj(x)
 
         return x
@@ -171,6 +173,25 @@ def get_proj_weights_bias(original_proj_weights, original_proj_bias, block_confi
     return final_proj_weights, final_proj_bias
 
 
+def get_mlp_weights_bias(original_mlp, block_config, new_emb_dims):
+    fc1_weights = original_mlp.fc1.weight
+    fc1_bias = original_mlp.fc1.bias
+    fc2_weights = original_mlp.fc2.weight
+    fc2_bias = original_mlp.fc2.bias
+
+    mlp_pruned_dims = block_config["mlp_pruned_dims"]
+    original_mlp_dims = fc1_weights.shape[0]
+    final_fc1_dims = [d for d in range(original_mlp_dims) if d not in mlp_pruned_dims]
+
+    final_fc1_weights = fc1_weights[final_fc1_dims, :][:, new_emb_dims]
+    final_fc1_bias = fc1_bias[final_fc1_dims]
+
+    final_fc2_weights = fc2_weights[new_emb_dims, :][:, final_fc1_dims]
+    final_fc2_bias = fc2_bias[new_emb_dims]
+
+    return final_fc1_weights, final_fc1_bias, final_fc2_weights, final_fc2_bias
+
+
 class CompressedViT(nn.Module):
     def __init__(self, search_dict, pruned_model, img_size=224, patch_size=16):
         super().__init__()
@@ -188,9 +209,10 @@ class CompressedViT(nn.Module):
 
         self.blocks_list = []
         blocks_dict = search_dict["blocks"]
+        original_num_heads = pruned_model.blocks[0].attn.num_heads
+        original_head_dim = pruned_model.blocks[0].attn.head_dim
+        original_eps = pruned_model.blocks[0].norm1.eps
         for i, block in enumerate(blocks_dict):
-            original_num_heads = pruned_model.blocks[0].attn.num_heads
-            original_head_dim = pruned_model.blocks[0].attn.head_dim
 
             qkv_weights, qkv_bias, qk_dim, v_dim, num_heads = get_qkv_weights_bias(
                 pruned_model.blocks[i].attn.qkv.weight,
@@ -201,10 +223,46 @@ class CompressedViT(nn.Module):
                                                             pruned_model.blocks[i].attn.proj.bias,
                                                             block, original_num_heads, original_head_dim, new_emb_dims)
 
-            mhsa = MultiHeadSelfAttention(qkv_weights, qkv_bias, proj_weights, proj_bias, qk_dim, v_dim, num_heads)
+            mhsa = MultiHeadSelfAttention(qkv_weights, qkv_bias, proj_weights, proj_bias, original_head_dim,qk_dim, v_dim, num_heads)
 
+            fc1_weights, fc1_bias, fc2_weights, fc2_bias = get_mlp_weights_bias(pruned_model.blocks[i].mlp, block,
+                                                                                new_emb_dims)
 
-def forward(self, x):
-    x = self.patch_embed(x)
-    x = self.pos_enc(x)
-    return x
+            norm1_weights = pruned_model.blocks[i].norm1.weight.data[new_emb_dims]
+            norm1_bias = pruned_model.blocks[i].norm1.bias.data[new_emb_dims]
+            norm2_weights = pruned_model.blocks[i].norm2.weight.data[new_emb_dims]
+            norm2_bias = pruned_model.blocks[i].norm2.bias.data[new_emb_dims]
+
+            enc_block = EncoderBlock(mhsa, fc1_weights, fc1_bias, fc2_weights, fc2_bias, norm1_weights, norm1_bias,
+                                     norm2_weights, norm2_bias)
+
+            enc_block.layerNorm1.eps = original_eps
+            enc_block.layerNorm2.eps = original_eps
+
+            self.blocks_list.append(enc_block)
+
+        self.blocks = nn.Sequential(*self.blocks_list)
+
+        last_norm_weights = pruned_model.norm.weight.data[new_emb_dims]
+        last_norm_bias = pruned_model.norm.bias.data[new_emb_dims]
+
+        head_weights = pruned_model.head.weight[:, new_emb_dims]
+        head_bias = pruned_model.head.bias
+
+        self.norm = nn.LayerNorm(len(new_emb_dims), eps=original_eps)
+        self.head = nn.Linear(len(new_emb_dims), pruned_model.head.out_features)
+
+        with torch.no_grad():
+            self.norm.weight.copy_(last_norm_weights)
+            self.norm.bias.copy_(last_norm_bias)
+            self.head.weight.copy_(head_weights)
+            self.head.bias.copy_(head_bias)
+
+    def forward(self, x):
+        x = self.patch_embed(x)
+        x = self.pos_enc(x)
+        x = self.blocks(x)
+        x = self.norm(x)
+        x = x[:, 0]
+        x = self.head(x)
+        return x

@@ -69,8 +69,11 @@ class HybridNAS:
 
         return next_states
 
-    def apply_pruning(self, state):
-        model = deepcopy(self.base_model)
+    @staticmethod
+    def apply_pruning(self, state, model=None):
+        if model is None:
+            model = deepcopy(self.base_model)
+
         set_initial_masks(model)
 
         # prune cls token and position embedding
