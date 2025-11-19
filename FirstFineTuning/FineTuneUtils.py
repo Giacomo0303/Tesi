@@ -49,7 +49,7 @@ def train_loop(model, dataloader, loss_fn, optimizer, device, pbar, scaler):
     return epoch_loss / num_batches
 
 
-def eval_loop(model, dataloader, loss_fn, device, classes, report=False):
+def eval_loop(model, dataloader, loss_fn, device, classes=None, report=False):
     num_batches = len(dataloader)
     size = len(dataloader.dataset)
     epoch_loss = 0.0

@@ -4,7 +4,7 @@ from torchvision.datasets import ImageFolder
 from torchvision import transforms
 import json
 from NAS.NAS_Utils import count_parameters
-from NAS_Utils import find_target_emb, find_target_QK, find_target_V_proj, find_target_head, find_target_mlp, \
+from NAS.NAS_Utils import find_target_emb, find_target_QK, find_target_V_proj, find_target_head, find_target_mlp, \
     set_initial_masks, compute_obj
 from Pruning.PruneUtils import head_alignment, compute_grads
 from copy import deepcopy
@@ -163,7 +163,7 @@ class HybridNAS:
 
         while len(stack) > 0:
             current_state = stack.pop()
-            model = self.apply_pruning(current_state)
+            model = self.apply_pruning(self, state=current_state)
             self.eval_model(model, current_state, search_iterations)
 
             search_iterations += 1
@@ -206,7 +206,7 @@ if __name__ == '__main__':
     batch_size = 128
 
     search_set = ImageFolder(root=path, transform=search_transform)
-    search_loader = torch.utils.data.DataLoader(search_set, batch_size=batch_size, shuffle=False, num_workers=1)
+    search_loader = torch.utils.data.DataLoader(search_set, batch_size=batch_size, shuffle=False, num_workers=1, pin_memory=True)
 
     nas = HybridNAS(model, loss_fn=nn.CrossEntropyLoss(), search_loader=search_loader, device=device)
     # 1. Cattura lo stato finale e il valore
@@ -217,7 +217,7 @@ if __name__ == '__main__':
         print(f"\n--- Statistiche del Modello Migliore (Valore: {best_val:.4f}) ---")
 
         # 3. Calcola le statistiche finali (è più pulito farlo fuori dal print)
-        final_pruned_model = nas.apply_pruning(state)
+        final_pruned_model = nas.apply_pruning(None, state=state)
         _, final_accuracy = compute_grads(final_pruned_model, nas.loss_fn, device, search_loader)
         final_params = count_parameters(final_pruned_model)
 
