@@ -2,131 +2,169 @@
     "embed_pruned_dims": [
         201,
         170,
-        49,
-        271,
-        257,
-        85,
-        190,
-        362,
-        70,
-        317,
-        16,
-        0,
-        45,
-        216,
-        89,
-        379,
-        255,
-        191,
-        329,
-        166,
-        126,
-        244,
-        83,
-        349,
-        162,
-        325,
+        269,
         199,
-        184,
-        319,
-        348,
-        282,
-        66,
-        225,
-        309,
-        264,
-        102,
-        281,
-        335,
-        378,
-        314,
-        53,
-        291,
-        2,
-        127,
-        80
+        52,
+        292,
+        333
     ],
     "blocks": [
         {
-            "head_pruned_idx": [
-                1
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [
+                53
             ],
-            "qk_pruned_dims": [],
             "v_proj_pruned_dims": [],
             "mlp_pruned_dims": [
-                192
+                1275,
+                20,
+                1014,
+                1433
             ]
         },
         {
             "head_pruned_idx": [],
             "qk_pruned_dims": [],
             "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": []
+            "mlp_pruned_dims": [
+                754,
+                232,
+                1073,
+                38,
+                1477
+            ]
         },
         {
-            "head_pruned_idx": [
-                4
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [
+                9
             ],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": []
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": []
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": []
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": []
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": []
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": []
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": []
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": []
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
             "v_proj_pruned_dims": [],
             "mlp_pruned_dims": [
-                655
+                1268
+            ]
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [
+                26
+            ],
+            "mlp_pruned_dims": [
+                279,
+                146,
+                594,
+                1346,
+                273,
+                4,
+                929,
+                765,
+                527,
+                316,
+                149
             ]
         },
         {
             "head_pruned_idx": [],
             "qk_pruned_dims": [],
             "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": []
+            "mlp_pruned_dims": [
+                690,
+                184,
+                825
+            ]
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": [
+                747,
+                614
+            ]
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": [
+                1504,
+                1386,
+                453
+            ]
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [
+                26
+            ],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": [
+                1087,
+                119
+            ]
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [
+                34
+            ],
+            "mlp_pruned_dims": [
+                1270,
+                971,
+                848
+            ]
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [
+                32
+            ],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": [
+                549
+            ]
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": [
+                476,
+                1303,
+                238,
+                658,
+                600,
+                1213,
+                545,
+                852,
+                550,
+                180,
+                570,
+                1160,
+                909,
+                149,
+                743,
+                183
+            ]
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [
+                19
+            ],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": [
+                377,
+                772,
+                549,
+                1044,
+                1531,
+                1290,
+                35
+            ]
         }
     ],
-    "obj_val": -85.88919448852539
+    "obj_val": -0.5236934195775904
 }

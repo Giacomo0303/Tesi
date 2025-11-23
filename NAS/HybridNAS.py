@@ -5,15 +5,15 @@ from torchvision import transforms
 import json
 from NAS.NAS_Utils import count_parameters
 from NAS.NAS_Utils import find_target_emb, find_target_QK, find_target_V_proj, find_target_head, find_target_mlp, \
-    set_initial_masks, compute_obj
+    set_initial_masks, compute_obj, count_params_no_mask
 from Pruning.PruneUtils import head_alignment, compute_grads
 from copy import deepcopy
 
 
 class HybridNAS:
-    def __init__(self, model, loss_fn, search_loader, device):
+    def __init__(self, model, loss_fn, search_loader, device, original_params):
         self.base_model = model
-        self.original_params = count_parameters(self.base_model)
+        self.original_params = original_params
         self.loss_fn = loss_fn
         self.device = device
         self.dataloader = search_loader
@@ -143,12 +143,13 @@ class HybridNAS:
         return model
 
     def eval_model(self, model, state, search_iter):
-        obj_val = compute_obj(model, self.loss_fn, device=self.device, dataloader=self.dataloader, original_params=self.original_params)
+        obj_val, accuracy, params = compute_obj(model, self.loss_fn, device=self.device, dataloader=self.dataloader, original_params=self.original_params)
         state["obj_val"] = obj_val
         if search_iter > 0 and obj_val > self.best_value:
             print(f"--- NUOVO BEST TROVATO! --- Valore: {obj_val:.4f} (Precedente: {self.best_value:.4f})")
             self.best_value = obj_val
             self.best_state = deepcopy(state)
+        return accuracy, params
 
     def search(self):
         start_state = self.build_initial_state()
@@ -163,12 +164,12 @@ class HybridNAS:
             current_state = stack.pop()
             model_copy = deepcopy(self.base_model)
             model = self.apply_pruning(state=current_state, model=model_copy)
-            self.eval_model(model, current_state, search_iterations)
+            acc, params = self.eval_model(model, current_state, search_iterations)
 
             search_iterations += 1
 
             print(
-                f"Iter: {search_iterations} | Stack: {len(stack)} | Pruned: {pruned_branches} | Curr Val: {current_state['obj_val']:.4f} | Best Val: {self.best_value:.4f}")
+                f"Iter: {search_iterations} | Stack: {len(stack)} | Pruned: {pruned_branches} | Curr Val: {current_state['obj_val']:.4f} | Acc: {acc:.4f} | Params: {params:.4f}M")
 
             # è fondamentale che il pruning venga fatto sullo stato corrente e non sui figli, così da garantire che il confronto sia fatto con il best value attuale
             if not (self.bound(current_state)):
@@ -194,6 +195,7 @@ if __name__ == '__main__':
     model = timm.create_model("vit_small_patch16_224", pretrained=True, num_classes=num_classes).to(device)
     checkpoint = torch.load("D:\\Tesi\\FirstFineTuning\\best_model.pth")
     model.load_state_dict(checkpoint['model_state_dict'])
+    original_params = count_params_no_mask(model)
 
     data_config = timm.data.resolve_model_data_config(model)
     imagenet_mean, imagenet_std = data_config["mean"], data_config["std"]
@@ -207,7 +209,7 @@ if __name__ == '__main__':
     search_set = ImageFolder(root=path, transform=search_transform)
     search_loader = torch.utils.data.DataLoader(search_set, batch_size=batch_size, shuffle=False, num_workers=1, pin_memory=True)
 
-    nas = HybridNAS(model, loss_fn=nn.CrossEntropyLoss(), search_loader=search_loader, device=device)
+    nas = HybridNAS(model, loss_fn=nn.CrossEntropyLoss(), search_loader=search_loader, device=device, original_params=original_params)
     # 1. Cattura lo stato finale e il valore
     state, best_val = nas.search()
 
