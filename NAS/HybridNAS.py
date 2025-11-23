@@ -13,6 +13,7 @@ from copy import deepcopy
 class HybridNAS:
     def __init__(self, model, loss_fn, search_loader, device):
         self.base_model = model
+        self.original_params = count_parameters(self.base_model)
         self.loss_fn = loss_fn
         self.device = device
         self.dataloader = search_loader
@@ -70,10 +71,7 @@ class HybridNAS:
         return next_states
 
     @staticmethod
-    def apply_pruning(self, state, model=None):
-        if model is None:
-            model = deepcopy(self.base_model)
-
+    def apply_pruning(state, model):
         set_initial_masks(model)
 
         # prune cls token and position embedding
@@ -145,7 +143,7 @@ class HybridNAS:
         return model
 
     def eval_model(self, model, state, search_iter):
-        obj_val = compute_obj(model, self.loss_fn, device=self.device, dataloader=self.dataloader)
+        obj_val = compute_obj(model, self.loss_fn, device=self.device, dataloader=self.dataloader, original_params=self.original_params)
         state["obj_val"] = obj_val
         if search_iter > 0 and obj_val > self.best_value:
             print(f"--- NUOVO BEST TROVATO! --- Valore: {obj_val:.4f} (Precedente: {self.best_value:.4f})")
@@ -163,7 +161,8 @@ class HybridNAS:
 
         while len(stack) > 0:
             current_state = stack.pop()
-            model = self.apply_pruning(self, state=current_state)
+            model_copy = deepcopy(self.base_model)
+            model = self.apply_pruning(state=current_state, model=model_copy)
             self.eval_model(model, current_state, search_iterations)
 
             search_iterations += 1
@@ -191,7 +190,7 @@ class HybridNAS:
 # TESTING
 if __name__ == '__main__':
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    num_classes = 204
+    num_classes = 200
     model = timm.create_model("vit_small_patch16_224", pretrained=True, num_classes=num_classes).to(device)
     checkpoint = torch.load("D:\\Tesi\\FirstFineTuning\\best_model.pth")
     model.load_state_dict(checkpoint['model_state_dict'])
@@ -217,7 +216,7 @@ if __name__ == '__main__':
         print(f"\n--- Statistiche del Modello Migliore (Valore: {best_val:.4f}) ---")
 
         # 3. Calcola le statistiche finali (è più pulito farlo fuori dal print)
-        final_pruned_model = nas.apply_pruning(None, state=state)
+        final_pruned_model = nas.apply_pruning(state=state, model=deepcopy(nas.base_model))
         _, final_accuracy = compute_grads(final_pruned_model, nas.loss_fn, device, search_loader)
         final_params = count_parameters(final_pruned_model)
 

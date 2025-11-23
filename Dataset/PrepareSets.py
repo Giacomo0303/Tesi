@@ -4,13 +4,13 @@ import cv2
 from tqdm import tqdm
 from shutil import rmtree
 
-train_path = "/Places365Simplified/train"
-set1_path = "/Sets/Set1"
-set2_path = "/Sets/Set2"
+train_path = "D:/Tesi/Places365Simplified/train"
+set1_path = "D:/Tesi/Sets/Set1"
+set2_path = "D:/Tesi/Sets/Set2"
 
 train_val_split = 0.95
 
-rmtree("/Sets")
+rmtree("D:/Tesi/Sets")
 
 #creo la cartella dei due set
 os.makedirs(set1_path, exist_ok=True)

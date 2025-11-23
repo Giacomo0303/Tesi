@@ -1,60 +1,112 @@
 {
     "embed_pruned_dims": [
-        358,
-        335,
-        214,
-        158,
-        181,
-        278,
-        315,
-        95,
-        8,
-        356,
-        48,
-        209,
-        252,
-        316,
-        20,
-        148,
-        24,
-        244,
-        329,
-        312,
-        365,
-        142,
-        241,
-        113,
-        366,
-        268,
-        220,
-        183,
+        201,
+        170,
+        49,
+        271,
+        257,
+        85,
+        190,
+        362,
+        70,
+        317,
+        16,
+        0,
+        45,
         216,
-        96,
-        76,
-        381,
-        104,
-        333,
-        279,
-        300,
-        61,
-        156,
-        111,
-        159,
-        123,
-        341,
-        69,
-        346,
-        100,
-        319,
-        101,
-        280,
+        89,
+        379,
         255,
-        50,
-        58,
-        222,
-        161
+        191,
+        329,
+        166,
+        126,
+        244,
+        83,
+        349,
+        162,
+        325,
+        199,
+        184,
+        319,
+        348,
+        282,
+        66,
+        225,
+        309,
+        264,
+        102,
+        281,
+        335,
+        378,
+        314,
+        53,
+        291,
+        2,
+        127,
+        80
     ],
     "blocks": [
+        {
+            "head_pruned_idx": [
+                1
+            ],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": [
+                192
+            ]
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": []
+        },
+        {
+            "head_pruned_idx": [
+                4
+            ],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": []
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": []
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": []
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": []
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": []
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": []
+        },
+        {
+            "head_pruned_idx": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [],
+            "mlp_pruned_dims": []
+        },
         {
             "head_pruned_idx": [],
             "qk_pruned_dims": [],
@@ -66,132 +118,15 @@
             "qk_pruned_dims": [],
             "v_proj_pruned_dims": [],
             "mlp_pruned_dims": [
-                1281
-            ]
-        },
-        {
-            "head_pruned_idx": [
-                0
-            ],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                1,
-                266
+                655
             ]
         },
         {
             "head_pruned_idx": [],
             "qk_pruned_dims": [],
             "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                1152,
-                334
-            ]
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [
-                6
-            ],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                1
-            ]
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [
-                52
-            ],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                361,
-                1182
-            ]
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                1478,
-                1231
-            ]
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                1295
-            ]
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                1133,
-                551,
-                252,
-                962,
-                517
-            ]
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                695,
-                856,
-                691,
-                1259,
-                1295,
-                757
-            ]
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [
-                50
-            ],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                1186,
-                311,
-                711,
-                819,
-                1036,
-                480,
-                863,
-                370,
-                185,
-                443,
-                1282,
-                372,
-                1080
-            ]
-        },
-        {
-            "head_pruned_idx": [
-                2
-            ],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                486,
-                147,
-                474,
-                457,
-                1134,
-                1350,
-                714,
-                339,
-                444
-            ]
+            "mlp_pruned_dims": []
         }
     ],
-    "obj_val": -6.894645008337026
+    "obj_val": -85.88919448852539
 }

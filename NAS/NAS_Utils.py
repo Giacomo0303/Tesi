@@ -91,12 +91,11 @@ def count_parameters(model):
     return float(n_params / 1e6)
 
 
-def compute_obj(model, loss_fn, device, dataloader):
+def compute_obj(model, loss_fn, device, dataloader, original_params):
     _, accuracy = compute_grads(model, loss_fn, device, dataloader)
     params = count_parameters(model)
-    # attualmente uso soltanto loss e param
 
-    return  log2(100*accuracy) - 3.0 * log2(params)
+    return log2(accuracy) - 0.5 * log2(params/original_params)
 
 
 # QK PRUNING

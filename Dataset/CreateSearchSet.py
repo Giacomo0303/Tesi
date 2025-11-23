@@ -6,9 +6,10 @@ from shutil import rmtree
 
 path = "D:\\Tesi\\Sets\\Set1"
 classes = os.listdir(os.path.join(path, "val"))
-rmtree(os.path.join(path, "search"))
+if os.path.exists("D:\\Tesi\\Sets\\Set1\\search"):
+    rmtree(os.path.join(path, "search"))
 os.makedirs(os.path.join(path, "search"), exist_ok=True)
-images_per_class = 10
+images_per_class = 20
 
 for cl in tqdm(classes):
     os.makedirs(os.path.join(path, "search", cl), exist_ok=True)

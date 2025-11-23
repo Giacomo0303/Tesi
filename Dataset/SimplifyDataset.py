@@ -1,7 +1,7 @@
 import os
 from shutil import rmtree
 
-base_path = "/Places365Simplified"
+base_path = "D:\\Tesi\\Places365Simplified"
 
 #utilizzo le removed_class per assicurarmi che non siano presenti nel train e val principali
 
