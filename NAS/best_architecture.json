@@ -1,170 +1,285 @@
 {
     "embed_pruned_dims": [
-        201,
-        170,
-        269,
-        199,
-        52,
+        313,
+        299,
+        363,
+        25,
+        310,
+        217,
+        282,
+        70,
+        159,
         292,
-        333
+        158,
+        269,
+        69
     ],
     "blocks": [
         {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [
-                53
+            "head_pruned_idx": [
+                2,
+                5,
+                3
             ],
-            "v_proj_pruned_dims": [],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [
+                49,
+                33
+            ],
+            "mlp_pruned_dims": []
+        },
+        {
+            "head_pruned_idx": [
+                4
+            ],
+            "qk_pruned_dims": [],
+            "v_proj_pruned_dims": [
+                21
+            ],
             "mlp_pruned_dims": [
-                1275,
-                20,
-                1014,
-                1433
+                882,
+                181,
+                458,
+                268,
+                780,
+                1291,
+                262,
+                215,
+                450,
+                177
+            ]
+        },
+        {
+            "head_pruned_idx": [
+                4
+            ],
+            "qk_pruned_dims": [
+                7,
+                39
+            ],
+            "v_proj_pruned_dims": [
+                14,
+                52
+            ],
+            "mlp_pruned_dims": [
+                81,
+                69,
+                787,
+                508,
+                364,
+                203,
+                1284,
+                272
+            ]
+        },
+        {
+            "head_pruned_idx": [
+                1,
+                2
+            ],
+            "qk_pruned_dims": [
+                26
+            ],
+            "v_proj_pruned_dims": [
+                42,
+                45,
+                37,
+                43
+            ],
+            "mlp_pruned_dims": [
+                28,
+                1232,
+                1105,
+                1295,
+                1483
             ]
         },
         {
             "head_pruned_idx": [],
-            "qk_pruned_dims": [],
+            "qk_pruned_dims": [
+                48,
+                32
+            ],
+            "v_proj_pruned_dims": [
+                60,
+                42,
+                13
+            ],
+            "mlp_pruned_dims": [
+                1441,
+                538,
+                666,
+                641,
+                1217,
+                1532,
+                1041,
+                17,
+                1075,
+                383
+            ]
+        },
+        {
+            "head_pruned_idx": [
+                4
+            ],
+            "qk_pruned_dims": [
+                36
+            ],
             "v_proj_pruned_dims": [],
             "mlp_pruned_dims": [
-                754,
-                232,
-                1073,
-                38,
+                568,
                 1477
             ]
         },
         {
-            "head_pruned_idx": [],
+            "head_pruned_idx": [
+                1
+            ],
             "qk_pruned_dims": [
-                9
+                38
             ],
             "v_proj_pruned_dims": [],
             "mlp_pruned_dims": [
-                1268
+                970,
+                735
             ]
         },
         {
             "head_pruned_idx": [],
             "qk_pruned_dims": [],
             "v_proj_pruned_dims": [
-                26
+                56
             ],
             "mlp_pruned_dims": [
-                279,
-                146,
-                594,
-                1346,
-                273,
-                4,
-                929,
-                765,
-                527,
-                316,
-                149
+                416,
+                540
             ]
         },
         {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                690,
-                184,
-                825
-            ]
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                747,
-                614
-            ]
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                1504,
-                1386,
-                453
-            ]
-        },
-        {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [
-                26
+            "head_pruned_idx": [
+                1,
+                4
             ],
-            "v_proj_pruned_dims": [],
-            "mlp_pruned_dims": [
-                1087,
-                119
-            ]
-        },
-        {
-            "head_pruned_idx": [],
             "qk_pruned_dims": [],
             "v_proj_pruned_dims": [
-                34
+                48
             ],
             "mlp_pruned_dims": [
-                1270,
-                971,
-                848
+                538,
+                553,
+                828,
+                621,
+                1054,
+                994,
+                1337,
+                489,
+                1276,
+                1019
             ]
         },
         {
-            "head_pruned_idx": [],
+            "head_pruned_idx": [
+                4
+            ],
             "qk_pruned_dims": [
+                33,
+                54,
+                8
+            ],
+            "v_proj_pruned_dims": [
+                20,
                 32
             ],
-            "v_proj_pruned_dims": [],
             "mlp_pruned_dims": [
-                549
+                433,
+                301,
+                9,
+                403,
+                397,
+                675,
+                1410
             ]
         },
         {
-            "head_pruned_idx": [],
-            "qk_pruned_dims": [],
+            "head_pruned_idx": [
+                1,
+                2
+            ],
+            "qk_pruned_dims": [
+                4,
+                31,
+                26
+            ],
             "v_proj_pruned_dims": [],
             "mlp_pruned_dims": [
-                476,
-                1303,
-                238,
-                658,
-                600,
-                1213,
-                545,
-                852,
+                428,
+                823,
+                1248,
+                1455,
+                1385,
+                193,
+                754,
                 550,
-                180,
-                570,
-                1160,
-                909,
-                149,
-                743,
-                183
+                698,
+                290,
+                737,
+                1515,
+                631,
+                124,
+                1203,
+                1261,
+                1142,
+                1151,
+                878,
+                57,
+                826,
+                853,
+                482,
+                340,
+                772,
+                1033,
+                24,
+                125,
+                43,
+                370
             ]
         },
         {
             "head_pruned_idx": [],
             "qk_pruned_dims": [
-                19
+                31,
+                62,
+                0,
+                16,
+                60,
+                50,
+                11,
+                41
             ],
-            "v_proj_pruned_dims": [],
+            "v_proj_pruned_dims": [
+                46,
+                18
+            ],
             "mlp_pruned_dims": [
-                377,
-                772,
-                549,
-                1044,
-                1531,
-                1290,
-                35
+                553,
+                157,
+                7,
+                692,
+                1171,
+                547,
+                323,
+                714,
+                626,
+                968,
+                457,
+                1487,
+                1289,
+                360,
+                753,
+                913,
+                1444
             ]
         }
     ],
-    "obj_val": -0.5236934195775904
+    "obj_val": -0.19530712475368495
 }

@@ -19,7 +19,13 @@ class HybridNAS:
         self.dataloader = search_loader
         self.best_value = -float("inf")
         self.best_state = None
-        self.actions = [find_target_QK, find_target_V_proj, find_target_head, find_target_mlp, find_target_emb]
+        self.actions = [
+            find_target_emb,  # 5. Messo in fondo allo stack (bassa priorità immediata)
+            find_target_head,  # 4.
+            find_target_QK,  # 3.
+            find_target_V_proj,  # 2.
+            find_target_mlp  # 1. Cima dello stack (ALTA priorità: prova prima a sfoltire i neuroni)
+        ]
 
     def build_initial_state(self) -> dict:
         start_state = {}
@@ -42,7 +48,7 @@ class HybridNAS:
         return start_state
 
     def bound(self, state):
-        if state["obj_val"] + 0.0025 < self.best_value:
+        if state["obj_val"] < self.best_value:
             return True
         return False
 
@@ -53,20 +59,20 @@ class HybridNAS:
 
         next_states = [deepcopy(state) for i in range(len(self.actions))]
         # pruning QK
-        block, dim = targets[0]
-        next_states[0]["blocks"][block]["qk_pruned_dims"].append(dim)
-        # pruning V/proj
-        block, dim = targets[1]
-        next_states[1]["blocks"][block]["v_proj_pruned_dims"].append(dim)
-        # head pruning
         block, dim = targets[2]
-        next_states[2]["blocks"][block]["head_pruned_idx"].append(dim)
-        # mlp pruning
+        next_states[2]["blocks"][block]["qk_pruned_dims"].append(dim)
+        # pruning V/proj
         block, dim = targets[3]
-        next_states[3]["blocks"][block]["mlp_pruned_dims"].append(dim)
+        next_states[3]["blocks"][block]["v_proj_pruned_dims"].append(dim)
+        # head pruning
+        block, dim = targets[1]
+        next_states[1]["blocks"][block]["head_pruned_idx"].append(dim)
+        # mlp pruning
+        block, dim = targets[4]
+        next_states[4]["blocks"][block]["mlp_pruned_dims"].append(dim)
         # embed pruning
-        dim = targets[4]
-        next_states[4]["embed_pruned_dims"].append(dim)
+        dim = targets[0]
+        next_states[0]["embed_pruned_dims"].append(dim)
 
         return next_states
 
