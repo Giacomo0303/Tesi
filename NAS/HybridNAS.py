@@ -44,6 +44,7 @@ class HybridNAS:
             start_state["blocks"].append(block_state)
 
         start_state["obj_val"] = -float("inf")
+        start_state["depth"] = 0
 
         return start_state
 
@@ -157,7 +158,7 @@ class HybridNAS:
             self.best_state = deepcopy(state)
         return accuracy, params
 
-    def search(self):
+    def search(self, depth_limit = None):
         start_state = self.build_initial_state()
         stack = [start_state]
 
@@ -177,13 +178,17 @@ class HybridNAS:
             print(
                 f"Iter: {search_iterations} | Stack: {len(stack)} | Pruned: {pruned_branches} | Curr Val: {current_state['obj_val']:.4f} | Acc: {acc:.4f} | Params: {params:.4f}M")
 
+            # depth limit
+            if depth_limit is not None and current_state["depth"] >= depth_limit:
+                continue
+
             # è fondamentale che il pruning venga fatto sullo stato corrente e non sui figli, così da garantire che il confronto sia fatto con il best value attuale
             if not (self.bound(current_state)):
                 next_states = self.branch(current_state, model)
                 for state in next_states:
+                    state["depth"] = current_state["depth"] + 1
                     stack.append(state)
             else:
-
                 pruned_branches += 1
 
         print("--- Ricerca Completata ---")

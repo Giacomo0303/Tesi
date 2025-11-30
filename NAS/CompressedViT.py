@@ -7,53 +7,30 @@ class PatchEmbed(nn.Module):
         super().__init__()
         self.img_size = img_size
         self.patch_size = patch_size
-        self.weight_tensor = weight_tensor
-        self.bias_tensor = bias_tensor
 
-        in_channels = self.weight_tensor.shape[1]
-        self.patch_embed = nn.Conv2d(in_channels=in_channels, out_channels=self.bias_tensor.shape[0],
-                                     kernel_size=self.patch_size, stride=self.patch_size)
+        in_channels = weight_tensor.shape[1]
+        self.proj = nn.Conv2d(in_channels=in_channels, out_channels=bias_tensor.shape[0],
+                              kernel_size=self.patch_size, stride=self.patch_size)
 
         with torch.no_grad():
-            self.patch_embed.weight.data.copy_(self.weight_tensor)
-            self.patch_embed.bias.data.copy_(self.bias_tensor)
+            self.proj.weight.data.copy_(weight_tensor)
+            self.proj.bias.data.copy_(bias_tensor)
 
     def forward(self, x):
-        x = self.patch_embed(x)
+        x = self.proj(x)
         x = x.flatten(start_dim=2)
         x = x.transpose(1, 2)
         return x
 
 
-class PositionalEncoding(nn.Module):
-    def __init__(self, pos_encoding_params, cls_token_params):
-        super().__init__()
-        self.pos_encoding_w = pos_encoding_params
-        self.cls_token_w = cls_token_params
-
-        with torch.no_grad():
-            self.cls_token = nn.Parameter(self.cls_token_w)
-            self.pos_embed = nn.Parameter(self.pos_encoding_w)
-
-    def forward(self, x):
-        cls_token_exp = self.cls_token.expand(x.shape[0], -1, -1)
-        x = torch.cat((cls_token_exp, x), dim=1)
-        x = x + self.pos_embed
-        return x
-
-
 class MultiHeadSelfAttention(nn.Module):
-    def __init__(self, qkv_weights, qkv_bias, proj_weights, proj_bias, original_qk_dim:int, qk_dim: int, v_dim: int,
+    def __init__(self, qkv_weights, qkv_bias, proj_weights, proj_bias, original_qk_dim: int, qk_dim: int, v_dim: int,
                  num_heads: int):
         super().__init__()
-        self.qkv_weights = qkv_weights
-        self.qkv_bias = qkv_bias
-        self.proj_weights = proj_weights
-        self.proj_bias = proj_bias
-        self.qk_dim = qk_dim  # dimensione della singola head
+        self.head_dim = qk_dim  # dimensione della singola head
         self.v_dim = v_dim  # come per qk
         self.num_heads = num_heads
-        self.total_qk = self.num_heads * self.qk_dim
+        self.total_qk = self.num_heads * self.head_dim
         self.total_v = self.num_heads * self.v_dim
         self.scale = original_qk_dim ** (-0.5)
 
@@ -61,10 +38,10 @@ class MultiHeadSelfAttention(nn.Module):
         self.proj = nn.Linear(in_features=proj_weights.shape[1], out_features=proj_weights.shape[0])
 
         with torch.no_grad():
-            self.qkv.weight.data.copy_(self.qkv_weights)
-            self.qkv.bias.data.copy_(self.qkv_bias)
-            self.proj.weight.data.copy_(self.proj_weights)
-            self.proj.bias.data.copy_(self.proj_bias)
+            self.qkv.weight.data.copy_(qkv_weights)
+            self.qkv.bias.data.copy_(qkv_bias)
+            self.proj.weight.data.copy_(proj_weights)
+            self.proj.bias.data.copy_(proj_bias)
 
     def forward(self, x):
         qkv = self.qkv(x)  # qkv ha shape [B, N, dimQ + dimK + dimV]
@@ -73,8 +50,8 @@ class MultiHeadSelfAttention(nn.Module):
         # dimQ, dimK e dimV contengono l'output delle varie head concatenate, quindi devo fare il reshape
         # da [B, N, H*dim] -> [B, N, H, dim], ma non va ancora bene perche
         # nel fare il mat_mul ho bisgno di [B, H, N, dim] perche devo moltiplicare tutto il contenuto della testa di Q con quella di K
-        Q = Q.reshape(Q.shape[0], Q.shape[1], self.num_heads, self.qk_dim).permute(0, 2, 1, 3)
-        K = K.reshape(K.shape[0], K.shape[1], self.num_heads, self.qk_dim).permute(0, 2, 1, 3)
+        Q = Q.reshape(Q.shape[0], Q.shape[1], self.num_heads, self.head_dim).permute(0, 2, 1, 3)
+        K = K.reshape(K.shape[0], K.shape[1], self.num_heads, self.head_dim).permute(0, 2, 1, 3)
         V = V.reshape(V.shape[0], V.shape[1], self.num_heads, self.v_dim).permute(0, 2, 1, 3)
 
         # [B, H, N, dim] x [B, H, dim, N] -> [B, H, N, N]
@@ -90,38 +67,49 @@ class MultiHeadSelfAttention(nn.Module):
         return x
 
 
+class Mlp(nn.Module):
+    def __init__(self, in_features, hidden_features, out_features):
+        super().__init__()
+        self.fc1 = nn.Linear(in_features, hidden_features)
+        self.act = nn.GELU()
+        self.fc2 = nn.Linear(hidden_features, out_features)
+
+    def forward(self, x):
+        x = self.fc1(x)
+        x = self.act(x)
+        x = self.fc2(x)
+        return x
+
+
 class EncoderBlock(nn.Module):
     def __init__(self, mhsa, fc1_weights, fc1_bias, fc2_weights, fc2_bias, norm1_weights, norm1_bias, norm2_weights,
                  norm2_bias):
         super().__init__()
         self.new_emb_dim = fc1_weights.shape[1]
-        self.mhsa = mhsa
+        self.attn = mhsa
 
-        self.layerNorm1 = nn.LayerNorm(self.new_emb_dim)
-        self.layerNorm2 = nn.LayerNorm(self.new_emb_dim)
+        self.norm1 = nn.LayerNorm(self.new_emb_dim)
+        self.norm2 = nn.LayerNorm(self.new_emb_dim)
 
-        self.fc1 = nn.Linear(fc1_weights.shape[1], fc1_weights.shape[0])
-        self.fc2 = nn.Linear(fc2_weights.shape[1], fc2_weights.shape[0])
+        in_features = fc1_weights.shape[1]
+        hidden_features = fc1_weights.shape[0]
+        out_features = fc2_weights.shape[0]
 
-        self.mlp = nn.Sequential(
-            self.fc1,
-            nn.GELU(),
-            self.fc2
-        )
+        self.mlp = Mlp(in_features, hidden_features, out_features)
 
         with torch.no_grad():
-            self.fc1.weight.data.copy_(fc1_weights)
-            self.fc1.bias.data.copy_(fc1_bias)
-            self.fc2.weight.data.copy_(fc2_weights)
-            self.fc2.bias.data.copy_(fc2_bias)
-            self.layerNorm1.weight.data.copy_(norm1_weights)
-            self.layerNorm1.bias.data.copy_(norm1_bias)
-            self.layerNorm2.weight.data.copy_(norm2_weights)
-            self.layerNorm2.bias.data.copy_(norm2_bias)
+            self.mlp.fc1.weight.data.copy_(fc1_weights)
+            self.mlp.fc1.bias.data.copy_(fc1_bias)
+            self.mlp.fc2.weight.data.copy_(fc2_weights)
+            self.mlp.fc2.bias.data.copy_(fc2_bias)
+            self.norm1.weight.data.copy_(norm1_weights)
+            self.norm1.bias.data.copy_(norm1_bias)
+            self.norm2.weight.data.copy_(norm2_weights)
+            self.norm2.bias.data.copy_(norm2_bias)
 
     def forward(self, x):
-        x = x + self.mhsa(self.layerNorm1(x))
-        x = x + self.mlp(self.layerNorm2(x))
+        x = x + self.attn(self.norm1(x))
+        x = x + self.mlp(self.norm2(x))
         return x
 
 
@@ -204,15 +192,23 @@ class CompressedViT(nn.Module):
         self.patch_embed = PatchEmbed((img_size, img_size), (patch_size, patch_size), patch_embed_weight,
                                       patch_embed_bias)
 
-        self.pos_enc = PositionalEncoding(pos_encoding_params=pruned_model.pos_embed.data[:, :, new_emb_dims],
-                                          cls_token_params=pruned_model.cls_token.data[:, :, new_emb_dims])
+        cls_token_data = pruned_model.cls_token.data[:, :, new_emb_dims]
+        pos_embed_data = pruned_model.pos_embed.data[:, :, new_emb_dims]
+
+        with torch.no_grad():
+            self.cls_token = nn.Parameter(cls_token_data)
+            self.pos_embed = nn.Parameter(pos_embed_data)
 
         self.blocks_list = []
         blocks_dict = search_dict["blocks"]
-        original_num_heads = pruned_model.blocks[0].attn.num_heads
-        original_head_dim = pruned_model.blocks[0].attn.head_dim
-        original_eps = pruned_model.blocks[0].norm1.eps
+
         for i, block in enumerate(blocks_dict):
+
+            original_num_heads = pruned_model.blocks[i].attn.num_heads
+            original_head_dim = pruned_model.blocks[i].attn.qk_dim if hasattr(pruned_model.blocks[i].attn,
+                                                                              'qk_dim') else pruned_model.blocks[
+                i].attn.head_dim
+            original_eps = pruned_model.blocks[i].norm1.eps
 
             qkv_weights, qkv_bias, qk_dim, v_dim, num_heads = get_qkv_weights_bias(
                 pruned_model.blocks[i].attn.qkv.weight,
@@ -223,7 +219,8 @@ class CompressedViT(nn.Module):
                                                             pruned_model.blocks[i].attn.proj.bias,
                                                             block, original_num_heads, original_head_dim, new_emb_dims)
 
-            mhsa = MultiHeadSelfAttention(qkv_weights, qkv_bias, proj_weights, proj_bias, original_head_dim,qk_dim, v_dim, num_heads)
+            mhsa = MultiHeadSelfAttention(qkv_weights, qkv_bias, proj_weights, proj_bias, original_head_dim, qk_dim,
+                                          v_dim, num_heads)
 
             fc1_weights, fc1_bias, fc2_weights, fc2_bias = get_mlp_weights_bias(pruned_model.blocks[i].mlp, block,
                                                                                 new_emb_dims)
@@ -236,8 +233,8 @@ class CompressedViT(nn.Module):
             enc_block = EncoderBlock(mhsa, fc1_weights, fc1_bias, fc2_weights, fc2_bias, norm1_weights, norm1_bias,
                                      norm2_weights, norm2_bias)
 
-            enc_block.layerNorm1.eps = original_eps
-            enc_block.layerNorm2.eps = original_eps
+            enc_block.norm1.eps = original_eps
+            enc_block.norm2.eps = original_eps
 
             self.blocks_list.append(enc_block)
 
@@ -260,7 +257,9 @@ class CompressedViT(nn.Module):
 
     def forward(self, x):
         x = self.patch_embed(x)
-        x = self.pos_enc(x)
+        cls_token_exp = self.cls_token.expand(x.shape[0], -1, -1)
+        x = torch.cat((cls_token_exp, x), dim=1)
+        x = x + self.pos_embed
         x = self.blocks(x)
         x = self.norm(x)
         x = x[:, 0]

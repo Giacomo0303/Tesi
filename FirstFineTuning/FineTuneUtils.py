@@ -25,6 +25,7 @@ class EarlyStopping:
         else:
             self.counter = 0
             self.min_validation_loss = validation_loss
+            print("---Best model saved---")
             save_model(model, current_epoch, f"{self.path}\\best_model.pth")
 
 def train_loop(model, dataloader, loss_fn, optimizer, device, pbar, scaler):
