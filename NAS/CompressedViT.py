@@ -28,9 +28,10 @@ class MultiHeadSelfAttention(nn.Module):
                  num_heads: int):
         super().__init__()
         self.head_dim = qk_dim  # dimensione della singola head
+        self.qk_dim = qk_dim
         self.v_dim = v_dim  # come per qk
         self.num_heads = num_heads
-        self.total_qk = self.num_heads * self.head_dim
+        self.total_qk = self.num_heads * self.qk_dim
         self.total_v = self.num_heads * self.v_dim
         self.scale = original_qk_dim ** (-0.5)
 
@@ -50,8 +51,8 @@ class MultiHeadSelfAttention(nn.Module):
         # dimQ, dimK e dimV contengono l'output delle varie head concatenate, quindi devo fare il reshape
         # da [B, N, H*dim] -> [B, N, H, dim], ma non va ancora bene perche
         # nel fare il mat_mul ho bisgno di [B, H, N, dim] perche devo moltiplicare tutto il contenuto della testa di Q con quella di K
-        Q = Q.reshape(Q.shape[0], Q.shape[1], self.num_heads, self.head_dim).permute(0, 2, 1, 3)
-        K = K.reshape(K.shape[0], K.shape[1], self.num_heads, self.head_dim).permute(0, 2, 1, 3)
+        Q = Q.reshape(Q.shape[0], Q.shape[1], self.num_heads, self.qk_dim).permute(0, 2, 1, 3)
+        K = K.reshape(K.shape[0], K.shape[1], self.num_heads, self.qk_dim).permute(0, 2, 1, 3)
         V = V.reshape(V.shape[0], V.shape[1], self.num_heads, self.v_dim).permute(0, 2, 1, 3)
 
         # [B, H, N, dim] x [B, H, dim, N] -> [B, H, N, N]
@@ -113,28 +114,43 @@ class EncoderBlock(nn.Module):
         return x
 
 
-def get_qkv_weights_bias(original_qkv_weights, original_qkv_bias, block_config, original_num_heads, original_head_dim,
-                         new_emb_dims):
+def get_qkv_weights_bias(original_qkv_weights, original_qkv_bias, block_config, original_num_heads, original_qk_dim,
+                         original_v_dim, new_emb_dims):
     head_pruned_idx = block_config["head_pruned_idx"]
     qk_pruned_dims = block_config["qk_pruned_dims"]
     v_proj_pruned_dims = block_config["v_proj_pruned_dims"]
 
     final_heads = [h for h in range(original_num_heads) if h not in head_pruned_idx]
-    final_qk_dims = [d for d in range(original_head_dim) if d not in qk_pruned_dims]
-    final_v_dims = [d for d in range(original_head_dim) if d not in v_proj_pruned_dims]
+    final_qk_dims = [d for d in range(original_qk_dim) if d not in qk_pruned_dims]
+    final_v_dims = [d for d in range(original_v_dim) if d not in v_proj_pruned_dims]
 
-    original_qkv_weights = original_qkv_weights.reshape(3, original_num_heads, original_head_dim, -1)
-    original_qkv_bias = original_qkv_bias.reshape(3, original_num_heads, original_head_dim)
+    # calcolo delle dimensioni attuali
+    total_qk_size = original_qk_dim * original_num_heads
+    total_v_size = original_v_dim * original_num_heads
+
+    # splitting delle Q, K, V con tutte le head
+    q_w, k_w, v_w = torch.split(original_qkv_weights, [total_qk_size, total_qk_size, total_v_size], dim=0)
+    q_b, k_b, v_b = torch.split(original_qkv_bias, [total_qk_size, total_qk_size, total_v_size], dim=0)
+
+    # selezione dei pesi originali delle matrici Q e K
+    q_w = q_w.reshape(original_num_heads, original_qk_dim, -1)
+    k_w = k_w.reshape(original_num_heads, original_qk_dim, -1)
+    q_b = q_b.reshape(original_num_heads, original_qk_dim)
+    k_b = k_b.reshape(original_num_heads, original_qk_dim)
+
+    # V usa original_v_dim
+    v_w = v_w.reshape(original_num_heads, original_v_dim, -1)
+    v_b = v_b.reshape(original_num_heads, original_v_dim)
 
     # seleziona Q, k, V, poi la head, poi di tutte le head rimaste prende solo le dimensioni selezionate, infine elimina anche l'embedding prunato
-    q_w = original_qkv_weights[0][final_heads][:, final_qk_dims, :][:, :, new_emb_dims].reshape(-1,
-                                                                                                len(new_emb_dims))  # l'ultimo reshape è per ottenere [n_heads*final_dim, emb]
-    k_w = original_qkv_weights[1][final_heads][:, final_qk_dims, :][:, :, new_emb_dims].reshape(-1, len(new_emb_dims))
-    v_w = original_qkv_weights[2][final_heads][:, final_v_dims, :][:, :, new_emb_dims].reshape(-1, len(new_emb_dims))
+    q_w = q_w[final_heads][:, final_qk_dims, :][:, :, new_emb_dims].reshape(-1,
+                                                                            len(new_emb_dims))  # l'ultimo reshape è per ottenere [n_heads*final_dim, emb]
+    k_w = k_w[final_heads][:, final_qk_dims, :][:, :, new_emb_dims].reshape(-1, len(new_emb_dims))
+    q_b = q_b[final_heads][:, final_qk_dims].flatten()
+    k_b = k_b[final_heads][:, final_qk_dims].flatten()
 
-    q_b = original_qkv_bias[0][final_heads][:, final_qk_dims].flatten()
-    k_b = original_qkv_bias[1][final_heads][:, final_qk_dims].flatten()
-    v_b = original_qkv_bias[2][final_heads][:, final_v_dims].flatten()
+    v_w = v_w[final_heads][:, final_v_dims, :][:, :, new_emb_dims].reshape(-1, len(new_emb_dims))
+    v_b = v_b[final_heads][:, final_v_dims].flatten()
 
     final_qkv_weights = torch.cat([q_w, k_w, v_w], dim=0)
     final_qkv_bias = torch.cat([q_b, k_b, v_b], dim=0)
@@ -143,16 +159,16 @@ def get_qkv_weights_bias(original_qkv_weights, original_qkv_bias, block_config, 
 
 
 def get_proj_weights_bias(original_proj_weights, original_proj_bias, block_config, original_num_heads,
-                          original_head_dim,
+                          original_v_dim,
                           new_emb_dims):
     head_pruned_idx = block_config["head_pruned_idx"]
     v_proj_pruned_dims = block_config["v_proj_pruned_dims"]
 
     final_heads = [h for h in range(original_num_heads) if h not in head_pruned_idx]
-    final_v_dims = [d for d in range(original_head_dim) if d not in v_proj_pruned_dims]
+    final_v_dims = [d for d in range(original_v_dim) if d not in v_proj_pruned_dims]
 
     # da [emb, n_heads * head_dim] -> [emb, n_heads, head_dim]
-    original_proj_weights = original_proj_weights.reshape(-1, original_num_heads, original_head_dim)
+    original_proj_weights = original_proj_weights.reshape(-1, original_num_heads, original_v_dim)
 
     final_proj_weights = original_proj_weights[new_emb_dims][:, final_heads, :][:, :, final_v_dims].reshape(
         len(new_emb_dims), -1)
@@ -181,7 +197,7 @@ def get_mlp_weights_bias(original_mlp, block_config, new_emb_dims):
 
 
 class CompressedViT(nn.Module):
-    def __init__(self, search_dict, pruned_model, img_size=224, patch_size=16):
+    def __init__(self, search_dict, pruned_model, original_head_dim, img_size=224, patch_size=16):
         super().__init__()
 
         original_emb_dims = list(range(pruned_model.patch_embed.proj.weight.shape[0]))
@@ -203,21 +219,26 @@ class CompressedViT(nn.Module):
         blocks_dict = search_dict["blocks"]
 
         for i, block in enumerate(blocks_dict):
+            current_block_attn = pruned_model.blocks[i].attn
+            original_num_heads = current_block_attn.num_heads
 
-            original_num_heads = pruned_model.blocks[i].attn.num_heads
-            original_head_dim = pruned_model.blocks[i].attn.qk_dim if hasattr(pruned_model.blocks[i].attn,
-                                                                              'qk_dim') else pruned_model.blocks[
-                i].attn.head_dim
+            if hasattr(current_block_attn, 'qk_dim'):
+                original_qk_dim = current_block_attn.qk_dim
+                original_v_dim = current_block_attn.v_dim
+            else:
+                original_qk_dim = current_block_attn.head_dim
+                original_v_dim = current_block_attn.head_dim
+
             original_eps = pruned_model.blocks[i].norm1.eps
 
             qkv_weights, qkv_bias, qk_dim, v_dim, num_heads = get_qkv_weights_bias(
                 pruned_model.blocks[i].attn.qkv.weight,
                 pruned_model.blocks[i].attn.qkv.bias, block,
-                original_num_heads, original_head_dim, new_emb_dims)
+                original_num_heads, original_qk_dim, original_v_dim, new_emb_dims)
 
             proj_weights, proj_bias = get_proj_weights_bias(pruned_model.blocks[i].attn.proj.weight,
                                                             pruned_model.blocks[i].attn.proj.bias,
-                                                            block, original_num_heads, original_head_dim, new_emb_dims)
+                                                            block, original_num_heads, original_v_dim, new_emb_dims)
 
             mhsa = MultiHeadSelfAttention(qkv_weights, qkv_bias, proj_weights, proj_bias, original_head_dim, qk_dim,
                                           v_dim, num_heads)

@@ -1,6 +1,7 @@
 import torch
 from sklearn.metrics import accuracy_score
 
+
 def compute_grads(model, loss_fn, device, dataloader):
     model.zero_grad()
     n_batches = 0
@@ -64,69 +65,116 @@ class HeadAligned():
 
 def head_alignment(attn_block) -> HeadAligned:
     n_heads = attn_block.num_heads
-    qk_dim = attn_block.head_dim
-    v_dim = attn_block.head_dim
+
+    if hasattr(attn_block, 'qk_dim'):
+        qk_dim = attn_block.qk_dim
+        v_dim = attn_block.v_dim
+    else:
+        qk_dim = attn_block.head_dim
+        v_dim = attn_block.head_dim
+
     emb_in = attn_block.qkv.in_features
     emb_out = attn_block.proj.out_features
 
     qkv = attn_block.qkv
     proj = attn_block.proj
 
-    qkv_shape = (3, n_heads, qk_dim, emb_in)
-    proj_shape = (emb_out, n_heads, v_dim)
-    qkv_bias_shape = (3, n_heads, qk_dim)
+    total_qk_size = n_heads * qk_dim
+    total_v_size = n_heads * v_dim
+    split_sections = [total_qk_size, total_qk_size, total_v_size]
 
-    # attualmente qkv ha shape (3*H*QK, EMB)
-    # deve diventare (3, H, QK, EMB)
-    qkv_view = qkv.weight.reshape(qkv_shape)
+    # --- 1. SELEZIONE SORGENTI ---
+    if hasattr(qkv, "weight_orig"):
+        qkv_w_src = qkv.weight_orig
+        qkv_b_src = qkv.bias_orig
+    else:
+        qkv_w_src = qkv.weight
+        qkv_b_src = qkv.bias
 
-    # simile per i bias
-    qkv_bias_view = qkv.bias.reshape(qkv_bias_shape)
+    if hasattr(proj, "weight_orig"):
+        proj_w_src = proj.weight_orig
+        proj_b_src = proj.bias_orig
+    else:
+        proj_w_src = proj.weight
+        proj_b_src = proj.bias
 
-    # proj ha shape (EMB, H*V)
-    # diventa (EMB, H, V)
-    proj_view = proj.weight.reshape(proj_shape)
+    # --- 2. PESI (WEIGHTS) ---
+    q_w, k_w, v_w = torch.split(qkv_w_src, split_sections, dim=0)
+    q_weights = q_w.reshape(n_heads, qk_dim, emb_in)
+    k_weights = k_w.reshape(n_heads, qk_dim, emb_in)
+    v_weights = v_w.reshape(n_heads, v_dim, emb_in)
 
-    q_weights = qkv_view[0]
-    k_weights = qkv_view[1]
-    v_weights = qkv_view[2]
+    # --- 3. BIAS ---
+    q_b, k_b, v_b = torch.split(qkv_b_src, split_sections, dim=0)
+    q_bias = q_b.reshape(n_heads, qk_dim)
+    k_bias = k_b.reshape(n_heads, qk_dim)
+    v_bias = v_b.reshape(n_heads, v_dim)
 
-    q_bias = qkv_bias_view[0]
-    k_bias = qkv_bias_view[1]
-    v_bias = qkv_bias_view[2]
-
+    # --- 4. GRADIENTI (Separati e Sicuri) ---
     q_weights_grad, k_weights_grad, v_weights_grad = None, None, None
     q_bias_grad, k_bias_grad, v_bias_grad = None, None, None
     proj_grad, proj_bias_grad = None, None
 
-    if qkv.weight_orig.grad is not None:
-        qkv_grads_view = qkv.weight_orig.grad.reshape(qkv_shape)
-        q_weights_grad, k_weights_grad, v_weights_grad = qkv_grads_view[0], qkv_grads_view[1], qkv_grads_view[2]
+    # Gradienti Pesi
+    if qkv_w_src.grad is not None:
+        q_g, k_g, v_g = torch.split(qkv_w_src.grad, split_sections, dim=0)
+        q_weights_grad = q_g.reshape(n_heads, qk_dim, emb_in)
+        k_weights_grad = k_g.reshape(n_heads, qk_dim, emb_in)
+        v_weights_grad = v_g.reshape(n_heads, v_dim, emb_in)
 
-    qkv_weights_mask_view = qkv.weight_mask.reshape(qkv_shape)
-    q_weights_mask, k_weights_mask, v_weights_mask = qkv_weights_mask_view[0], qkv_weights_mask_view[1], \
-    qkv_weights_mask_view[2]
+    # Gradienti Bias (Controllo separato!)
+    if qkv_b_src.grad is not None:
+        q_bg, k_bg, v_bg = torch.split(qkv_b_src.grad, split_sections, dim=0)
+        q_bias_grad = q_bg.reshape(n_heads, qk_dim)
+        k_bias_grad = k_bg.reshape(n_heads, qk_dim)
+        v_bias_grad = v_bg.reshape(n_heads, v_dim)
 
-    if qkv.bias_orig.grad is not None:
-        qkv_bias_grad_view = qkv.bias_orig.grad.reshape(qkv_bias_shape)
-        q_bias_grad, k_bias_grad, v_bias_grad = qkv_bias_grad_view[0], qkv_bias_grad_view[1], qkv_bias_grad_view[2]
+    # --- 5. MASCHERE QKV (FUORI dall'if dei gradienti!) ---
+    # Inizializziamo a 1 (nessun pruning)
+    q_w_mask = torch.ones_like(q_weights)
+    k_w_mask = torch.ones_like(k_weights)
+    v_w_mask = torch.ones_like(v_weights)
 
-    qkv_bias_mask_view = qkv.bias_mask.reshape(qkv_bias_shape)
-    q_bias_mask, k_bias_mask, v_bias_mask = qkv_bias_mask_view[0], qkv_bias_mask_view[1], qkv_bias_mask_view[2]
+    q_b_mask = torch.ones_like(q_bias)
+    k_b_mask = torch.ones_like(k_bias)
+    v_b_mask = torch.ones_like(v_bias)
 
-    if proj.weight_orig.grad is not None:
-        proj_grad = proj.weight_orig.grad.reshape(proj_shape)
+    # Sovrascriviamo se esistono le maschere reali
+    if hasattr(qkv, 'weight_mask') and qkv.weight_mask is not None:
+        q_m, k_m, v_m = torch.split(qkv.weight_mask, split_sections, dim=0)
+        q_w_mask = q_m.reshape(n_heads, qk_dim, emb_in)
+        k_w_mask = k_m.reshape(n_heads, qk_dim, emb_in)
+        v_w_mask = v_m.reshape(n_heads, v_dim, emb_in)
 
-    proj_weight_mask = proj.weight_mask.reshape(proj_shape)
+    if hasattr(qkv, 'bias_mask') and qkv.bias_mask is not None:
+        q_bm, k_bm, v_bm = torch.split(qkv.bias_mask, split_sections, dim=0)
+        q_b_mask = q_bm.reshape(n_heads, qk_dim)
+        k_b_mask = k_bm.reshape(n_heads, qk_dim)
+        v_b_mask = v_bm.reshape(n_heads, v_dim)
 
-    if proj.bias_orig.grad is not None:
-        proj_bias_grad = proj.bias_orig.grad
+    # --- 6. PROJ ---
+    proj_shape = (emb_out, n_heads, v_dim)
+    proj_view = proj_w_src.reshape(proj_shape)
 
-    proj_bias_mask = proj.bias_mask
+    if proj_w_src.grad is not None:
+        proj_grad = proj_w_src.grad.reshape(proj_shape)
 
-    Q = WeightBias(q_weights, q_bias, q_weights_grad, q_bias_grad, q_weights_mask, q_bias_mask)
-    K = WeightBias(k_weights, k_bias, k_weights_grad, k_bias_grad, k_weights_mask, k_bias_mask)
-    V = WeightBias(v_weights, v_bias, v_weights_grad, v_bias_grad, v_weights_mask, v_bias_mask)
-    proj = WeightBias(proj_view, proj.bias, proj_grad, proj_bias_grad, proj_weight_mask, proj_bias_mask)
+    proj_w_mask = torch.ones_like(proj_view)
+    if hasattr(proj, 'weight_mask') and proj.weight_mask is not None:
+        proj_w_mask = proj.weight_mask.reshape(proj_shape)
 
-    return HeadAligned(Q, K, V, proj)
+    # Bias Proj
+    proj_b_grad = proj_b_src.grad  # Può essere None, va bene
+
+    proj_b_mask = torch.ones_like(proj_b_src)
+    if hasattr(proj, 'bias_mask') and proj.bias_mask is not None:
+        proj_b_mask = proj.bias_mask
+
+    # --- 7. ASSEMBLAGGIO ---
+    Q = WeightBias(q_weights, q_bias, q_weights_grad, q_bias_grad, q_w_mask, q_b_mask)
+    K = WeightBias(k_weights, k_bias, k_weights_grad, k_bias_grad, k_w_mask, k_b_mask)
+    V = WeightBias(v_weights, v_bias, v_weights_grad, v_bias_grad, v_w_mask, v_b_mask)
+
+    proj_obj = WeightBias(proj_view, proj_b_src, proj_grad, proj_b_grad, proj_w_mask, proj_b_mask)
+
+    return HeadAligned(Q, K, V, proj_obj)

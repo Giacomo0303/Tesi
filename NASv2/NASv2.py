@@ -9,11 +9,11 @@ from NAS.HybridNAS import HybridNAS
 from NASv2utils import get_search_set
 
 batch_size = 128
-N_iterations = 2
+N_iterations = 6
 lr = 0.5e-5
 weight_decay = 0.05
-images_per_class = 20
-depth_limit = 1
+images_per_class = 5
+depth_limit = 2
 n_epochs = 1
 
 if __name__ == "__main__":
@@ -78,7 +78,7 @@ if __name__ == "__main__":
         nas = HybridNAS(model, loss_fn=loss_fn, search_loader=search_loader, device=device, original_params=original_params)
         state, best_val = nas.search(depth_limit=depth_limit)
         model = nas.apply_pruning(state, model)
-        comp_model = CompressedViT(state, model).to(device)
+        comp_model = CompressedViT(state, model, original_head_dim=64).to(device)
         _, acc, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, classes)
         print(f"ACCURACY DOPO LA RICERCA ALL'ITERAZIONE {n}: {acc}")
         print(f"PARAMETRI DEL MODELLO DOPO LA RICERCA: {count_params_no_mask(comp_model)}")
