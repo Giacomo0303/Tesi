@@ -7,14 +7,15 @@ from NAS.CompressedViT import CompressedViT
 from NAS.NAS_Utils import count_params_no_mask
 from NAS.HybridNAS import HybridNAS
 from NASv2utils import get_search_set
+import time
 
 batch_size = 128
-N_iterations = 6
+N_iterations = 10
 lr = 0.5e-5
 weight_decay = 0.05
-images_per_class = 5
-depth_limit = 2
-n_epochs = 1
+images_per_class = 20
+depth_limit = 8
+n_epochs = 2
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -69,29 +70,99 @@ if __name__ == "__main__":
 
     loss_fn = torch.nn.CrossEntropyLoss()
 
-    _, acc, _, _ = eval_loop(model, val_loader, loss_fn, device, classes)
-    print(f"VALORE INIZIALE DI ACCURACY SUL VAL SET: {acc}")
+    initial_params_count = count_params_no_mask(model)
+    _, initial_acc, _, _ = eval_loop(model, val_loader, loss_fn, device, classes)
+
+    print(f"\n{'=' * 60}")
+    print(f"🚀 AVVIO PIPELINE ITERATIVE NAS (CIFAR-100)")
+    print(f"{'=' * 60}")
+    print(f"📌 Baseline Model:")
+    print(f"   - Params: {initial_params_count:.2f}M")
+    print(f"   - Accuracy: {initial_acc * 100:.2f}%")
+    print(f"{'=' * 60}\n")
+
+    total_start_time = time.time()
 
     for n in range(N_iterations):
+        iter_start_time = time.time()
+        print(f"\n🔹 ITERAZIONE {n + 1}/{N_iterations}")
+        print(f"   [1/3] Campionamento Search Set & NAS Search...")
+
+        # 1. Search Set & Loader
         search_set = get_search_set(train_set, images_per_class, num_classes)
         search_loader = DataLoader(search_set, batch_size=batch_size, shuffle=False, num_workers=1, pin_memory=True)
-        nas = HybridNAS(model, loss_fn=loss_fn, search_loader=search_loader, device=device, original_params=original_params)
+
+        # 2. HybridNAS Execution
+        nas_start = time.time()
+        nas = HybridNAS(model, loss_fn=loss_fn, search_loader=search_loader, device=device,
+                        original_params=original_params)
         state, best_val = nas.search(depth_limit=depth_limit)
+        nas_duration = time.time() - nas_start
+
+        # 3. Compressione Fisica
+        print(f"   [2/3] Applicazione Pruning e Compressione Fisica...")
         model = nas.apply_pruning(state, model)
+        # Nota: original_head_dim=64 è hardcoded per ViT-Small come discusso
         comp_model = CompressedViT(state, model, original_head_dim=64).to(device)
-        _, acc, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, classes)
-        print(f"ACCURACY DOPO LA RICERCA ALL'ITERAZIONE {n}: {acc}")
-        print(f"PARAMETRI DEL MODELLO DOPO LA RICERCA: {count_params_no_mask(comp_model)}")
+
+        # --- METRICHE POST-PRUNING (A Freddo) ---
+        _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, classes)
+        curr_params = count_params_no_mask(comp_model)
+
+        # Calcoli Statistici
+        params_dropped = (
+                    original_params - count_params_no_mask(model))  # Nota: 'model' qui è quello vecchio mascherato
+        iter_reduction = 100 * (1 - (curr_params / count_params_no_mask(model)))  # Riduzione locale
+        total_reduction = 100 * (1 - (curr_params / initial_params_count))  # Riduzione globale
+        acc_drop = (initial_acc - acc_pruned) * 100
+
+        print(f"   📊 REPORT POST-TAGLIO:")
+        print(f"      - Params: {curr_params:.2f}M (Riduzione Globale: {total_reduction:.2f}%)")
+        print(f"      - Accuracy: {acc_pruned * 100:.2f}% (Drop: {acc_drop:.2f} %)")
+        print(f"      - Tempo Ricerca: {nas_duration:.1f}s")
+
+        # 4. Recovery Fine-Tuning
+        print(f"   [3/3] Recovery Fine-Tuning ({n_epochs} epoche)...")
+        ft_start = time.time()
 
         model = comp_model
         optim = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
-
         scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optim, T_max=n_epochs)
-        _, _, _ = train_model(model, n_epochs, optimizer=optim, device=device,
-                                                     train_dataloader=train_loader, loss_fn=loss_fn, scheduler=scheduler, val_dataloader=val_loader)
 
+        # Passiamo val_dataloader per vedere i log nel training, ma ignoriamo il return qui
+        _, _, _ = train_model(
+            model, n_epochs, optimizer=optim, device=device,
+            train_dataloader=train_loader, loss_fn=loss_fn,
+            scheduler=scheduler, val_dataloader=val_loader
+        )
+        ft_duration = time.time() - ft_start
+
+        # --- METRICHE FINALI ITERAZIONE ---
+        _, acc_final, _, _ = eval_loop(model, val_loader, loss_fn, device, classes)
+        recovered_points = (acc_final - acc_pruned) * 100
+
+        print(f"   ✅ FINE ITERAZIONE {n + 1}")
+        print(f"      - Accuracy Recuperata: {acc_final * 100:.2f}% (+{recovered_points:.2f}%)")
+        print(f"      - Tempo Fine-Tuning: {ft_duration:.1f}s")
+        print(f"      - Tempo Totale Iter: {(time.time() - iter_start_time):.1f}s")
+        print(f"{'-' * 60}")
+
+    # --- SALVATAGGIO E TEST FINALE ---
+    print(f"\n💾 Salvataggio modello finale...")
     save_model(model, 0, f"D:\\Tesi\\NASv2\\pruned_model.pth")
-    _, acc, _, _ = eval_loop(model, test_loader, loss_fn, device, classes, report=True)
-    print(f"ACCURACY FINALE SUL TEST SET: {acc}")
 
+    print(f"\n🎯 VALUTAZIONE FINALE (Test Set)")
+    _, final_test_acc, _, _ = eval_loop(model, test_loader, loss_fn, device, classes, report=True)
 
+    total_duration = time.time() - total_start_time
+    final_reduction = 100 * (1 - (curr_params / initial_params_count))
+
+    print(f"\n{'=' * 60}")
+    print(f"🏆 RISULTATI FINALI")
+    print(f"{'=' * 60}")
+    print(f"   - Tempo Totale: {total_duration / 60:.1f} min")
+    print(f"   - Parametri Iniziali: {initial_params_count / 1e6:.2f}M")
+    print(f"   - Parametri Finali:   {curr_params / 1e6:.2f}M")
+    print(f"   - Riduzione Size:     {final_reduction:.2f}%")
+    print(f"   - Accuracy Test Set:  {final_test_acc * 100:.2f}%")
+    print(f"{'=' * 60}")
