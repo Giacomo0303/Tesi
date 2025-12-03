@@ -1,5 +1,5 @@
 import torch
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import balanced_accuracy_score
 
 
 def compute_grads(model, loss_fn, device, dataloader):
@@ -30,7 +30,7 @@ def compute_grads(model, loss_fn, device, dataloader):
     y_true = torch.cat(y_true)
     y_pred = torch.cat(y_pred)
 
-    accuracy = accuracy_score(y_true.cpu(), y_pred.cpu())
+    accuracy = balanced_accuracy_score(y_true.cpu(), y_pred.cpu())
 
     return loss_value / n_batches, accuracy
 

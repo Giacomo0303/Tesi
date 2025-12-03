@@ -54,7 +54,6 @@ def eval_loop(model, dataloader, loss_fn, device, classes=None, report=False):
     num_batches = len(dataloader)
     size = len(dataloader.dataset)
     epoch_loss = 0.0
-    accuracy = 0.0
     y_true = []
     y_pred = []
 
@@ -68,16 +67,15 @@ def eval_loop(model, dataloader, loss_fn, device, classes=None, report=False):
                 batch_loss = loss_fn(logits, y)
 
             epoch_loss += batch_loss.item()
-            accuracy += (logits.argmax(dim=1) == y).type(torch.float).sum().item()
             y_true.extend(y.cpu().numpy())
             y_pred.extend(logits.argmax(dim=1).cpu().numpy())
 
     epoch_loss = epoch_loss / num_batches
-    accuracy = accuracy / size
+    accuracy = balanced_accuracy_score(y_true, y_pred)
 
     if report:
         print(classification_report(y_true, y_pred, target_names=classes, digits=3))
-        print(f"Balanced Accuracy: {balanced_accuracy_score(y_true, y_pred) * 100:.2f}%")
+        print(f"Balanced Accuracy: {accuracy * 100:.2f}%")
 
     return epoch_loss, accuracy, y_true, y_pred
 

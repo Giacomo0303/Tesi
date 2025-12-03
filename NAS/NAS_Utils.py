@@ -99,7 +99,7 @@ def compute_obj(model, loss_fn, device, dataloader, original_params):
     _, accuracy = compute_grads(model, loss_fn, device, dataloader)
     params = count_parameters(model)
 
-    return log2(accuracy) - 3.5 * log2(params / original_params), accuracy, params
+    return log2(accuracy) - 4.0 * log2(params / original_params), accuracy, params
 
 
 # QK PRUNING

@@ -1,8 +1,9 @@
+import os
 from torchvision.datasets import CIFAR100
 import timm, torch
 from torchvision import transforms
 from torch.utils.data import DataLoader, Subset, random_split
-from FirstFineTuning.FineTuneUtils import eval_loop, train_model, save_model
+from FirstFineTuning.FineTuneUtils import eval_loop, train_model, save_model, EarlyStopping
 from NAS.CompressedViT import CompressedViT
 from NAS.NAS_Utils import count_params_no_mask
 from NAS.HybridNAS import HybridNAS
@@ -10,12 +11,15 @@ from NASv2utils import get_search_set
 import time
 
 batch_size = 128
-N_iterations = 10
+N_iterations = 2
 lr = 0.5e-5
 weight_decay = 0.05
 images_per_class = 20
 depth_limit = 8
-n_epochs = 2
+max_epochs = 5
+patience = 2
+min_delta = 0.0001
+early_stop_path = "D:\\Tesi\\NASv2"
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -30,10 +34,12 @@ if __name__ == "__main__":
     imagenet_mean, imagenet_std = data_config["mean"], data_config["std"]
 
     test_transform = transforms.Compose(
-        [transforms.Resize((224, 224)), transforms.ToTensor(), transforms.Normalize(mean=imagenet_mean, std=imagenet_std)])
+        [transforms.Resize((224, 224)), transforms.ToTensor(),
+         transforms.Normalize(mean=imagenet_mean, std=imagenet_std)])
 
     val_transform = transforms.Compose(
-        [transforms.Resize((224, 224)), transforms.ToTensor(), transforms.Normalize(mean=imagenet_mean, std=imagenet_std)])
+        [transforms.Resize((224, 224)), transforms.ToTensor(),
+         transforms.Normalize(mean=imagenet_mean, std=imagenet_std)])
 
     train_transform = transforms.Compose([
         transforms.Resize((224, 224)),
@@ -71,6 +77,8 @@ if __name__ == "__main__":
     loss_fn = torch.nn.CrossEntropyLoss()
 
     initial_params_count = count_params_no_mask(model)
+    curr_params = initial_params_count
+
     _, initial_acc, _, _ = eval_loop(model, val_loader, loss_fn, device, classes)
 
     print(f"\n{'=' * 60}")
@@ -111,7 +119,7 @@ if __name__ == "__main__":
 
         # Calcoli Statistici
         params_dropped = (
-                    original_params - count_params_no_mask(model))  # Nota: 'model' qui è quello vecchio mascherato
+                original_params - count_params_no_mask(model))  # Nota: 'model' qui è quello vecchio mascherato
         iter_reduction = 100 * (1 - (curr_params / count_params_no_mask(model)))  # Riduzione locale
         total_reduction = 100 * (1 - (curr_params / initial_params_count))  # Riduzione globale
         acc_drop = (initial_acc - acc_pruned) * 100
@@ -122,20 +130,28 @@ if __name__ == "__main__":
         print(f"      - Tempo Ricerca: {nas_duration:.1f}s")
 
         # 4. Recovery Fine-Tuning
-        print(f"   [3/3] Recovery Fine-Tuning ({n_epochs} epoche)...")
+        print(f"   [3/3] Recovery Fine-Tuning...")
         ft_start = time.time()
 
         model = comp_model
         optim = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optim, T_max=n_epochs)
+        scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optim, T_max=max_epochs)
+
+        earlystop = EarlyStopping(path=early_stop_path, patience=patience, min_delta=min_delta)
 
         # Passiamo val_dataloader per vedere i log nel training, ma ignoriamo il return qui
         _, _, _ = train_model(
-            model, n_epochs, optimizer=optim, device=device,
+            model, max_epochs, optimizer=optim, device=device,
             train_dataloader=train_loader, loss_fn=loss_fn,
-            scheduler=scheduler, val_dataloader=val_loader
+            scheduler=scheduler, val_dataloader=val_loader,
+            early_stopping=earlystop
         )
         ft_duration = time.time() - ft_start
+
+        best_model_path = os.path.join(early_stop_path, "best_model.pth")
+        if os.path.exists(best_model_path):
+            checkpoint = torch.load(best_model_path)
+            model.load_state_dict(checkpoint['model_state_dict'])
 
         # --- METRICHE FINALI ITERAZIONE ---
         _, acc_final, _, _ = eval_loop(model, val_loader, loss_fn, device, classes)
@@ -147,10 +163,6 @@ if __name__ == "__main__":
         print(f"      - Tempo Totale Iter: {(time.time() - iter_start_time):.1f}s")
         print(f"{'-' * 60}")
 
-    # --- SALVATAGGIO E TEST FINALE ---
-    print(f"\n💾 Salvataggio modello finale...")
-    save_model(model, 0, f"D:\\Tesi\\NASv2\\pruned_model.pth")
-
     print(f"\n🎯 VALUTAZIONE FINALE (Test Set)")
     _, final_test_acc, _, _ = eval_loop(model, test_loader, loss_fn, device, classes, report=True)
 
@@ -161,8 +173,32 @@ if __name__ == "__main__":
     print(f"🏆 RISULTATI FINALI")
     print(f"{'=' * 60}")
     print(f"   - Tempo Totale: {total_duration / 60:.1f} min")
-    print(f"   - Parametri Iniziali: {initial_params_count / 1e6:.2f}M")
-    print(f"   - Parametri Finali:   {curr_params / 1e6:.2f}M")
+    print(f"   - Parametri Iniziali: {initial_params_count:.2f}M")
+    print(f"   - Parametri Finali:   {curr_params:.2f}M")
     print(f"   - Riduzione Size:     {final_reduction:.2f}%")
     print(f"   - Accuracy Test Set:  {final_test_acc * 100:.2f}%")
     print(f"{'=' * 60}")
+
+    # SALVATAGGIO DEL MODELLO
+    model.eval()
+
+    random_input = torch.randn(1, 3, 224, 224).to(device)
+
+    try:
+        traced_model = torch.jit.trace(model, random_input)
+        traced_model.save("D:\\Tesi\\NASv2\\best_model.pt")
+        print("MODELLO SALVATO CORRETTAMENTE")
+
+        # Test di verifica immediato
+        print("   Verifica caricamento JIT...")
+        loaded_jit = torch.jit.load("D:\\Tesi\\NASv2\\best_model.pt")
+        loaded_jit.eval()
+        with torch.no_grad():
+            out_orig = model(random_input)
+            out_jit = loaded_jit(random_input)
+            # Verifica che i risultati siano identici
+            diff = (out_orig - out_jit).abs().max()
+            print(f"   Differenza max output Originale vs JIT: {diff:.6f}")  # Deve essere vicina a 0
+
+    except Exception as e:
+        print(f"❌ Errore durante l'export JIT: {e}")
