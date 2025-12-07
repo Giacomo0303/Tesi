@@ -11,7 +11,7 @@ from NASv2utils import get_search_set
 import time
 
 batch_size = 128
-N_iterations = 2
+N_iterations = 20
 lr = 0.5e-5
 weight_decay = 0.05
 images_per_class = 20
