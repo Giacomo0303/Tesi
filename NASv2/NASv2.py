@@ -3,7 +3,9 @@ import timm, torch
 from torchvision import transforms
 from torch.utils.data import DataLoader
 from FirstFineTuning.FineTuneUtils import eval_loop
+from NAS.HybridNAS import HybridNAS
 from NAS.NAS_Utils import count_params_no_mask
+from NASv2utils import updatePruningReport, createPruningReport, savePruningReport
 from NASv2utils import load_model, split_dataset, pruningNAS, recoveryFineTune, save_model_jit
 from NASv2utils import get_search_set
 import time
@@ -20,6 +22,7 @@ min_delta = 0.0001
 early_stop_path = "D:\\Tesi\\NASv2"
 seed = 42
 num_classes = 100
+search_threshold = 0.005
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -65,6 +68,7 @@ if __name__ == "__main__":
     curr_params = initial_params_count
 
     _, initial_acc, _, _ = eval_loop(model, val_loader, loss_fn, device, classes)
+    pruningReport = createPruningReport(model)
 
     print(f"\n{'=' * 60}")
     print(f"AVVIO PIPELINE ITERATIVE NAS (CIFAR-100)")
@@ -87,9 +91,12 @@ if __name__ == "__main__":
 
         # 2. HybridNAS Execution
         # Nota: original_head_dim=64 è hardcoded per ViT-Small
-        comp_model, nas_duration = pruningNAS(model=model, loss_fn=loss_fn, search_loader=search_loader, device=device,
+        comp_model, nas_duration, state = pruningNAS(model=model, loss_fn=loss_fn, search_loader=search_loader, device=device,
                                               initial_params_count=initial_params_count, depth_limit=depth_limit,
-                                              original_head_dim=64)
+                                              original_head_dim=64, threshold=search_threshold)
+
+        pruningReport = updatePruningReport(pruningReport, state)
+        savePruningReport(pruningReport, path="D:\\Tesi\\NASv2\\pruning_report.json")
 
         # --- METRICHE POST-PRUNING (A Freddo) ---
         _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, classes)

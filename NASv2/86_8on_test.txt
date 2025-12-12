@@ -1866,6 +1866,7 @@ depth_limit = 8
 max_epochs = 5
 patience = 2
 min_delta = 0.0001
+nessuna soglia sul BnB
 
 
 

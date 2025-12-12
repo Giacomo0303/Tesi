@@ -5,7 +5,7 @@ from copy import deepcopy
 
 
 class HybridNAS:
-    def __init__(self, model, loss_fn, search_loader, device, original_params):
+    def __init__(self, model, loss_fn, search_loader, device, original_params, threshold):
         self.base_model = model
         self.original_params = original_params
         self.loss_fn = loss_fn
@@ -13,6 +13,7 @@ class HybridNAS:
         self.dataloader = search_loader
         self.best_value = -float("inf")
         self.best_state = None
+        self.threshold = threshold
         self.actions = [
             find_target_emb,  # 5. Messo in fondo allo stack (bassa priorità immediata)
             find_target_head,  # 4.
@@ -43,7 +44,7 @@ class HybridNAS:
         return start_state
 
     def bound(self, state):
-        if state["obj_val"] < self.best_value:
+        if (state["obj_val"] + self.threshold) < self.best_value:
             return True
         return False
 

@@ -2,6 +2,7 @@ import time
 import numpy as np
 import timm
 import torch
+import json
 from torch.utils.data import Subset, random_split
 from torchvision.datasets import CIFAR100
 from FirstFineTuning.FineTuneUtils import EarlyStopping, train_model
@@ -56,17 +57,17 @@ def split_dataset(transforms, seed):
     return train_set, val_set, test_set
 
 
-def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, depth_limit, original_head_dim):
+def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, depth_limit, original_head_dim, threshold):
     nas_start = time.time()
     nas = HybridNAS(model, loss_fn=loss_fn, search_loader=search_loader, device=device,
-                    original_params=initial_params_count)
+                    original_params=initial_params_count, threshold=threshold)
     state, best_val = nas.search(depth_limit=depth_limit)
     nas_duration = time.time() - nas_start
 
     model = nas.apply_pruning(state, model)
     comp_model = CompressedViT(state, model, original_head_dim=original_head_dim).to(device)
 
-    return comp_model, nas_duration
+    return comp_model, nas_duration, state
 
 
 def recoveryFineTune(model, lr, weight_decay, max_epochs, early_stop_path, patience, min_delta, device, train_loader,
@@ -109,3 +110,52 @@ def save_model_jit(model, device, path):
 
     except Exception as e:
         print(f"❌ Errore durante l'export JIT: {e}")
+
+
+def createPruningReport(model):
+    start_state = {}
+    start_state["embed_pruned_dims"] = 0
+    start_state["blocks"] = []
+
+    n_blocks = len(model.blocks)
+
+    for block in range(n_blocks):
+        block_state = {
+            "head_pruned_idx": 0,
+            "qk_pruned_dims": 0,
+            "v_proj_pruned_dims": 0,
+            "mlp_pruned_dims": 0
+        }
+        start_state["blocks"].append(block_state)
+
+    start_state["obj_val"] = -float("inf")
+    start_state["depth"] = 0
+
+    return start_state
+
+
+def updatePruningReport(pruningReport, state):
+    pruningReport["obj_val"] = state["obj_val"]
+    pruningReport["depth"] = state["depth"]
+
+    pruningReport["embed_pruned_dims"] += len(state["embed_pruned_dims"])
+    n_blocks = len(pruningReport["blocks"])
+
+    for i, block in enumerate(pruningReport["blocks"]):
+        block["head_pruned_idx"] += len(state["blocks"][i]["head_pruned_idx"])
+        block["qk_pruned_dims"] += len(state["blocks"][i]["qk_pruned_dims"])
+        block["v_proj_pruned_dims"] += len(state["blocks"][i]["v_proj_pruned_dims"])
+        block["mlp_pruned_dims"] += len(state["blocks"][i]["mlp_pruned_dims"])
+
+    return pruningReport
+
+
+def savePruningReport(report, path):
+    # Salva il file JSON
+    with open(path, 'w') as f:
+        json.dump(report, f, indent=4)
+
+
+
+
+
