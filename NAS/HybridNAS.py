@@ -1,12 +1,6 @@
-import torch, timm
-from torch import nn
-from torchvision.datasets import ImageFolder
-from torchvision import transforms
-import json
-from NAS.NAS_Utils import count_parameters
 from NAS.NAS_Utils import find_target_emb, find_target_QK, find_target_V_proj, find_target_head, find_target_mlp, \
-    set_initial_masks, compute_obj, count_params_no_mask
-from Pruning.PruneUtils import head_alignment, compute_grads
+    set_initial_masks, compute_obj
+from Pruning.PruneUtils import head_alignment
 from copy import deepcopy
 
 
@@ -197,53 +191,3 @@ class HybridNAS:
         print(f"Miglior Valore Trovato: {self.best_value:.4f}")
 
         return self.best_state, self.best_value
-
-
-# TESTING
-if __name__ == '__main__':
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    num_classes = 200
-    model = timm.create_model("vit_small_patch16_224", pretrained=True, num_classes=num_classes).to(device)
-    checkpoint = torch.load("D:\\Tesi\\FirstFineTuning\\best_model.pth")
-    model.load_state_dict(checkpoint['model_state_dict'])
-    original_params = count_params_no_mask(model)
-
-    data_config = timm.data.resolve_model_data_config(model)
-    imagenet_mean, imagenet_std = data_config["mean"], data_config["std"]
-
-    search_transform = transforms.Compose(
-        [transforms.ToTensor(), transforms.Normalize(mean=imagenet_mean, std=imagenet_std)])
-
-    path = "D:\\Tesi\\Sets\\Set1\\search"
-    batch_size = 128
-
-    search_set = ImageFolder(root=path, transform=search_transform)
-    search_loader = torch.utils.data.DataLoader(search_set, batch_size=batch_size, shuffle=False, num_workers=1, pin_memory=True)
-
-    nas = HybridNAS(model, loss_fn=nn.CrossEntropyLoss(), search_loader=search_loader, device=device, original_params=original_params)
-    # 1. Cattura lo stato finale e il valore
-    state, best_val = nas.search()
-
-    # 2. Controlla se la ricerca ha prodotto un risultato valido
-    if state is not None:
-        print(f"\n--- Statistiche del Modello Migliore (Valore: {best_val:.4f}) ---")
-
-        # 3. Calcola le statistiche finali (è più pulito farlo fuori dal print)
-        final_pruned_model = nas.apply_pruning(state=state, model=deepcopy(nas.base_model))
-        _, final_accuracy = compute_grads(final_pruned_model, nas.loss_fn, device, search_loader)
-        final_params = count_parameters(final_pruned_model)
-
-        print(f"Accuracy: {final_accuracy:.4f}")
-        print(f"Parametri (Milioni): {final_params:.4f}M")
-
-        # 4. Salva il dizionario 'state' nel file JSON
-        output_filename = "D:\\Tesi\\NAS\\best_architecture.json"
-        print(f"Salvataggio dell'architettura in {output_filename}...")
-
-        with open(output_filename, "w") as f:
-            json.dump(state, f, indent=4)
-
-        print("Salvataggio completato.")
-
-    else:
-        print("Ricerca completata senza trovare un best_state valido.")

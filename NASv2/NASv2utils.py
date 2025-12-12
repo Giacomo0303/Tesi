@@ -1,5 +1,20 @@
+import time
 import numpy as np
-from torch.utils.data import Subset
+import timm
+import torch
+from torch.utils.data import Subset, random_split
+from torchvision.datasets import CIFAR100
+from FirstFineTuning.FineTuneUtils import EarlyStopping, train_model
+from NAS.CompressedViT import CompressedViT
+from NAS.HybridNAS import HybridNAS
+
+
+def load_model(model_name, num_classes, path):
+    model = timm.create_model(model_name, pretrained=False, num_classes=num_classes)
+    checkpoint = torch.load(path)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    return model
+
 
 def get_search_set(train_set, n_per_classes, n_classes):
     train_indices = np.arange(len(train_set))
@@ -21,3 +36,76 @@ def get_search_set(train_set, n_per_classes, n_classes):
         final_indices.extend(selected_indices.tolist())
 
     return Subset(train_set, final_indices)
+
+
+def split_dataset(transforms, seed):
+    total_size = 50000
+    train_size = int(0.9 * total_size)
+    val_size = total_size - train_size
+
+    train_set = CIFAR100(root="D:\\Tesi\\CIFAR100", train=True, download=True, transform=transforms[0])
+    val_set = CIFAR100(root="D:\\Tesi\\CIFAR100", train=True, download=True, transform=transforms[1])
+    test_set = CIFAR100(root="D:\\Tesi\\CIFAR100", train=False, download=True, transform=transforms[2])
+
+    generator = torch.Generator().manual_seed(seed)
+    train_split, val_split = random_split(train_set, [train_size, val_size], generator=generator)
+
+    train_set = Subset(train_set, train_split.indices)
+    val_set = Subset(val_set, val_split.indices)
+
+    return train_set, val_set, test_set
+
+
+def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, depth_limit, original_head_dim):
+    nas_start = time.time()
+    nas = HybridNAS(model, loss_fn=loss_fn, search_loader=search_loader, device=device,
+                    original_params=initial_params_count)
+    state, best_val = nas.search(depth_limit=depth_limit)
+    nas_duration = time.time() - nas_start
+
+    model = nas.apply_pruning(state, model)
+    comp_model = CompressedViT(state, model, original_head_dim=original_head_dim).to(device)
+
+    return comp_model, nas_duration
+
+
+def recoveryFineTune(model, lr, weight_decay, max_epochs, early_stop_path, patience, min_delta, device, train_loader,
+                     val_loader, loss_fn):
+    ft_start = time.time()
+    optim = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optim, T_max=max_epochs)
+
+    earlystop = EarlyStopping(path=early_stop_path, patience=patience, min_delta=min_delta)
+
+    # Passiamo val_dataloader per vedere i log nel training, ma ignoriamo il return qui
+    _, _, _ = train_model(
+        model, max_epochs, optimizer=optim, device=device,
+        train_dataloader=train_loader, loss_fn=loss_fn,
+        scheduler=scheduler, val_dataloader=val_loader,
+        early_stopping=earlystop
+    )
+    ft_duration = time.time() - ft_start
+
+    return ft_duration
+
+
+def save_model_jit(model, device, path):
+    model.eval()
+    random_input = torch.randn(1, 3, 224, 224).to(device)
+    try:
+        traced_model = torch.jit.trace(model, random_input)
+        traced_model.save(path)
+        print("MODELLO SALVATO CORRETTAMENTE")
+
+        # Test di verifica immediato
+        loaded_jit = torch.jit.load(path)
+        loaded_jit.eval()
+        with torch.no_grad():
+            out_orig = model(random_input)
+            out_jit = loaded_jit(random_input)
+            # Verifica che i risultati siano identici
+            diff = (out_orig - out_jit).abs().max()
+            print(f"   Differenza max output Originale vs JIT: {diff:.6f}")  # Deve essere vicina a 0
+
+    except Exception as e:
+        print(f"❌ Errore durante l'export JIT: {e}")
