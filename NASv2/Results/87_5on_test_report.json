@@ -1,0 +1,79 @@
+{
+    "embed_pruned_dims": 28,
+    "blocks": [
+        {
+            "head_pruned_idx": 5,
+            "qk_pruned_dims": 0,
+            "v_proj_pruned_dims": 1,
+            "mlp_pruned_dims": 1
+        },
+        {
+            "head_pruned_idx": 0,
+            "qk_pruned_dims": 0,
+            "v_proj_pruned_dims": 0,
+            "mlp_pruned_dims": 1
+        },
+        {
+            "head_pruned_idx": 2,
+            "qk_pruned_dims": 2,
+            "v_proj_pruned_dims": 0,
+            "mlp_pruned_dims": 3
+        },
+        {
+            "head_pruned_idx": 1,
+            "qk_pruned_dims": 0,
+            "v_proj_pruned_dims": 0,
+            "mlp_pruned_dims": 6
+        },
+        {
+            "head_pruned_idx": 2,
+            "qk_pruned_dims": 0,
+            "v_proj_pruned_dims": 1,
+            "mlp_pruned_dims": 3
+        },
+        {
+            "head_pruned_idx": 0,
+            "qk_pruned_dims": 0,
+            "v_proj_pruned_dims": 0,
+            "mlp_pruned_dims": 1
+        },
+        {
+            "head_pruned_idx": 0,
+            "qk_pruned_dims": 1,
+            "v_proj_pruned_dims": 0,
+            "mlp_pruned_dims": 2
+        },
+        {
+            "head_pruned_idx": 1,
+            "qk_pruned_dims": 0,
+            "v_proj_pruned_dims": 0,
+            "mlp_pruned_dims": 4
+        },
+        {
+            "head_pruned_idx": 2,
+            "qk_pruned_dims": 1,
+            "v_proj_pruned_dims": 0,
+            "mlp_pruned_dims": 6
+        },
+        {
+            "head_pruned_idx": 2,
+            "qk_pruned_dims": 0,
+            "v_proj_pruned_dims": 0,
+            "mlp_pruned_dims": 5
+        },
+        {
+            "head_pruned_idx": 4,
+            "qk_pruned_dims": 2,
+            "v_proj_pruned_dims": 0,
+            "mlp_pruned_dims": 47
+        },
+        {
+            "head_pruned_idx": 3,
+            "qk_pruned_dims": 0,
+            "v_proj_pruned_dims": 1,
+            "mlp_pruned_dims": 22
+        }
+    ],
+    "obj_val": 1.026903503995545,
+    "depth": 8
+}

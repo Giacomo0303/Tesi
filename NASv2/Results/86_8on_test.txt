@@ -1848,6 +1848,7 @@ Accuracy finale: 86.79%
 ---------------------------------------
 Configurazione:
 
+
 Azioni:[
             find_target_emb,  # 5. Messo in fondo allo stack (bassa priorità immediata)
             find_target_head,  # 4.
@@ -1855,7 +1856,11 @@ Azioni:[
             find_target_V_proj,  # 2.
             find_target_mlp  # 1. Cima dello stack (ALTA priorità: prova prima a sfoltire i neuroni)
         ]
-Metrica di pruning: hessiano NViT
+
+
+Metrica di pruning: hessiano NViT con lambda = 4.0
+
+
 Iperparametri:
 batch_size = 128
 N_iterations = 20
