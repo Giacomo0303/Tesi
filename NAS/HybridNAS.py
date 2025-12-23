@@ -55,20 +55,20 @@ class HybridNAS:
 
         next_states = [deepcopy(state) for i in range(len(self.actions))]
         # pruning QK
-        block, dim = targets[2]
-        next_states[2]["blocks"][block]["qk_pruned_dims"].append(dim)
+        block, dims = targets[2]
+        next_states[2]["blocks"][block]["qk_pruned_dims"].extend(dims)
         # pruning V/proj
-        block, dim = targets[3]
-        next_states[3]["blocks"][block]["v_proj_pruned_dims"].append(dim)
+        block, dims = targets[3]
+        next_states[3]["blocks"][block]["v_proj_pruned_dims"].extend(dims)
         # head pruning
         block, dim = targets[1]
         next_states[1]["blocks"][block]["head_pruned_idx"].append(dim)
         # mlp pruning
-        block, dim = targets[4]
-        next_states[4]["blocks"][block]["mlp_pruned_dims"].append(dim)
+        block, dims = targets[4]
+        next_states[4]["blocks"][block]["mlp_pruned_dims"].extend(dims)
         # embed pruning
-        dim = targets[0]
-        next_states[0]["embed_pruned_dims"].append(dim)
+        dims = targets[0]
+        next_states[0]["embed_pruned_dims"].extend(dims)
 
         return next_states
 

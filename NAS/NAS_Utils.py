@@ -1,6 +1,6 @@
 import torch
 import torch.nn.utils.prune as pruning
-from Pruning.PruneUtils import compute_grads, importance_score, head_alignment
+from Pruning.PruneUtils import compute_grads, importance_score, head_alignment, importance_score_no_square
 from math import log2
 
 
@@ -103,10 +103,11 @@ def compute_obj(model, loss_fn, device, dataloader, original_params):
 
 
 # QK PRUNING
+# rimuoviamo chunk_size dimensioni da ogni testa, in totale chunk_size * num_heads dimensioni
 
-def find_target_QK(model) -> tuple:
-    target = {
-        "position": (0, 0),  # (num_block, dim)
+def find_target_QK(model, chunk_size=8) -> tuple:
+    best_target = {
+        "position": (0, []),  # (block_index, [lista_di_8_indici])
         "importance": float("inf")
     }
 
@@ -118,6 +119,8 @@ def find_target_QK(model) -> tuple:
 
         # get dimensions to prune
         n_dims = Q.weight.shape[1]
+
+        candidates = []
 
         for dim in range(n_dims):
             # check if dim is already pruned using the bias
@@ -138,36 +141,33 @@ def find_target_QK(model) -> tuple:
                 K.bias_grad[:, dim]
             ]
 
-            imp = importance_score(weights, grads)
+            signed_imp = importance_score_no_square(weights, grads)
+            candidates.append((dim, signed_imp))
 
-            if imp < target["importance"]:
-                target["importance"] = imp
-                target["position"] = (b, dim)
+        if len(candidates) < chunk_size:
+            continue
 
-    return target["position"]
+        # sort in ascending order by abs of signed importances
+        candidates.sort(key=lambda x: abs(x[1]))
 
+        best_dims = candidates[:chunk_size]
+        best_indices = [x[0] for x in best_dims]
+        best_values = [x[1] for x in best_dims]
 
-def apply_QK_Prune(model, target: tuple) -> None:
-    block = target["position"][0]
-    dim = target["position"][1]
+        chunk_importance = (sum(best_values)) ** 2
 
-    head_aligned = head_alignment(model.blocks[block].attn)
-    Q = head_aligned.Q
-    K = head_aligned.K
+        if chunk_importance < best_target["importance"]:
+            best_target["position"] = (b, best_indices)
+            best_target["importance"] = chunk_importance
 
-    # apply pruning
-    Q.weight_mask[:, dim, :] = 0.0
-    Q.bias_mask[:, dim] = 0.0
-
-    K.weight_mask[:, dim, :] = 0.0
-    K.bias_mask[:, dim] = 0.0
+    return best_target["position"]
 
 
 # V/PROJ PRUNING
 
-def find_target_V_proj(model) -> tuple:
+def find_target_V_proj(model, chunk_size=8) -> tuple:
     target = {
-        "position": (0, 0),  # (num_block, dim)
+        "position": (0, []),  # (num_block, dims)
         "importance": float("inf")
     }
 
@@ -179,6 +179,8 @@ def find_target_V_proj(model) -> tuple:
         proj = head_aligned.proj
 
         n_dims = V.weight.shape[1]
+
+        candidates = []
 
         for dim in range(n_dims):
             # checking already pruned dimensions
@@ -198,26 +200,26 @@ def find_target_V_proj(model) -> tuple:
                 proj.weight_grad[:, :, dim]
             ]
 
-            imp = importance_score(weights, grads)
+            signed_imp = importance_score_no_square(weights, grads)
+            candidates.append((dim, signed_imp))
 
-            if imp < target["importance"]:
-                target["importance"] = imp
-                target["position"] = (b, dim)
+        if len(candidates) < chunk_size:
+            continue
+
+        # sort in ascending order by abs of signed importances
+        candidates.sort(key=lambda x: abs(x[1]))
+
+        best_dims = candidates[:chunk_size]
+        best_indices = [x[0] for x in best_dims]
+        best_values = [x[1] for x in best_dims]
+
+        chunk_importance = (sum(best_values)) ** 2
+
+        if chunk_importance < target["importance"]:
+            target["position"] = (b, best_indices)
+            target["importance"] = chunk_importance
 
     return target["position"]
-
-
-def apply_V_proj_Prune(model, target: tuple) -> None:
-    block = target["position"][0]
-    dim = target["position"][1]
-    head_aligned = head_alignment(model.blocks[block].attn)
-    V = head_aligned.V
-    proj = head_aligned.proj
-
-    V.weight_mask[:, dim, :] = 0.0
-    V.bias_mask[:, dim] = 0.0
-
-    proj.weight_mask[:, :, dim] = 0.0
 
 
 # HEAD PRUNING
@@ -271,30 +273,11 @@ def find_target_head(model) -> tuple:
     return target["position"]
 
 
-def apply_head_Prune(model, target: tuple) -> None:
-    block = target["position"][0]
-    head = target["position"][1]
-
-    head_aligned = head_alignment(model.blocks[block].attn)
-    Q = head_aligned.Q
-    K = head_aligned.K
-    V = head_aligned.V
-    proj = head_aligned.proj
-
-    Q.weight_mask[head, :, :] = 0.0
-    Q.bias_mask[head, :] = 0.0
-    K.weight_mask[head, :, :] = 0.0
-    K.bias_mask[head, :] = 0.0
-    V.weight_mask[head, :, :] = 0.0
-    V.bias_mask[head, :] = 0.0
-    proj.weight_mask[:, head, :] = 0.0
-
-
 # MLP PRUNING
 
-def find_target_mlp(model) -> tuple:
+def find_target_mlp(model, chunk_size=64) -> tuple:
     target = {
-        "position": (0, 0),  # (block, dim)
+        "position": (0, []),  # (block, dims)
         "importance": float("inf")
     }
 
@@ -310,40 +293,36 @@ def find_target_mlp(model) -> tuple:
         imp_fc2_w = torch.sum(mlp.fc2.weight * mlp.fc2.weight_orig.grad, dim=0)
 
         # final scores
-        total_imp_per_neuron = (imp_fc1_w + imp_fc1_b + imp_fc2_w) ** 2
+        signed_imp_per_neuron = imp_fc1_w + imp_fc1_b + imp_fc2_w
+
+        abs_imp_per_neuron = torch.abs(signed_imp_per_neuron)
 
         # masking already pruned dims
-        total_imp_per_neuron[mlp.fc1.bias_mask == 0.0] = float('inf')
+        abs_imp_per_neuron[mlp.fc1.bias_mask == 0.0] = float('inf')
 
-        # finding best candidate
-        min_imp_block, min_dim_block = torch.min(total_imp_per_neuron, dim=0)
+        if (mlp.fc1.bias_mask > 0).sum() < chunk_size:
+            continue
 
-        if min_imp_block < target["importance"]:
-            target["importance"] = min_imp_block.item()
-            target["position"] = (b, min_dim_block.item())
+        # take the dims with the smallest abs importances
+        _, indices = torch.topk(abs_imp_per_neuron, k=chunk_size, largest=False)
+
+        best_dims = signed_imp_per_neuron[indices]
+
+        # Se hai selezionato dei valori 'inf' (già prunati), il chunk è da scartare
+        if torch.isinf(best_dims).any():
+            continue
+
+        chunk_importance = (torch.sum(best_dims)) ** 2
+        if chunk_importance < target["importance"]:
+            target["position"] = (b, indices.tolist())
+            target["importance"] = chunk_importance.item()
 
     return target["position"]
 
 
-def apply_mlp_Prune(model, target: tuple) -> None:
-    block = target["position"][0]
-    dim = target["position"][1]
-
-    mlp = model.blocks[block].mlp
-
-    mlp.fc1.weight_mask[dim, :] = 0.0
-    mlp.fc1.bias_mask[dim] = 0.0
-    mlp.fc2.weight_mask[:, dim] = 0.0
-
-
 # EMB PRUNING
 
-def find_target_emb(model) -> int:
-    target = {
-        "position": 0,  # the embedding dim to prune
-        "importance": float("inf")
-    }
-
+def find_target_emb(model, chunk_size=8) -> list[int]:
     # like for mlp calculation takes too long so we got to parallelize
 
     # contribution of cls token
@@ -387,13 +366,22 @@ def find_target_emb(model) -> int:
     # contribution of classification head
     total_dim_importances += torch.sum(model.head.weight * model.head.weight_orig.grad, dim=0)
 
-    total_dim_importances = total_dim_importances ** 2
-    # mask dims that are already pruned
-    total_dim_importances[model.cls_token_mask[0, 0, :] == 0.0] = float('inf')
+    # --- SELEZIONE (Chunk Strategy) ---
 
-    min_imp, dim = torch.min(total_dim_importances, dim=0)
+    # Usiamo il valore ASSOLUTO per decidere chi tagliare
+    abs_imp = torch.abs(total_dim_importances)
 
-    target["importance"] = min_imp.item()
-    target["position"] = dim.item()
+    # Mascheriamo le dimensioni già prunate
+    # cls_token_mask shape: [1, 1, dim] -> prendiamo [0,0,:] per avere il vettore [dim]
+    current_mask = model.cls_token_mask[0, 0, :]
+    abs_imp[current_mask == 0.0] = float('inf')
 
-    return target["position"]
+    # Controllo di sicurezza
+    if (current_mask > 0).sum() < chunk_size:
+        return []
+
+    # Troviamo gli indici con magnitudine minore (i più vicini a zero)
+    _, indices = torch.topk(abs_imp, k=chunk_size, largest=False)
+
+    # Restituiamo direttamente la lista degli indici
+    return indices.tolist()

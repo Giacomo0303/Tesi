@@ -43,6 +43,14 @@ def importance_score(weights, grads):
 
     return (accumul ** 2).item()
 
+def importance_score_no_square(weights, grads):
+    accumul = 0.0
+
+    for weight_group, grad in zip(weights, grads):
+        accumul += torch.sum(weight_group * grad)
+
+    return accumul.item()
+
 
 class WeightBias():
     def __init__(self, weight: torch.Tensor, bias: torch.Tensor, w_grad: torch.Tensor, b_grad: torch.Tensor,
