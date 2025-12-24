@@ -21,6 +21,13 @@ class HybridNAS:
             find_target_V_proj,  # 2.
             find_target_mlp  # 1. Cima dello stack (ALTA priorità: prova prima a sfoltire i neuroni)
         ]
+        self.action_names = [
+            "find_target_emb",
+            "find_target_head",
+            "find_target_QK",
+            "find_target_V_proj",
+            "find_target_mlp"
+        ]
 
     def build_initial_state(self) -> dict:
         start_state = {}
@@ -40,6 +47,7 @@ class HybridNAS:
 
         start_state["obj_val"] = -float("inf")
         start_state["depth"] = 0
+        start_state["last_act"] = "Start"
 
         return start_state
 
@@ -57,18 +65,23 @@ class HybridNAS:
         # pruning QK
         block, dims = targets[2]
         next_states[2]["blocks"][block]["qk_pruned_dims"].extend(dims)
+        next_states[2]["last_act"] = self.action_names[2]
         # pruning V/proj
         block, dims = targets[3]
         next_states[3]["blocks"][block]["v_proj_pruned_dims"].extend(dims)
+        next_states[3]["last_act"] = self.action_names[3]
         # head pruning
         block, dim = targets[1]
         next_states[1]["blocks"][block]["head_pruned_idx"].append(dim)
+        next_states[1]["last_act"] = self.action_names[1]
         # mlp pruning
         block, dims = targets[4]
         next_states[4]["blocks"][block]["mlp_pruned_dims"].extend(dims)
+        next_states[4]["last_act"] = self.action_names[4]
         # embed pruning
         dims = targets[0]
         next_states[0]["embed_pruned_dims"].extend(dims)
+        next_states[0]["last_act"] = self.action_names[0]
 
         return next_states
 
@@ -145,7 +158,8 @@ class HybridNAS:
         return model
 
     def eval_model(self, model, state, search_iter):
-        obj_val, accuracy, params = compute_obj(model, self.loss_fn, device=self.device, dataloader=self.dataloader, original_params=self.original_params)
+        obj_val, accuracy, params = compute_obj(model, self.loss_fn, device=self.device, dataloader=self.dataloader,
+                                                original_params=self.original_params)
         state["obj_val"] = obj_val
         if search_iter > 0 and obj_val > self.best_value:
             print(f"--- NUOVO BEST TROVATO! --- Valore: {obj_val:.4f} (Precedente: {self.best_value:.4f})")
@@ -153,7 +167,7 @@ class HybridNAS:
             self.best_state = deepcopy(state)
         return accuracy, params
 
-    def search(self, depth_limit = None):
+    def search(self, depth_limit=None):
         start_state = self.build_initial_state()
         stack = [start_state]
 
@@ -171,7 +185,7 @@ class HybridNAS:
             search_iterations += 1
 
             print(
-                f"Iter: {search_iterations} | Stack: {len(stack)} | Pruned: {pruned_branches} | Curr Val: {current_state['obj_val']:.4f} | Acc: {acc:.4f} | Params: {params:.4f}M")
+                f"Iter: {search_iterations} | Stack: {len(stack)} | Pruned: {pruned_branches} | Curr Val: {current_state['obj_val']:.4f} | Last Action: {current_state['last_act']} |Acc: {acc:.4f} | Params: {params:.4f}M")
 
             # depth limit
             if depth_limit is not None and current_state["depth"] >= depth_limit:
