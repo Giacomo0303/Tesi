@@ -137,7 +137,6 @@ def head_alignment(attn_block) -> HeadAligned:
         k_bias_grad = k_bg.reshape(n_heads, qk_dim)
         v_bias_grad = v_bg.reshape(n_heads, v_dim)
 
-    # --- 5. MASCHERE QKV (FUORI dall'if dei gradienti!) ---
     # Inizializziamo a 1 (nessun pruning)
     q_w_mask = torch.ones_like(q_weights)
     k_w_mask = torch.ones_like(k_weights)
@@ -178,7 +177,6 @@ def head_alignment(attn_block) -> HeadAligned:
     if hasattr(proj, 'bias_mask') and proj.bias_mask is not None:
         proj_b_mask = proj.bias_mask
 
-    # --- 7. ASSEMBLAGGIO ---
     Q = WeightBias(q_weights, q_bias, q_weights_grad, q_bias_grad, q_w_mask, q_b_mask)
     K = WeightBias(k_weights, k_bias, k_weights_grad, k_bias_grad, k_w_mask, k_b_mask)
     V = WeightBias(v_weights, v_bias, v_weights_grad, v_bias_grad, v_w_mask, v_b_mask)

@@ -366,8 +366,6 @@ def find_target_emb(model, chunk_size=8) -> list[int]:
     # contribution of classification head
     total_dim_importances += torch.sum(model.head.weight * model.head.weight_orig.grad, dim=0)
 
-    # --- SELEZIONE (Chunk Strategy) ---
-
     # Usiamo il valore ASSOLUTO per decidere chi tagliare
     abs_imp = torch.abs(total_dim_importances)
 
