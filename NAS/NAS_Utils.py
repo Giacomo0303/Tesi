@@ -1,6 +1,6 @@
 import torch
 import torch.nn.utils.prune as pruning
-from Pruning.PruneUtils import compute_grads, importance_score, head_alignment, importance_score_no_square
+from Pruning.PruneUtils import compute_grads, importance_score, head_alignment
 from math import log2
 
 
@@ -99,7 +99,7 @@ def compute_obj(model, loss_fn, device, dataloader, original_params):
     _, accuracy = compute_grads(model, loss_fn, device, dataloader)
     params = count_parameters(model)
 
-    return log2(accuracy) - 2.0 * log2(params / original_params), accuracy, params
+    return log2(accuracy) - 1.5 * log2(params / original_params), accuracy, params
 
 
 # QK PRUNING
@@ -127,34 +127,27 @@ def find_target_QK(model, chunk_size=8) -> tuple:
             if torch.all(Q.bias_mask[:, dim] == 0.0):
                 continue
 
-            weights = [
-                Q.weight[:, dim, :],
-                Q.bias[:, dim],
-                K.weight[:, dim, :],
-                K.bias[:, dim]
+            importances = [
+                Q.weight_imp[:, dim, :],
+                Q.bias_imp[:, dim],
+                K.weight_imp[:, dim, :],
+                K.bias_imp[:, dim]
             ]
 
-            grads = [
-                Q.weight_grad[:, dim, :],
-                Q.bias_grad[:, dim],
-                K.weight_grad[:, dim, :],
-                K.bias_grad[:, dim]
-            ]
-
-            signed_imp = importance_score_no_square(weights, grads)
-            candidates.append((dim, signed_imp))
+            dim_imp = importance_score(importances)
+            candidates.append((dim, dim_imp))
 
         if len(candidates) < chunk_size:
             continue
 
-        # sort in ascending order by abs of signed importances
-        candidates.sort(key=lambda x: abs(x[1]))
+        # sort in ascending order
+        candidates.sort(key=lambda x: x[1])
 
         best_dims = candidates[:chunk_size]
         best_indices = [x[0] for x in best_dims]
         best_values = [x[1] for x in best_dims]
 
-        chunk_importance = (sum(best_values)) ** 2
+        chunk_importance = sum(best_values)
 
         if chunk_importance < best_target["importance"]:
             best_target["position"] = (b, best_indices)
@@ -187,33 +180,27 @@ def find_target_V_proj(model, chunk_size=8) -> tuple:
             if torch.all(V.bias_mask[:, dim] == 0.0):
                 continue
 
-            weights = [
-                V.weight[:, dim, :],
-                V.bias[:, dim],
-                proj.weight[:, :, dim]  # prune input_size
+            importances = [
+                V.weight_imp[:, dim, :],
+                V.bias_imp[:, dim],
+                proj.weight_imp[:, :, dim]  # prune input_size
                 # no need to prune proj bias because is applied on output, not on input
             ]
 
-            grads = [
-                V.weight_grad[:, dim, :],
-                V.bias_grad[:, dim],
-                proj.weight_grad[:, :, dim]
-            ]
-
-            signed_imp = importance_score_no_square(weights, grads)
-            candidates.append((dim, signed_imp))
+            dim_imp = importance_score(importances)
+            candidates.append((dim, dim_imp))
 
         if len(candidates) < chunk_size:
             continue
 
-        # sort in ascending order by abs of signed importances
-        candidates.sort(key=lambda x: abs(x[1]))
+        # sort in ascending order
+        candidates.sort(key=lambda x: x[1])
 
         best_dims = candidates[:chunk_size]
         best_indices = [x[0] for x in best_dims]
         best_values = [x[1] for x in best_dims]
 
-        chunk_importance = (sum(best_values)) ** 2
+        chunk_importance = sum(best_values)
 
         if chunk_importance < target["importance"]:
             target["position"] = (b, best_indices)
@@ -244,27 +231,17 @@ def find_target_head(model) -> tuple:
             if torch.all(Q.bias_mask[head, :] == 0.0) and torch.all(V.bias_mask[head, :] == 0.0):
                 continue
 
-            weights = [
-                Q.weight[head, :, :],
-                Q.bias[head, :],
-                K.weight[head, :, :],
-                K.bias[head, :],
-                V.weight[head, :, :],
-                V.bias[head, :],
-                proj.weight[:, head, :]
+            importances = [
+                Q.weight_imp[head, :, :],
+                Q.bias_imp[head, :],
+                K.weight_imp[head, :, :],
+                K.bias_imp[head, :],
+                V.weight_imp[head, :, :],
+                V.bias_imp[head, :],
+                proj.weight_imp[:, head, :]
             ]
 
-            grads = [
-                Q.weight_grad[head, :, :],
-                Q.bias_grad[head, :],
-                K.weight_grad[head, :, :],
-                K.bias_grad[head, :],
-                V.weight_grad[head, :, :],
-                V.bias_grad[head, :],
-                proj.weight_grad[:, head, :]
-            ]
-
-            imp = importance_score(weights, grads)
+            imp = importance_score(importances)
 
             if imp < target["importance"]:
                 target["importance"] = imp
@@ -286,33 +263,31 @@ def find_target_mlp(model, chunk_size=32) -> tuple:
         mlp = block.mlp
 
         # importance of fc1 neurons
-        imp_fc1_w = torch.sum(mlp.fc1.weight * mlp.fc1.weight_orig.grad, dim=1)
-        imp_fc1_b = mlp.fc1.bias * mlp.fc1.bias_orig.grad
+        imp_fc1_w = torch.sum(mlp.fc1.weight_orig.imp, dim=1)
+        imp_fc1_b = mlp.fc1.bias_orig.imp
 
         # importance of fc2 input dims
-        imp_fc2_w = torch.sum(mlp.fc2.weight * mlp.fc2.weight_orig.grad, dim=0)
+        imp_fc2_w = torch.sum(mlp.fc2.weight_orig.imp, dim=0)
 
         # final scores
-        signed_imp_per_neuron = imp_fc1_w + imp_fc1_b + imp_fc2_w
-
-        abs_imp_per_neuron = torch.abs(signed_imp_per_neuron)
+        imp_per_neuron = imp_fc1_w + imp_fc1_b + imp_fc2_w
 
         # masking already pruned dims
-        abs_imp_per_neuron[mlp.fc1.bias_mask == 0.0] = float('inf')
+        imp_per_neuron[mlp.fc1.bias_mask == 0.0] = float('inf')
 
         if (mlp.fc1.bias_mask > 0).sum() < chunk_size:
             continue
 
         # take the dims with the smallest abs importances
-        _, indices = torch.topk(abs_imp_per_neuron, k=chunk_size, largest=False)
+        _, indices = torch.topk(imp_per_neuron, k=chunk_size, largest=False)
 
-        best_dims = signed_imp_per_neuron[indices]
+        best_dims = imp_per_neuron[indices]
 
         # Se hai selezionato dei valori 'inf' (già prunati), il chunk è da scartare
         if torch.isinf(best_dims).any():
             continue
 
-        chunk_importance = (torch.sum(best_dims)) ** 2
+        chunk_importance = torch.sum(best_dims)
         if chunk_importance < target["importance"]:
             target["position"] = (b, indices.tolist())
             target["importance"] = chunk_importance.item()
@@ -326,60 +301,54 @@ def find_target_emb(model, chunk_size=8) -> list[int]:
     # like for mlp calculation takes too long so we got to parallelize
 
     # contribution of cls token
-    pruned_cls_token = model.cls_token * model.cls_token_mask
-    total_dim_importances = torch.sum(pruned_cls_token * model.cls_token_orig.grad, dim=(0, 1))
+    total_dim_importances = torch.sum(model.cls_token_orig.imp, dim=(0, 1))
 
     # contribution of positional embedding
-    pruned_pos_embed = model.pos_embed * model.pos_embed_mask
-    total_dim_importances += torch.sum(pruned_pos_embed * model.pos_embed_orig.grad, dim=(0, 1))
+    total_dim_importances += torch.sum(model.pos_embed_orig.imp, dim=(0, 1))
 
     # contribution of patch_embedding
-    total_dim_importances += torch.sum(model.patch_embed.proj.weight * model.patch_embed.proj.weight_orig.grad,
-                                       dim=(1, 2, 3))  # sum importances for every dim of conv
-    total_dim_importances += model.patch_embed.proj.bias * model.patch_embed.proj.bias_orig.grad  # bias are [384]
+    total_dim_importances += torch.sum(model.patch_embed.proj.weight_orig.imp, dim = (1, 2, 3))  # sum importances for every dim of conv
+    total_dim_importances += model.patch_embed.proj.bias_orig.imp # bias are [384]
 
     for block in model.blocks:
         # contribution of LayerNorm1
-        total_dim_importances += block.norm1.weight * block.norm1.weight_orig.grad
-        total_dim_importances += block.norm1.bias * block.norm1.bias_orig.grad
+        total_dim_importances += block.norm1.weight_orig.imp
+        total_dim_importances += block.norm1.bias_orig.imp
 
         # contribution of QKV
-        total_dim_importances += torch.sum(block.attn.qkv.weight * block.attn.qkv.weight_orig.grad, dim=0)
+        total_dim_importances += torch.sum(block.attn.qkv.weight_orig.imp, dim=0)
 
         # contribution of Proj
-        total_dim_importances += torch.sum(block.attn.proj.weight * block.attn.proj.weight_orig.grad, dim=1)
-        total_dim_importances += block.attn.proj.bias * block.attn.proj.bias_orig.grad
+        total_dim_importances += torch.sum(block.attn.proj.weight_orig.imp, dim=1)
+        total_dim_importances += block.attn.proj.bias_orig.imp
 
         # contribution of LayerNorm2
-        total_dim_importances += block.norm2.weight * block.norm2.weight_orig.grad
-        total_dim_importances += block.norm2.bias * block.norm2.bias_orig.grad
+        total_dim_importances += block.norm2.weight_orig.imp
+        total_dim_importances += block.norm2.bias_orig.imp
 
         # contribution of FC
-        total_dim_importances += torch.sum(block.mlp.fc1.weight * block.mlp.fc1.weight_orig.grad, dim=0)
-        total_dim_importances += torch.sum(block.mlp.fc2.weight * block.mlp.fc2.weight_orig.grad, dim=1)
-        total_dim_importances += block.mlp.fc2.bias * block.mlp.fc2.bias_orig.grad
+        total_dim_importances += torch.sum(block.mlp.fc1.weight_orig.imp, dim=0)
+        total_dim_importances += torch.sum(block.mlp.fc2.weight_orig.imp, dim=1)
+        total_dim_importances += block.mlp.fc2.bias_orig.imp
 
     # contribution of last LayerNorm
-    total_dim_importances += model.norm.weight * model.norm.weight_orig.grad
-    total_dim_importances += model.norm.bias * model.norm.bias_orig.grad
+    total_dim_importances += model.norm.weight_orig.imp
+    total_dim_importances += model.norm.bias_orig.imp
 
     # contribution of classification head
-    total_dim_importances += torch.sum(model.head.weight * model.head.weight_orig.grad, dim=0)
-
-    # Usiamo il valore ASSOLUTO per decidere chi tagliare
-    abs_imp = torch.abs(total_dim_importances)
+    total_dim_importances += torch.sum(model.head.weight_orig.imp, dim=0)
 
     # Mascheriamo le dimensioni già prunate
     # cls_token_mask shape: [1, 1, dim] -> prendiamo [0,0,:] per avere il vettore [dim]
     current_mask = model.cls_token_mask[0, 0, :]
-    abs_imp[current_mask == 0.0] = float('inf')
+    total_dim_importances[current_mask == 0.0] = float('inf')
 
     # Controllo di sicurezza
     if (current_mask > 0).sum() < chunk_size:
         return []
 
     # Troviamo gli indici con magnitudine minore (i più vicini a zero)
-    _, indices = torch.topk(abs_imp, k=chunk_size, largest=False)
+    _, indices = torch.topk(total_dim_importances, k=chunk_size, largest=False)
 
     # Restituiamo direttamente la lista degli indici
     return indices.tolist()

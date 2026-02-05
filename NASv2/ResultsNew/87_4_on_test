@@ -1,0 +1,1405 @@
+============================================================
+AVVIO PIPELINE ITERATIVE NAS (CIFAR-100)
+============================================================
+Baseline Model:
+   - Params: 21.70M
+   - Accuracy: 90.12%
+============================================================
+
+
+ ITERAZIONE 1/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: -0.0854 | Last Action: Start |Acc: 0.9425 | Params: 21.7042M
+--- NUOVO BEST TROVATO! --- Valore: -0.0738 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: -0.0738 | Last Action: find_target_mlp |Acc: 0.9485 | Params: 21.6796M
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: -0.0813 | Last Action: find_target_mlp |Acc: 0.9420 | Params: 21.6549M
+Iter: 4 | Stack: 7 | Pruned: 1 | Curr Val: -0.0816 | Last Action: find_target_V_proj |Acc: 0.9410 | Params: 21.6426M
+Iter: 5 | Stack: 6 | Pruned: 2 | Curr Val: -0.0778 | Last Action: find_target_QK |Acc: 0.9435 | Params: 21.6426M
+Iter: 6 | Stack: 10 | Pruned: 2 | Curr Val: -0.0791 | Last Action: find_target_mlp |Acc: 0.9410 | Params: 21.6180M
+--- NUOVO BEST TROVATO! --- Valore: -0.0725 (Precedente: -0.0738)
+Iter: 7 | Stack: 9 | Pruned: 3 | Curr Val: -0.0725 | Last Action: find_target_V_proj |Acc: 0.9445 | Params: 21.6057M
+--- NUOVO BEST TROVATO! --- Valore: -0.0670 (Precedente: -0.0725)
+Iter: 8 | Stack: 13 | Pruned: 3 | Curr Val: -0.0670 | Last Action: find_target_mlp |Acc: 0.9465 | Params: 21.5811M
+Iter: 9 | Stack: 17 | Pruned: 3 | Curr Val: -0.0699 | Last Action: find_target_mlp |Acc: 0.9430 | Params: 21.5565M
+--- NUOVO BEST TROVATO! --- Valore: -0.0644 (Precedente: -0.0670)
+Iter: 10 | Stack: 21 | Pruned: 3 | Curr Val: -0.0644 | Last Action: find_target_mlp |Acc: 0.9450 | Params: 21.5319M
+Iter: 11 | Stack: 20 | Pruned: 3 | Curr Val: -0.0647 | Last Action: find_target_V_proj |Acc: 0.9440 | Params: 21.5196M
+--- NUOVO BEST TROVATO! --- Valore: -0.0639 (Precedente: -0.0644)
+Iter: 12 | Stack: 19 | Pruned: 3 | Curr Val: -0.0639 | Last Action: find_target_QK |Acc: 0.9445 | Params: 21.5195M
+--- NUOVO BEST TROVATO! --- Valore: -0.0614 (Precedente: -0.0639)
+Iter: 13 | Stack: 18 | Pruned: 3 | Curr Val: -0.0614 | Last Action: find_target_head |Acc: 0.9425 | Params: 21.4641M
+--- NUOVO BEST TROVATO! --- Valore: -0.0491 (Precedente: -0.0614)
+Iter: 14 | Stack: 17 | Pruned: 3 | Curr Val: -0.0491 | Last Action: find_target_emb |Acc: 0.9270 | Params: 21.1080M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: -0.0671 | Last Action: find_target_V_proj |Acc: 0.9440 | Params: 21.5442M
+Iter: 16 | Stack: 15 | Pruned: 4 | Curr Val: -0.0740 | Last Action: find_target_QK |Acc: 0.9395 | Params: 21.5441M
+Iter: 17 | Stack: 14 | Pruned: 5 | Curr Val: -0.0692 | Last Action: find_target_head |Acc: 0.9390 | Params: 21.4887M
+Iter: 18 | Stack: 13 | Pruned: 6 | Curr Val: -0.0531 | Last Action: find_target_emb |Acc: 0.9260 | Params: 21.1321M
+--- NUOVO BEST TROVATO! --- Valore: -0.0452 (Precedente: -0.0491)
+Iter: 19 | Stack: 17 | Pruned: 6 | Curr Val: -0.0452 | Last Action: find_target_mlp |Acc: 0.9295 | Params: 21.1080M
+Iter: 20 | Stack: 16 | Pruned: 6 | Curr Val: -0.0463 | Last Action: find_target_V_proj |Acc: 0.9280 | Params: 21.0960M
+Iter: 21 | Stack: 15 | Pruned: 6 | Curr Val: -0.0463 | Last Action: find_target_QK |Acc: 0.9280 | Params: 21.0959M
+Iter: 22 | Stack: 14 | Pruned: 6 | Curr Val: -0.0462 | Last Action: find_target_head |Acc: 0.9245 | Params: 21.0417M
+--- NUOVO BEST TROVATO! --- Valore: -0.0334 (Precedente: -0.0452)
+Iter: 23 | Stack: 13 | Pruned: 6 | Curr Val: -0.0334 | Last Action: find_target_emb |Acc: 0.9090 | Params: 20.6832M
+Iter: 24 | Stack: 12 | Pruned: 6 | Curr Val: -0.0757 | Last Action: find_target_V_proj |Acc: 0.9400 | Params: 21.5688M
+Iter: 25 | Stack: 11 | Pruned: 7 | Curr Val: -0.0612 | Last Action: find_target_QK |Acc: 0.9495 | Params: 21.5687M
+Iter: 26 | Stack: 10 | Pruned: 8 | Curr Val: -0.0725 | Last Action: find_target_head |Acc: 0.9385 | Params: 21.5133M
+Iter: 27 | Stack: 9 | Pruned: 9 | Curr Val: -0.0455 | Last Action: find_target_emb |Acc: 0.9325 | Params: 21.1562M
+Iter: 28 | Stack: 8 | Pruned: 10 | Curr Val: -0.0748 | Last Action: find_target_QK |Acc: 0.9430 | Params: 21.6056M
+Iter: 29 | Stack: 7 | Pruned: 11 | Curr Val: -0.0725 | Last Action: find_target_head |Acc: 0.9405 | Params: 21.5441M
+Iter: 30 | Stack: 6 | Pruned: 12 | Curr Val: -0.0569 | Last Action: find_target_emb |Acc: 0.9275 | Params: 21.1924M
+Iter: 31 | Stack: 5 | Pruned: 13 | Curr Val: -0.0663 | Last Action: find_target_head |Acc: 0.9470 | Params: 21.5811M
+Iter: 32 | Stack: 4 | Pruned: 14 | Curr Val: -0.0560 | Last Action: find_target_emb |Acc: 0.9305 | Params: 21.2286M
+Iter: 33 | Stack: 3 | Pruned: 15 | Curr Val: -0.0879 | Last Action: find_target_V_proj |Acc: 0.9385 | Params: 21.6673M
+Iter: 34 | Stack: 2 | Pruned: 16 | Curr Val: -0.0779 | Last Action: find_target_QK |Acc: 0.9450 | Params: 21.6672M
+Iter: 35 | Stack: 1 | Pruned: 17 | Curr Val: -0.0756 | Last Action: find_target_head |Acc: 0.9425 | Params: 21.6057M
+Iter: 36 | Stack: 0 | Pruned: 18 | Curr Val: -0.0546 | Last Action: find_target_emb |Acc: 0.9330 | Params: 21.2527M
+--- Ricerca Completata ---
+Iterazioni totali: 36
+Rami potati (pruned): 19
+Miglior Valore Trovato: -0.0334
+   REPORT POST-TAGLIO:
+      - Params: 20.68M (Riduzione Globale: 4.70%)
+      - Accuracy: 87.50% (Drop: 2.62 %)
+      - Tempo Ricerca: 274.8s
+Epoch 1: 100%|██████████| 352/352 [01:22<00:00,  4.26it/s]
+Train_loss: 0.2684
+Val loss: 0.3578	Accuracy: 0.8927
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:22<00:00,  4.27it/s]
+Train_loss: 0.2283
+Val loss: 0.3552	Accuracy: 0.8932
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:22<00:00,  4.27it/s]
+Train_loss: 0.2004
+Val loss: 0.3470	Accuracy: 0.8939
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [01:22<00:00,  4.27it/s]
+Train_loss: 0.1816
+Val loss: 0.3414	Accuracy: 0.8959
+
+---Best model saved---
+Epoch 5: 100%|██████████| 352/352 [01:22<00:00,  4.27it/s]
+Epoch 6:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.1623
+Val loss: 0.3461	Accuracy: 0.8942
+
+Epoch 6: 100%|██████████| 352/352 [01:22<00:00,  4.27it/s]
+Train_loss: 0.1490
+Val loss: 0.3413	Accuracy: 0.8984
+
+   FINE ITERAZIONE 1
+      - Accuracy Recuperata: 89.59% (+2.09%)
+      - Tempo Fine-Tuning: 538.4s
+      - Tempo Totale Iter: 827.3s
+------------------------------------------------------------
+
+ ITERAZIONE 2/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.0514 | Last Action: Start |Acc: 0.9640 | Params: 20.6832M
+--- NUOVO BEST TROVATO! --- Valore: 0.0508 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.0508 | Last Action: find_target_mlp |Acc: 0.9620 | Params: 20.6596M
+--- NUOVO BEST TROVATO! --- Valore: 0.0563 (Precedente: 0.0508)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.0563 | Last Action: find_target_mlp |Acc: 0.9640 | Params: 20.6360M
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.0528 | Last Action: find_target_mlp |Acc: 0.9600 | Params: 20.6125M
+--- NUOVO BEST TROVATO! --- Valore: 0.0613 (Precedente: 0.0563)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.0613 | Last Action: find_target_mlp |Acc: 0.9640 | Params: 20.5889M
+--- NUOVO BEST TROVATO! --- Valore: 0.0630 (Precedente: 0.0613)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.0630 | Last Action: find_target_mlp |Acc: 0.9635 | Params: 20.5653M
+--- NUOVO BEST TROVATO! --- Valore: 0.0670 (Precedente: 0.0630)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.0670 | Last Action: find_target_mlp |Acc: 0.9645 | Params: 20.5417M
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.0600 | Last Action: find_target_V_proj |Acc: 0.9590 | Params: 20.5299M
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.0600 | Last Action: find_target_QK |Acc: 0.9590 | Params: 20.5299M
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.0663 | Last Action: find_target_head |Acc: 0.9595 | Params: 20.4768M
+--- NUOVO BEST TROVATO! --- Valore: 0.0818 (Precedente: 0.0670)
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.0818 | Last Action: find_target_emb |Acc: 0.9445 | Params: 20.1189M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.0567 | Last Action: find_target_V_proj |Acc: 0.9585 | Params: 20.5535M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.0597 | Last Action: find_target_QK |Acc: 0.9605 | Params: 20.5534M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.0593 | Last Action: find_target_head |Acc: 0.9565 | Params: 20.5004M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.0731 | Last Action: find_target_emb |Acc: 0.9405 | Params: 20.1420M
+Iter: 16 | Stack: 15 | Pruned: 4 | Curr Val: 0.0618 | Last Action: find_target_V_proj |Acc: 0.9635 | Params: 20.5771M
+Iter: 17 | Stack: 14 | Pruned: 5 | Curr Val: 0.0565 | Last Action: find_target_QK |Acc: 0.9600 | Params: 20.5770M
+Iter: 18 | Stack: 13 | Pruned: 6 | Curr Val: 0.0614 | Last Action: find_target_head |Acc: 0.9595 | Params: 20.5239M
+Iter: 19 | Stack: 12 | Pruned: 7 | Curr Val: 0.0707 | Last Action: find_target_emb |Acc: 0.9405 | Params: 20.1651M
+Iter: 20 | Stack: 11 | Pruned: 8 | Curr Val: 0.0465 | Last Action: find_target_V_proj |Acc: 0.9550 | Params: 20.6007M
+Iter: 21 | Stack: 10 | Pruned: 9 | Curr Val: 0.0510 | Last Action: find_target_QK |Acc: 0.9580 | Params: 20.6006M
+Iter: 22 | Stack: 9 | Pruned: 10 | Curr Val: 0.0521 | Last Action: find_target_head |Acc: 0.9550 | Params: 20.5475M
+Iter: 23 | Stack: 8 | Pruned: 11 | Curr Val: 0.0690 | Last Action: find_target_emb |Acc: 0.9410 | Params: 20.1881M
+Iter: 24 | Stack: 7 | Pruned: 12 | Curr Val: 0.0523 | Last Action: find_target_V_proj |Acc: 0.9605 | Params: 20.6242M
+Iter: 25 | Stack: 6 | Pruned: 13 | Curr Val: 0.0531 | Last Action: find_target_QK |Acc: 0.9610 | Params: 20.6242M
+Iter: 26 | Stack: 5 | Pruned: 14 | Curr Val: 0.0654 | Last Action: find_target_head |Acc: 0.9655 | Params: 20.5711M
+Iter: 27 | Stack: 4 | Pruned: 15 | Curr Val: 0.0665 | Last Action: find_target_emb |Acc: 0.9410 | Params: 20.2112M
+Iter: 28 | Stack: 3 | Pruned: 16 | Curr Val: 0.0468 | Last Action: find_target_V_proj |Acc: 0.9585 | Params: 20.6478M
+Iter: 29 | Stack: 2 | Pruned: 17 | Curr Val: 0.0506 | Last Action: find_target_QK |Acc: 0.9610 | Params: 20.6478M
+Iter: 30 | Stack: 1 | Pruned: 18 | Curr Val: 0.0524 | Last Action: find_target_head |Acc: 0.9585 | Params: 20.5947M
+Iter: 31 | Stack: 0 | Pruned: 19 | Curr Val: 0.0602 | Last Action: find_target_emb |Acc: 0.9385 | Params: 20.2343M
+--- Ricerca Completata ---
+Iterazioni totali: 31
+Rami potati (pruned): 20
+Miglior Valore Trovato: 0.0818
+Epoch 1:   0%|          | 0/352 [00:00<?, ?it/s]   REPORT POST-TAGLIO:
+      - Params: 20.12M (Riduzione Globale: 7.30%)
+      - Accuracy: 88.67% (Drop: 1.44 %)
+      - Tempo Ricerca: 238.5s
+Epoch 1: 100%|██████████| 352/352 [01:21<00:00,  4.29it/s]
+Train_loss: 0.2119
+Val loss: 0.3664	Accuracy: 0.8925
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:22<00:00,  4.27it/s]
+Train_loss: 0.1814
+Val loss: 0.3638	Accuracy: 0.8895
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:22<00:00,  4.29it/s]
+Train_loss: 0.1602
+Val loss: 0.3632	Accuracy: 0.8956
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [01:21<00:00,  4.29it/s]
+Train_loss: 0.1453
+Val loss: 0.3613	Accuracy: 0.8960
+
+---Best model saved---
+Epoch 5: 100%|██████████| 352/352 [01:21<00:00,  4.30it/s]
+Train_loss: 0.1324
+Val loss: 0.3609	Accuracy: 0.8945
+
+---Best model saved---
+Epoch 6: 100%|██████████| 352/352 [01:21<00:00,  4.30it/s]
+Train_loss: 0.1207
+Val loss: 0.3565	Accuracy: 0.8964
+
+---Best model saved---
+Epoch 7: 100%|██████████| 352/352 [01:21<00:00,  4.29it/s]
+Train_loss: 0.1102
+Val loss: 0.3510	Accuracy: 0.8985
+
+---Best model saved---
+Epoch 8: 100%|██████████| 352/352 [01:22<00:00,  4.29it/s]
+Train_loss: 0.1013
+Val loss: 0.3560	Accuracy: 0.8987
+
+Epoch 9: 100%|██████████| 352/352 [01:22<00:00,  4.29it/s]
+Train_loss: 0.0949
+Val loss: 0.3578	Accuracy: 0.8976
+
+   FINE ITERAZIONE 2
+      - Accuracy Recuperata: 89.85% (+1.17%)
+      - Tempo Fine-Tuning: 803.6s
+      - Tempo Totale Iter: 1055.4s
+------------------------------------------------------------
+
+ ITERAZIONE 3/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.1232 | Last Action: Start |Acc: 0.9720 | Params: 20.1189M
+--- NUOVO BEST TROVATO! --- Valore: 0.1271 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.1271 | Last Action: find_target_mlp |Acc: 0.9730 | Params: 20.0958M
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.1259 | Last Action: find_target_mlp |Acc: 0.9705 | Params: 20.0728M
+--- NUOVO BEST TROVATO! --- Valore: 0.1410 (Precedente: 0.1271)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.1410 | Last Action: find_target_mlp |Acc: 0.9790 | Params: 20.0497M
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.1316 | Last Action: find_target_mlp |Acc: 0.9710 | Params: 20.0266M
+Iter: 6 | Stack: 15 | Pruned: 1 | Curr Val: 0.1388 | Last Action: find_target_V_proj |Acc: 0.9750 | Params: 20.0151M
+Iter: 7 | Stack: 19 | Pruned: 1 | Curr Val: 0.1361 | Last Action: find_target_mlp |Acc: 0.9715 | Params: 19.9920M
+Iter: 8 | Stack: 23 | Pruned: 1 | Curr Val: 0.1401 | Last Action: find_target_mlp |Acc: 0.9725 | Params: 19.9689M
+Iter: 9 | Stack: 22 | Pruned: 1 | Curr Val: 0.1391 | Last Action: find_target_V_proj |Acc: 0.9710 | Params: 19.9574M
+--- NUOVO BEST TROVATO! --- Valore: 0.1539 (Precedente: 0.1410)
+Iter: 10 | Stack: 21 | Pruned: 1 | Curr Val: 0.1539 | Last Action: find_target_QK |Acc: 0.9810 | Params: 19.9574M
+Iter: 11 | Stack: 20 | Pruned: 1 | Curr Val: 0.1501 | Last Action: find_target_head |Acc: 0.9750 | Params: 19.9112M
+Iter: 12 | Stack: 19 | Pruned: 1 | Curr Val: 0.1455 | Last Action: find_target_emb |Acc: 0.9455 | Params: 19.5485M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.1374 | Last Action: find_target_V_proj |Acc: 0.9715 | Params: 19.9805M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.1336 | Last Action: find_target_QK |Acc: 0.9690 | Params: 19.9804M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.1461 | Last Action: find_target_head |Acc: 0.9740 | Params: 19.9343M
+Iter: 16 | Stack: 15 | Pruned: 4 | Curr Val: 0.1392 | Last Action: find_target_emb |Acc: 0.9430 | Params: 19.5710M
+Iter: 17 | Stack: 14 | Pruned: 5 | Curr Val: 0.1432 | Last Action: find_target_QK |Acc: 0.9780 | Params: 20.0150M
+Iter: 18 | Stack: 13 | Pruned: 6 | Curr Val: 0.1407 | Last Action: find_target_head |Acc: 0.9725 | Params: 19.9631M
+--- NUOVO BEST TROVATO! --- Valore: 0.1560 (Precedente: 0.1539)
+Iter: 19 | Stack: 12 | Pruned: 7 | Curr Val: 0.1560 | Last Action: find_target_emb |Acc: 0.9565 | Params: 19.6049M
+Iter: 20 | Stack: 16 | Pruned: 7 | Curr Val: 0.1486 | Last Action: find_target_mlp |Acc: 0.9500 | Params: 19.5823M
+--- NUOVO BEST TROVATO! --- Valore: 0.1635 (Precedente: 0.1560)
+Iter: 21 | Stack: 15 | Pruned: 8 | Curr Val: 0.1635 | Last Action: find_target_V_proj |Acc: 0.9590 | Params: 19.5710M
+Iter: 22 | Stack: 19 | Pruned: 8 | Curr Val: 0.1554 | Last Action: find_target_mlp |Acc: 0.9520 | Params: 19.5485M
+Iter: 23 | Stack: 18 | Pruned: 8 | Curr Val: 0.1604 | Last Action: find_target_V_proj |Acc: 0.9545 | Params: 19.5372M
+Iter: 24 | Stack: 17 | Pruned: 8 | Curr Val: 0.1521 | Last Action: find_target_QK |Acc: 0.9490 | Params: 19.5371M
+Iter: 25 | Stack: 16 | Pruned: 8 | Curr Val: 0.1556 | Last Action: find_target_head |Acc: 0.9480 | Params: 19.4920M
+Iter: 26 | Stack: 15 | Pruned: 8 | Curr Val: 0.1351 | Last Action: find_target_emb |Acc: 0.9085 | Params: 19.1269M
+Iter: 27 | Stack: 14 | Pruned: 8 | Curr Val: 0.1506 | Last Action: find_target_QK |Acc: 0.9505 | Params: 19.5710M
+Iter: 28 | Stack: 13 | Pruned: 9 | Curr Val: 0.1608 | Last Action: find_target_head |Acc: 0.9535 | Params: 19.5202M
+Iter: 29 | Stack: 17 | Pruned: 9 | Curr Val: 0.1519 | Last Action: find_target_mlp |Acc: 0.9460 | Params: 19.4976M
+--- NUOVO BEST TROVATO! --- Valore: 0.1692 (Precedente: 0.1635)
+Iter: 30 | Stack: 16 | Pruned: 9 | Curr Val: 0.1692 | Last Action: find_target_V_proj |Acc: 0.9570 | Params: 19.4920M
+Iter: 31 | Stack: 15 | Pruned: 9 | Curr Val: 0.1653 | Last Action: find_target_QK |Acc: 0.9540 | Params: 19.4863M
+Iter: 32 | Stack: 14 | Pruned: 9 | Curr Val: 0.1687 | Last Action: find_target_head |Acc: 0.9525 | Params: 19.4355M
+Iter: 33 | Stack: 13 | Pruned: 9 | Curr Val: 0.1534 | Last Action: find_target_emb |Acc: 0.9165 | Params: 19.0773M
+Iter: 34 | Stack: 12 | Pruned: 9 | Curr Val: 0.1589 | Last Action: find_target_emb |Acc: 0.9260 | Params: 19.1600M
+Iter: 35 | Stack: 11 | Pruned: 10 | Curr Val: 0.1393 | Last Action: find_target_V_proj |Acc: 0.9770 | Params: 20.0382M
+Iter: 36 | Stack: 10 | Pruned: 11 | Curr Val: 0.1430 | Last Action: find_target_QK |Acc: 0.9795 | Params: 20.0381M
+Iter: 37 | Stack: 9 | Pruned: 12 | Curr Val: 0.1353 | Last Action: find_target_head |Acc: 0.9705 | Params: 19.9862M
+Iter: 38 | Stack: 8 | Pruned: 13 | Curr Val: 0.1429 | Last Action: find_target_emb |Acc: 0.9495 | Params: 19.6274M
+Iter: 39 | Stack: 7 | Pruned: 14 | Curr Val: 0.1346 | Last Action: find_target_V_proj |Acc: 0.9755 | Params: 20.0612M
+Iter: 40 | Stack: 6 | Pruned: 15 | Curr Val: 0.1397 | Last Action: find_target_QK |Acc: 0.9790 | Params: 20.0612M
+Iter: 41 | Stack: 5 | Pruned: 16 | Curr Val: 0.1380 | Last Action: find_target_head |Acc: 0.9740 | Params: 20.0093M
+Iter: 42 | Stack: 4 | Pruned: 17 | Curr Val: 0.1465 | Last Action: find_target_emb |Acc: 0.9535 | Params: 19.6500M
+Iter: 43 | Stack: 3 | Pruned: 18 | Curr Val: 0.1335 | Last Action: find_target_V_proj |Acc: 0.9765 | Params: 20.0843M
+Iter: 44 | Stack: 2 | Pruned: 19 | Curr Val: 0.1365 | Last Action: find_target_QK |Acc: 0.9785 | Params: 20.0843M
+Iter: 45 | Stack: 1 | Pruned: 20 | Curr Val: 0.1384 | Last Action: find_target_head |Acc: 0.9760 | Params: 20.0323M
+Iter: 46 | Stack: 0 | Pruned: 21 | Curr Val: 0.1455 | Last Action: find_target_emb |Acc: 0.9545 | Params: 19.6725M
+--- Ricerca Completata ---
+Iterazioni totali: 46
+Rami potati (pruned): 22
+Miglior Valore Trovato: 0.1692
+   REPORT POST-TAGLIO:
+      - Params: 19.49M (Riduzione Globale: 10.19%)
+      - Accuracy: 88.38% (Drop: 1.74 %)
+      - Tempo Ricerca: 352.7s
+Epoch 1: 100%|██████████| 352/352 [01:20<00:00,  4.39it/s]
+Train_loss: 0.1530
+Val loss: 0.3788	Accuracy: 0.8883
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:20<00:00,  4.40it/s]
+Train_loss: 0.1291
+Val loss: 0.3760	Accuracy: 0.8934
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:20<00:00,  4.40it/s]
+Train_loss: 0.1148
+Val loss: 0.3743	Accuracy: 0.8944
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [01:20<00:00,  4.40it/s]
+Epoch 5:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.1039
+Val loss: 0.3786	Accuracy: 0.8938
+
+Epoch 5: 100%|██████████| 352/352 [01:20<00:00,  4.39it/s]
+Train_loss: 0.0941
+Val loss: 0.3831	Accuracy: 0.8919
+
+   FINE ITERAZIONE 3
+      - Accuracy Recuperata: 89.44% (+1.07%)
+      - Tempo Fine-Tuning: 435.8s
+      - Tempo Totale Iter: 801.5s
+------------------------------------------------------------
+
+ ITERAZIONE 4/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.1887 | Last Action: Start |Acc: 0.9700 | Params: 19.4920M
+--- NUOVO BEST TROVATO! --- Valore: 0.1875 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.1875 | Last Action: find_target_mlp |Acc: 0.9675 | Params: 19.4694M
+--- NUOVO BEST TROVATO! --- Valore: 0.1945 (Precedente: 0.1875)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.1945 | Last Action: find_target_mlp |Acc: 0.9705 | Params: 19.4469M
+--- NUOVO BEST TROVATO! --- Valore: 0.1955 (Precedente: 0.1945)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.1955 | Last Action: find_target_mlp |Acc: 0.9695 | Params: 19.4243M
+--- NUOVO BEST TROVATO! --- Valore: 0.2047 (Precedente: 0.1955)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.2047 | Last Action: find_target_mlp |Acc: 0.9740 | Params: 19.4017M
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.1953 | Last Action: find_target_mlp |Acc: 0.9660 | Params: 19.3792M
+Iter: 7 | Stack: 19 | Pruned: 1 | Curr Val: 0.2019 | Last Action: find_target_V_proj |Acc: 0.9700 | Params: 19.3735M
+Iter: 8 | Stack: 23 | Pruned: 1 | Curr Val: 0.2022 | Last Action: find_target_mlp |Acc: 0.9685 | Params: 19.3510M
+Iter: 9 | Stack: 22 | Pruned: 1 | Curr Val: 0.2021 | Last Action: find_target_V_proj |Acc: 0.9680 | Params: 19.3453M
+--- NUOVO BEST TROVATO! --- Valore: 0.2086 (Precedente: 0.2047)
+Iter: 10 | Stack: 21 | Pruned: 1 | Curr Val: 0.2086 | Last Action: find_target_QK |Acc: 0.9720 | Params: 19.3397M
+Iter: 11 | Stack: 20 | Pruned: 1 | Curr Val: 0.2026 | Last Action: find_target_head |Acc: 0.9650 | Params: 19.3002M
+--- NUOVO BEST TROVATO! --- Valore: 0.2139 (Precedente: 0.2086)
+Iter: 12 | Stack: 19 | Pruned: 1 | Curr Val: 0.2139 | Last Action: find_target_emb |Acc: 0.9450 | Params: 18.9340M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.1921 | Last Action: find_target_QK |Acc: 0.9630 | Params: 19.3679M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.2135 | Last Action: find_target_head |Acc: 0.9740 | Params: 19.3227M
+Iter: 15 | Stack: 21 | Pruned: 2 | Curr Val: 0.2101 | Last Action: find_target_mlp |Acc: 0.9700 | Params: 19.3002M
+Iter: 16 | Stack: 20 | Pruned: 2 | Curr Val: 0.2094 | Last Action: find_target_V_proj |Acc: 0.9695 | Params: 19.3002M
+--- NUOVO BEST TROVATO! --- Valore: 0.2158 (Precedente: 0.2139)
+Iter: 17 | Stack: 19 | Pruned: 2 | Curr Val: 0.2158 | Last Action: find_target_QK |Acc: 0.9730 | Params: 19.2888M
+Iter: 18 | Stack: 18 | Pruned: 2 | Curr Val: 0.2157 | Last Action: find_target_head |Acc: 0.9695 | Params: 19.2437M
+--- NUOVO BEST TROVATO! --- Valore: 0.2165 (Precedente: 0.2158)
+Iter: 19 | Stack: 17 | Pruned: 2 | Curr Val: 0.2165 | Last Action: find_target_emb |Acc: 0.9430 | Params: 18.8843M
+Iter: 20 | Stack: 16 | Pruned: 2 | Curr Val: 0.1242 | Last Action: find_target_emb |Acc: 0.8900 | Params: 18.9615M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: 0.2023 | Last Action: find_target_V_proj |Acc: 0.9720 | Params: 19.3961M
+Iter: 22 | Stack: 14 | Pruned: 4 | Curr Val: 0.1993 | Last Action: find_target_QK |Acc: 0.9695 | Params: 19.3904M
+Iter: 23 | Stack: 13 | Pruned: 5 | Curr Val: 0.1991 | Last Action: find_target_head |Acc: 0.9660 | Params: 19.3453M
+Iter: 24 | Stack: 12 | Pruned: 6 | Curr Val: 0.2151 | Last Action: find_target_emb |Acc: 0.9495 | Params: 18.9836M
+Iter: 25 | Stack: 16 | Pruned: 6 | Curr Val: 0.2115 | Last Action: find_target_mlp |Acc: 0.9455 | Params: 18.9615M
+Iter: 26 | Stack: 15 | Pruned: 7 | Curr Val: 0.2114 | Last Action: find_target_V_proj |Acc: 0.9450 | Params: 18.9560M
+Iter: 27 | Stack: 14 | Pruned: 8 | Curr Val: 0.2097 | Last Action: find_target_QK |Acc: 0.9435 | Params: 18.9504M
+Iter: 28 | Stack: 13 | Pruned: 9 | Curr Val: 0.2155 | Last Action: find_target_head |Acc: 0.9440 | Params: 18.9063M
+Iter: 29 | Stack: 17 | Pruned: 9 | Curr Val: 0.2058 | Last Action: find_target_mlp |Acc: 0.9360 | Params: 18.8843M
+--- NUOVO BEST TROVATO! --- Valore: 0.2180 (Precedente: 0.2165)
+Iter: 30 | Stack: 16 | Pruned: 9 | Curr Val: 0.2180 | Last Action: find_target_V_proj |Acc: 0.9440 | Params: 18.8843M
+Iter: 31 | Stack: 15 | Pruned: 9 | Curr Val: 0.2132 | Last Action: find_target_QK |Acc: 0.9400 | Params: 18.8732M
+Iter: 32 | Stack: 14 | Pruned: 9 | Curr Val: 0.2121 | Last Action: find_target_head |Acc: 0.9360 | Params: 18.8291M
+Iter: 33 | Stack: 13 | Pruned: 9 | Curr Val: 0.1951 | Last Action: find_target_emb |Acc: 0.8985 | Params: 18.4674M
+Iter: 34 | Stack: 12 | Pruned: 9 | Curr Val: 0.1895 | Last Action: find_target_emb |Acc: 0.9005 | Params: 18.5428M
+Iter: 35 | Stack: 11 | Pruned: 10 | Curr Val: 0.1931 | Last Action: find_target_V_proj |Acc: 0.9675 | Params: 19.4187M
+Iter: 36 | Stack: 10 | Pruned: 11 | Curr Val: 0.1997 | Last Action: find_target_QK |Acc: 0.9715 | Params: 19.4130M
+Iter: 37 | Stack: 9 | Pruned: 12 | Curr Val: 0.2010 | Last Action: find_target_head |Acc: 0.9690 | Params: 19.3678M
+Iter: 38 | Stack: 8 | Pruned: 13 | Curr Val: 0.2088 | Last Action: find_target_emb |Acc: 0.9470 | Params: 19.0056M
+Iter: 39 | Stack: 7 | Pruned: 14 | Curr Val: 0.1958 | Last Action: find_target_V_proj |Acc: 0.9710 | Params: 19.4412M
+Iter: 40 | Stack: 6 | Pruned: 15 | Curr Val: 0.1935 | Last Action: find_target_QK |Acc: 0.9690 | Params: 19.4355M
+Iter: 41 | Stack: 5 | Pruned: 16 | Curr Val: 0.2015 | Last Action: find_target_head |Acc: 0.9710 | Params: 19.3904M
+Iter: 42 | Stack: 4 | Pruned: 17 | Curr Val: 0.2055 | Last Action: find_target_emb |Acc: 0.9465 | Params: 19.0277M
+Iter: 43 | Stack: 3 | Pruned: 18 | Curr Val: 0.1911 | Last Action: find_target_V_proj |Acc: 0.9695 | Params: 19.4638M
+Iter: 44 | Stack: 2 | Pruned: 19 | Curr Val: 0.1962 | Last Action: find_target_QK |Acc: 0.9725 | Params: 19.4581M
+Iter: 45 | Stack: 1 | Pruned: 20 | Curr Val: 0.1938 | Last Action: find_target_head |Acc: 0.9675 | Params: 19.4130M
+Iter: 46 | Stack: 0 | Pruned: 21 | Curr Val: 0.2053 | Last Action: find_target_emb |Acc: 0.9480 | Params: 19.0497M
+--- Ricerca Completata ---
+Iterazioni totali: 46
+Rami potati (pruned): 22
+Miglior Valore Trovato: 0.2180
+   REPORT POST-TAGLIO:
+      - Params: 18.88M (Riduzione Globale: 12.99%)
+      - Accuracy: 87.52% (Drop: 2.59 %)
+      - Tempo Ricerca: 355.6s
+Epoch 1: 100%|██████████| 352/352 [01:19<00:00,  4.44it/s]
+Train_loss: 0.1616
+Val loss: 0.3956	Accuracy: 0.8837
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:19<00:00,  4.44it/s]
+Train_loss: 0.1308
+Val loss: 0.3878	Accuracy: 0.8866
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:19<00:00,  4.43it/s]
+Epoch 4:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.1173
+Val loss: 0.3917	Accuracy: 0.8890
+
+Epoch 4: 100%|██████████| 352/352 [01:19<00:00,  4.44it/s]
+Train_loss: 0.1049
+Val loss: 0.3903	Accuracy: 0.8884
+
+   FINE ITERAZIONE 4
+      - Accuracy Recuperata: 88.66% (+1.14%)
+      - Tempo Fine-Tuning: 345.4s
+      - Tempo Totale Iter: 713.9s
+------------------------------------------------------------
+
+ ITERAZIONE 5/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.2490 | Last Action: Start |Acc: 0.9645 | Params: 18.8843M
+--- NUOVO BEST TROVATO! --- Valore: 0.2501 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.2501 | Last Action: find_target_mlp |Acc: 0.9635 | Params: 18.8622M
+--- NUOVO BEST TROVATO! --- Valore: 0.2541 (Precedente: 0.2501)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.2541 | Last Action: find_target_mlp |Acc: 0.9645 | Params: 18.8402M
+--- NUOVO BEST TROVATO! --- Valore: 0.2581 (Precedente: 0.2541)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.2581 | Last Action: find_target_mlp |Acc: 0.9655 | Params: 18.8181M
+--- NUOVO BEST TROVATO! --- Valore: 0.2644 (Precedente: 0.2581)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.2644 | Last Action: find_target_mlp |Acc: 0.9680 | Params: 18.7961M
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.2632 | Last Action: find_target_mlp |Acc: 0.9655 | Params: 18.7740M
+--- NUOVO BEST TROVATO! --- Valore: 0.2650 (Precedente: 0.2644)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.2650 | Last Action: find_target_mlp |Acc: 0.9650 | Params: 18.7520M
+--- NUOVO BEST TROVATO! --- Valore: 0.2732 (Precedente: 0.2650)
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.2732 | Last Action: find_target_V_proj |Acc: 0.9705 | Params: 18.7520M
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.2678 | Last Action: find_target_QK |Acc: 0.9660 | Params: 18.7409M
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.2647 | Last Action: find_target_head |Acc: 0.9610 | Params: 18.7023M
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.2693 | Last Action: find_target_emb |Acc: 0.9360 | Params: 18.3382M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.2542 | Last Action: find_target_V_proj |Acc: 0.9595 | Params: 18.7740M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.2645 | Last Action: find_target_QK |Acc: 0.9655 | Params: 18.7630M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.2637 | Last Action: find_target_head |Acc: 0.9620 | Params: 18.7244M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.2706 | Last Action: find_target_emb |Acc: 0.9385 | Params: 18.3597M
+Iter: 16 | Stack: 20 | Pruned: 3 | Curr Val: 0.2631 | Last Action: find_target_mlp |Acc: 0.9320 | Params: 18.3382M
+Iter: 17 | Stack: 19 | Pruned: 3 | Curr Val: 0.2700 | Last Action: find_target_V_proj |Acc: 0.9365 | Params: 18.3382M
+Iter: 18 | Stack: 18 | Pruned: 3 | Curr Val: 0.2713 | Last Action: find_target_QK |Acc: 0.9365 | Params: 18.3273M
+Iter: 19 | Stack: 17 | Pruned: 3 | Curr Val: 0.2649 | Last Action: find_target_head |Acc: 0.9295 | Params: 18.2896M
+Iter: 20 | Stack: 16 | Pruned: 3 | Curr Val: 0.2629 | Last Action: find_target_emb |Acc: 0.9335 | Params: 18.3597M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: 0.2651 | Last Action: find_target_V_proj |Acc: 0.9685 | Params: 18.7961M
+Iter: 22 | Stack: 14 | Pruned: 4 | Curr Val: 0.2597 | Last Action: find_target_QK |Acc: 0.9640 | Params: 18.7850M
+Iter: 23 | Stack: 13 | Pruned: 5 | Curr Val: 0.2596 | Last Action: find_target_head |Acc: 0.9610 | Params: 18.7464M
+Iter: 24 | Stack: 12 | Pruned: 6 | Curr Val: 0.2626 | Last Action: find_target_emb |Acc: 0.9350 | Params: 18.3812M
+Iter: 25 | Stack: 11 | Pruned: 7 | Curr Val: 0.2604 | Last Action: find_target_V_proj |Acc: 0.9670 | Params: 18.8181M
+Iter: 26 | Stack: 10 | Pruned: 8 | Curr Val: 0.2646 | Last Action: find_target_QK |Acc: 0.9690 | Params: 18.8071M
+Iter: 27 | Stack: 9 | Pruned: 9 | Curr Val: 0.2646 | Last Action: find_target_head |Acc: 0.9660 | Params: 18.7685M
+Iter: 28 | Stack: 8 | Pruned: 10 | Curr Val: 0.2555 | Last Action: find_target_emb |Acc: 0.9320 | Params: 18.4028M
+Iter: 29 | Stack: 7 | Pruned: 11 | Curr Val: 0.2511 | Last Action: find_target_V_proj |Acc: 0.9625 | Params: 18.8402M
+Iter: 30 | Stack: 6 | Pruned: 12 | Curr Val: 0.2613 | Last Action: find_target_QK |Acc: 0.9685 | Params: 18.8291M
+Iter: 31 | Stack: 5 | Pruned: 13 | Curr Val: 0.2665 | Last Action: find_target_head |Acc: 0.9690 | Params: 18.7905M
+Iter: 32 | Stack: 4 | Pruned: 14 | Curr Val: 0.2475 | Last Action: find_target_emb |Acc: 0.9285 | Params: 18.4243M
+Iter: 33 | Stack: 3 | Pruned: 15 | Curr Val: 0.2516 | Last Action: find_target_V_proj |Acc: 0.9645 | Params: 18.8622M
+Iter: 34 | Stack: 2 | Pruned: 16 | Curr Val: 0.2536 | Last Action: find_target_QK |Acc: 0.9650 | Params: 18.8512M
+Iter: 35 | Stack: 1 | Pruned: 17 | Curr Val: 0.2603 | Last Action: find_target_head |Acc: 0.9665 | Params: 18.8126M
+Iter: 36 | Stack: 0 | Pruned: 18 | Curr Val: 0.2512 | Last Action: find_target_emb |Acc: 0.9325 | Params: 18.4458M
+--- Ricerca Completata ---
+Iterazioni totali: 36
+Rami potati (pruned): 19
+Miglior Valore Trovato: 0.2732
+   REPORT POST-TAGLIO:
+      - Params: 18.75M (Riduzione Globale: 13.60%)
+      - Accuracy: 88.67% (Drop: 1.45 %)
+      - Tempo Ricerca: 277.4s
+Epoch 1: 100%|██████████| 352/352 [01:18<00:00,  4.46it/s]
+Train_loss: 0.1199
+Val loss: 0.3907	Accuracy: 0.8850
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:18<00:00,  4.46it/s]
+Train_loss: 0.1065
+Val loss: 0.3894	Accuracy: 0.8877
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:18<00:00,  4.46it/s]
+Epoch 4:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.0962
+Val loss: 0.3909	Accuracy: 0.8887
+
+Epoch 4: 100%|██████████| 352/352 [01:18<00:00,  4.47it/s]
+Train_loss: 0.0855
+Val loss: 0.3993	Accuracy: 0.8866
+
+   FINE ITERAZIONE 5
+      - Accuracy Recuperata: 88.77% (+0.10%)
+      - Tempo Fine-Tuning: 343.9s
+      - Tempo Totale Iter: 634.4s
+------------------------------------------------------------
+
+ ITERAZIONE 6/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.2828 | Last Action: Start |Acc: 0.9770 | Params: 18.7520M
+--- NUOVO BEST TROVATO! --- Valore: 0.2809 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.2809 | Last Action: find_target_mlp |Acc: 0.9740 | Params: 18.7299M
+--- NUOVO BEST TROVATO! --- Valore: 0.2842 (Precedente: 0.2809)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.2842 | Last Action: find_target_mlp |Acc: 0.9745 | Params: 18.7079M
+--- NUOVO BEST TROVATO! --- Valore: 0.2934 (Precedente: 0.2842)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.2934 | Last Action: find_target_mlp |Acc: 0.9790 | Params: 18.6859M
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.2930 | Last Action: find_target_mlp |Acc: 0.9770 | Params: 18.6638M
+--- NUOVO BEST TROVATO! --- Valore: 0.2941 (Precedente: 0.2934)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.2941 | Last Action: find_target_mlp |Acc: 0.9760 | Params: 18.6418M
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.2937 | Last Action: find_target_mlp |Acc: 0.9740 | Params: 18.6197M
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.2885 | Last Action: find_target_V_proj |Acc: 0.9705 | Params: 18.6197M
+--- NUOVO BEST TROVATO! --- Valore: 0.3009 (Precedente: 0.2941)
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.3009 | Last Action: find_target_QK |Acc: 0.9780 | Params: 18.6086M
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.2959 | Last Action: find_target_head |Acc: 0.9720 | Params: 18.5755M
+--- NUOVO BEST TROVATO! --- Valore: 0.3166 (Precedente: 0.3009)
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.3166 | Last Action: find_target_emb |Acc: 0.9570 | Params: 18.2089M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.2985 | Last Action: find_target_V_proj |Acc: 0.9790 | Params: 18.6418M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.2976 | Last Action: find_target_QK |Acc: 0.9775 | Params: 18.6307M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.2992 | Last Action: find_target_head |Acc: 0.9760 | Params: 18.5976M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.3072 | Last Action: find_target_emb |Acc: 0.9525 | Params: 18.2305M
+Iter: 16 | Stack: 15 | Pruned: 4 | Curr Val: 0.2893 | Last Action: find_target_V_proj |Acc: 0.9745 | Params: 18.6638M
+Iter: 17 | Stack: 14 | Pruned: 5 | Curr Val: 0.2921 | Last Action: find_target_QK |Acc: 0.9755 | Params: 18.6527M
+Iter: 18 | Stack: 13 | Pruned: 6 | Curr Val: 0.3018 | Last Action: find_target_head |Acc: 0.9795 | Params: 18.6196M
+Iter: 19 | Stack: 12 | Pruned: 7 | Curr Val: 0.1970 | Last Action: find_target_emb |Acc: 0.8840 | Params: 18.2520M
+Iter: 20 | Stack: 11 | Pruned: 8 | Curr Val: 0.2875 | Last Action: find_target_V_proj |Acc: 0.9750 | Params: 18.6859M
+Iter: 21 | Stack: 10 | Pruned: 9 | Curr Val: 0.2873 | Last Action: find_target_QK |Acc: 0.9740 | Params: 18.6748M
+Iter: 22 | Stack: 9 | Pruned: 10 | Curr Val: 0.2941 | Last Action: find_target_head |Acc: 0.9760 | Params: 18.6417M
+Iter: 23 | Stack: 8 | Pruned: 11 | Curr Val: 0.2998 | Last Action: find_target_emb |Acc: 0.9510 | Params: 18.2736M
+Iter: 24 | Stack: 7 | Pruned: 12 | Curr Val: 0.2857 | Last Action: find_target_V_proj |Acc: 0.9755 | Params: 18.7079M
+Iter: 25 | Stack: 6 | Pruned: 13 | Curr Val: 0.2907 | Last Action: find_target_QK |Acc: 0.9780 | Params: 18.6968M
+Iter: 26 | Stack: 5 | Pruned: 14 | Curr Val: 0.2901 | Last Action: find_target_head |Acc: 0.9750 | Params: 18.6637M
+Iter: 27 | Stack: 4 | Pruned: 15 | Curr Val: 0.3018 | Last Action: find_target_emb |Acc: 0.9540 | Params: 18.2951M
+Iter: 28 | Stack: 3 | Pruned: 16 | Curr Val: 0.2839 | Last Action: find_target_V_proj |Acc: 0.9760 | Params: 18.7299M
+Iter: 29 | Stack: 2 | Pruned: 17 | Curr Val: 0.2881 | Last Action: find_target_QK |Acc: 0.9780 | Params: 18.7189M
+Iter: 30 | Stack: 1 | Pruned: 18 | Curr Val: 0.2897 | Last Action: find_target_head |Acc: 0.9765 | Params: 18.6858M
+Iter: 31 | Stack: 0 | Pruned: 19 | Curr Val: 0.2864 | Last Action: find_target_emb |Acc: 0.9455 | Params: 18.3166M
+--- Ricerca Completata ---
+Iterazioni totali: 31
+Rami potati (pruned): 20
+Miglior Valore Trovato: 0.3166
+   REPORT POST-TAGLIO:
+      - Params: 18.21M (Riduzione Globale: 16.10%)
+      - Accuracy: 87.29% (Drop: 2.83 %)
+      - Tempo Ricerca: 238.0s
+Epoch 1: 100%|██████████| 352/352 [01:18<00:00,  4.50it/s]
+Train_loss: 0.1490
+Val loss: 0.4379	Accuracy: 0.8817
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:18<00:00,  4.48it/s]
+Train_loss: 0.1268
+Val loss: 0.4337	Accuracy: 0.8813
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:18<00:00,  4.49it/s]
+Train_loss: 0.1113
+Val loss: 0.4321	Accuracy: 0.8818
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [01:18<00:00,  4.48it/s]
+Epoch 5:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.0986
+Val loss: 0.4324	Accuracy: 0.8825
+
+Epoch 5: 100%|██████████| 352/352 [01:18<00:00,  4.51it/s]
+Train_loss: 0.0872
+Val loss: 0.4323	Accuracy: 0.8845
+
+   FINE ITERAZIONE 6
+      - Accuracy Recuperata: 88.18% (+0.89%)
+      - Tempo Fine-Tuning: 427.1s
+      - Tempo Totale Iter: 678.1s
+------------------------------------------------------------
+
+ ITERAZIONE 7/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.3405 | Last Action: Start |Acc: 0.9730 | Params: 18.2089M
+--- NUOVO BEST TROVATO! --- Valore: 0.3534 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.3534 | Last Action: find_target_mlp |Acc: 0.9800 | Params: 18.1874M
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.3523 | Last Action: find_target_mlp |Acc: 0.9775 | Params: 18.1659M
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.3452 | Last Action: find_target_mlp |Acc: 0.9710 | Params: 18.1443M
+Iter: 5 | Stack: 11 | Pruned: 1 | Curr Val: 0.3445 | Last Action: find_target_V_proj |Acc: 0.9705 | Params: 18.1443M
+Iter: 6 | Stack: 10 | Pruned: 2 | Curr Val: 0.3524 | Last Action: find_target_QK |Acc: 0.9750 | Params: 18.1335M
+--- NUOVO BEST TROVATO! --- Valore: 0.3587 (Precedente: 0.3534)
+Iter: 7 | Stack: 14 | Pruned: 2 | Curr Val: 0.3587 | Last Action: find_target_mlp |Acc: 0.9775 | Params: 18.1120M
+Iter: 8 | Stack: 18 | Pruned: 2 | Curr Val: 0.3509 | Last Action: find_target_mlp |Acc: 0.9705 | Params: 18.0905M
+Iter: 9 | Stack: 17 | Pruned: 3 | Curr Val: 0.3561 | Last Action: find_target_V_proj |Acc: 0.9740 | Params: 18.0905M
+Iter: 10 | Stack: 21 | Pruned: 3 | Curr Val: 0.3535 | Last Action: find_target_mlp |Acc: 0.9705 | Params: 18.0689M
+Iter: 11 | Stack: 20 | Pruned: 3 | Curr Val: 0.3518 | Last Action: find_target_V_proj |Acc: 0.9685 | Params: 18.0581M
+--- NUOVO BEST TROVATO! --- Valore: 0.3600 (Precedente: 0.3587)
+Iter: 12 | Stack: 19 | Pruned: 3 | Curr Val: 0.3600 | Last Action: find_target_QK |Acc: 0.9740 | Params: 18.0581M
+Iter: 13 | Stack: 18 | Pruned: 3 | Curr Val: 0.3528 | Last Action: find_target_head |Acc: 0.9670 | Params: 18.0312M
+Iter: 14 | Stack: 17 | Pruned: 3 | Curr Val: 0.3554 | Last Action: find_target_emb |Acc: 0.9390 | Params: 17.6605M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.3581 | Last Action: find_target_QK |Acc: 0.9745 | Params: 18.0796M
+--- NUOVO BEST TROVATO! --- Valore: 0.3629 (Precedente: 0.3600)
+Iter: 16 | Stack: 20 | Pruned: 3 | Curr Val: 0.3629 | Last Action: find_target_mlp |Acc: 0.9760 | Params: 18.0581M
+--- NUOVO BEST TROVATO! --- Valore: 0.3659 (Precedente: 0.3629)
+Iter: 17 | Stack: 19 | Pruned: 3 | Curr Val: 0.3659 | Last Action: find_target_V_proj |Acc: 0.9780 | Params: 18.0581M
+Iter: 18 | Stack: 18 | Pruned: 3 | Curr Val: 0.3650 | Last Action: find_target_QK |Acc: 0.9765 | Params: 18.0473M
+Iter: 19 | Stack: 17 | Pruned: 3 | Curr Val: 0.3629 | Last Action: find_target_head |Acc: 0.9725 | Params: 18.0150M
+Iter: 20 | Stack: 16 | Pruned: 3 | Curr Val: 0.3597 | Last Action: find_target_emb |Acc: 0.9410 | Params: 17.6499M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: 0.3583 | Last Action: find_target_head |Acc: 0.9720 | Params: 18.0473M
+--- NUOVO BEST TROVATO! --- Valore: 0.3688 (Precedente: 0.3659)
+Iter: 22 | Stack: 14 | Pruned: 4 | Curr Val: 0.3688 | Last Action: find_target_emb |Acc: 0.9495 | Params: 17.6815M
+Iter: 23 | Stack: 18 | Pruned: 4 | Curr Val: 0.3607 | Last Action: find_target_mlp |Acc: 0.9425 | Params: 17.6605M
+--- NUOVO BEST TROVATO! --- Valore: 0.3714 (Precedente: 0.3688)
+Iter: 24 | Stack: 17 | Pruned: 4 | Curr Val: 0.3714 | Last Action: find_target_V_proj |Acc: 0.9495 | Params: 17.6605M
+Iter: 25 | Stack: 16 | Pruned: 4 | Curr Val: 0.3582 | Last Action: find_target_QK |Acc: 0.9400 | Params: 17.6499M
+Iter: 26 | Stack: 15 | Pruned: 4 | Curr Val: 0.3697 | Last Action: find_target_head |Acc: 0.9450 | Params: 17.6183M
+Iter: 27 | Stack: 14 | Pruned: 4 | Curr Val: 0.3369 | Last Action: find_target_emb |Acc: 0.8950 | Params: 17.2510M
+Iter: 28 | Stack: 13 | Pruned: 4 | Curr Val: 0.3646 | Last Action: find_target_V_proj |Acc: 0.9815 | Params: 18.1120M
+Iter: 29 | Stack: 12 | Pruned: 5 | Curr Val: 0.3593 | Last Action: find_target_QK |Acc: 0.9770 | Params: 18.1012M
+Iter: 30 | Stack: 11 | Pruned: 6 | Curr Val: 0.3542 | Last Action: find_target_head |Acc: 0.9710 | Params: 18.0689M
+Iter: 31 | Stack: 10 | Pruned: 7 | Curr Val: 0.3541 | Last Action: find_target_emb |Acc: 0.9415 | Params: 17.7025M
+Iter: 32 | Stack: 9 | Pruned: 8 | Curr Val: 0.3541 | Last Action: find_target_head |Acc: 0.9735 | Params: 18.1012M
+Iter: 33 | Stack: 8 | Pruned: 9 | Curr Val: 0.3471 | Last Action: find_target_emb |Acc: 0.9395 | Params: 17.7341M
+Iter: 34 | Stack: 7 | Pruned: 10 | Curr Val: 0.3419 | Last Action: find_target_V_proj |Acc: 0.9705 | Params: 18.1659M
+Iter: 35 | Stack: 6 | Pruned: 11 | Curr Val: 0.3484 | Last Action: find_target_QK |Acc: 0.9740 | Params: 18.1551M
+Iter: 36 | Stack: 5 | Pruned: 12 | Curr Val: 0.3485 | Last Action: find_target_head |Acc: 0.9715 | Params: 18.1227M
+Iter: 37 | Stack: 4 | Pruned: 13 | Curr Val: 0.3392 | Last Action: find_target_emb |Acc: 0.9360 | Params: 17.7551M
+Iter: 38 | Stack: 3 | Pruned: 14 | Curr Val: 0.3423 | Last Action: find_target_V_proj |Acc: 0.9725 | Params: 18.1874M
+Iter: 39 | Stack: 2 | Pruned: 15 | Curr Val: 0.3473 | Last Action: find_target_QK |Acc: 0.9750 | Params: 18.1766M
+Iter: 40 | Stack: 1 | Pruned: 16 | Curr Val: 0.3452 | Last Action: find_target_head |Acc: 0.9710 | Params: 18.1443M
+Iter: 41 | Stack: 0 | Pruned: 17 | Curr Val: 0.3512 | Last Action: find_target_emb |Acc: 0.9455 | Params: 17.7761M
+--- Ricerca Completata ---
+Iterazioni totali: 41
+Rami potati (pruned): 18
+Miglior Valore Trovato: 0.3714
+   REPORT POST-TAGLIO:
+      - Params: 17.66M (Riduzione Globale: 18.63%)
+      - Accuracy: 85.73% (Drop: 4.39 %)
+      - Tempo Ricerca: 312.8s
+Epoch 1: 100%|██████████| 352/352 [01:17<00:00,  4.53it/s]
+Train_loss: 0.1749
+Val loss: 0.4555	Accuracy: 0.8697
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:17<00:00,  4.53it/s]
+Train_loss: 0.1451
+Val loss: 0.4447	Accuracy: 0.8732
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:17<00:00,  4.52it/s]
+Train_loss: 0.1241
+Val loss: 0.4402	Accuracy: 0.8743
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [01:17<00:00,  4.52it/s]
+Epoch 5:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.1091
+Val loss: 0.4435	Accuracy: 0.8764
+
+Epoch 5: 100%|██████████| 352/352 [01:17<00:00,  4.53it/s]
+Train_loss: 0.0974
+Val loss: 0.4453	Accuracy: 0.8775
+
+   FINE ITERAZIONE 7
+      - Accuracy Recuperata: 87.43% (+1.70%)
+      - Tempo Fine-Tuning: 423.5s
+      - Tempo Totale Iter: 749.3s
+------------------------------------------------------------
+
+ ITERAZIONE 8/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.4007 | Last Action: Start |Acc: 0.9690 | Params: 17.6605M
+--- NUOVO BEST TROVATO! --- Valore: 0.3974 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.3974 | Last Action: find_target_mlp |Acc: 0.9650 | Params: 17.6394M
+--- NUOVO BEST TROVATO! --- Valore: 0.4111 (Precedente: 0.3974)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.4111 | Last Action: find_target_mlp |Acc: 0.9725 | Params: 17.6184M
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.4018 | Last Action: find_target_mlp |Acc: 0.9645 | Params: 17.5974M
+Iter: 5 | Stack: 11 | Pruned: 1 | Curr Val: 0.4046 | Last Action: find_target_V_proj |Acc: 0.9655 | Params: 17.5869M
+Iter: 6 | Stack: 10 | Pruned: 2 | Curr Val: 0.4031 | Last Action: find_target_QK |Acc: 0.9645 | Params: 17.5868M
+--- NUOVO BEST TROVATO! --- Valore: 0.4130 (Precedente: 0.4111)
+Iter: 7 | Stack: 9 | Pruned: 3 | Curr Val: 0.4130 | Last Action: find_target_head |Acc: 0.9690 | Params: 17.5605M
+Iter: 8 | Stack: 13 | Pruned: 3 | Curr Val: 0.4126 | Last Action: find_target_mlp |Acc: 0.9670 | Params: 17.5395M
+--- NUOVO BEST TROVATO! --- Valore: 0.4145 (Precedente: 0.4130)
+Iter: 9 | Stack: 17 | Pruned: 3 | Curr Val: 0.4145 | Last Action: find_target_mlp |Acc: 0.9665 | Params: 17.5185M
+--- NUOVO BEST TROVATO! --- Valore: 0.4156 (Precedente: 0.4145)
+Iter: 10 | Stack: 21 | Pruned: 3 | Curr Val: 0.4156 | Last Action: find_target_mlp |Acc: 0.9655 | Params: 17.4975M
+--- NUOVO BEST TROVATO! --- Valore: 0.4184 (Precedente: 0.4156)
+Iter: 11 | Stack: 20 | Pruned: 3 | Curr Val: 0.4184 | Last Action: find_target_V_proj |Acc: 0.9665 | Params: 17.4869M
+--- NUOVO BEST TROVATO! --- Valore: 0.4236 (Precedente: 0.4184)
+Iter: 12 | Stack: 19 | Pruned: 3 | Curr Val: 0.4236 | Last Action: find_target_QK |Acc: 0.9700 | Params: 17.4869M
+Iter: 13 | Stack: 18 | Pruned: 3 | Curr Val: 0.4142 | Last Action: find_target_head |Acc: 0.9615 | Params: 17.4606M
+Iter: 14 | Stack: 17 | Pruned: 3 | Curr Val: 0.4185 | Last Action: find_target_emb |Acc: 0.9340 | Params: 17.0919M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.4232 | Last Action: find_target_V_proj |Acc: 0.9715 | Params: 17.5080M
+Iter: 16 | Stack: 20 | Pruned: 3 | Curr Val: 0.4221 | Last Action: find_target_mlp |Acc: 0.9690 | Params: 17.4869M
+Iter: 17 | Stack: 19 | Pruned: 3 | Curr Val: 0.4159 | Last Action: find_target_V_proj |Acc: 0.9640 | Params: 17.4764M
+Iter: 18 | Stack: 18 | Pruned: 3 | Curr Val: 0.4234 | Last Action: find_target_QK |Acc: 0.9690 | Params: 17.4764M
+Iter: 19 | Stack: 17 | Pruned: 3 | Curr Val: 0.4155 | Last Action: find_target_head |Acc: 0.9615 | Params: 17.4501M
+Iter: 20 | Stack: 16 | Pruned: 3 | Curr Val: 0.4058 | Last Action: find_target_emb |Acc: 0.9250 | Params: 17.0817M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: 0.4188 | Last Action: find_target_QK |Acc: 0.9685 | Params: 17.5079M
+Iter: 22 | Stack: 19 | Pruned: 3 | Curr Val: 0.4124 | Last Action: find_target_mlp |Acc: 0.9625 | Params: 17.4869M
+Iter: 23 | Stack: 18 | Pruned: 3 | Curr Val: 0.4174 | Last Action: find_target_V_proj |Acc: 0.9650 | Params: 17.4764M
+Iter: 24 | Stack: 17 | Pruned: 3 | Curr Val: 0.4189 | Last Action: find_target_QK |Acc: 0.9660 | Params: 17.4763M
+Iter: 25 | Stack: 16 | Pruned: 3 | Curr Val: 0.4230 | Last Action: find_target_head |Acc: 0.9665 | Params: 17.4500M
+Iter: 26 | Stack: 15 | Pruned: 3 | Curr Val: 0.4136 | Last Action: find_target_emb |Acc: 0.9300 | Params: 17.0816M
+Iter: 27 | Stack: 14 | Pruned: 3 | Curr Val: 0.4078 | Last Action: find_target_head |Acc: 0.9590 | Params: 17.4816M
+Iter: 28 | Stack: 13 | Pruned: 4 | Curr Val: 0.3941 | Last Action: find_target_emb |Acc: 0.9200 | Params: 17.1125M
+Iter: 29 | Stack: 12 | Pruned: 5 | Curr Val: 0.4094 | Last Action: find_target_V_proj |Acc: 0.9640 | Params: 17.5290M
+Iter: 30 | Stack: 11 | Pruned: 6 | Curr Val: 0.4236 | Last Action: find_target_QK |Acc: 0.9735 | Params: 17.5289M
+Iter: 31 | Stack: 15 | Pruned: 6 | Curr Val: 0.4128 | Last Action: find_target_mlp |Acc: 0.9645 | Params: 17.5079M
+Iter: 32 | Stack: 14 | Pruned: 7 | Curr Val: 0.4036 | Last Action: find_target_V_proj |Acc: 0.9575 | Params: 17.4974M
+Iter: 33 | Stack: 13 | Pruned: 8 | Curr Val: 0.4104 | Last Action: find_target_QK |Acc: 0.9620 | Params: 17.4974M
+Iter: 34 | Stack: 12 | Pruned: 9 | Curr Val: 0.4091 | Last Action: find_target_head |Acc: 0.9590 | Params: 17.4711M
+Iter: 35 | Stack: 11 | Pruned: 10 | Curr Val: 0.3993 | Last Action: find_target_emb |Acc: 0.9225 | Params: 17.1022M
+Iter: 36 | Stack: 10 | Pruned: 11 | Curr Val: 0.4127 | Last Action: find_target_head |Acc: 0.9640 | Params: 17.5027M
+Iter: 37 | Stack: 9 | Pruned: 12 | Curr Val: 0.4048 | Last Action: find_target_emb |Acc: 0.9285 | Params: 17.1330M
+Iter: 38 | Stack: 8 | Pruned: 13 | Curr Val: 0.4023 | Last Action: find_target_emb |Acc: 0.9315 | Params: 17.1894M
+Iter: 39 | Stack: 7 | Pruned: 14 | Curr Val: 0.4094 | Last Action: find_target_V_proj |Acc: 0.9705 | Params: 17.6079M
+Iter: 40 | Stack: 6 | Pruned: 15 | Curr Val: 0.4213 | Last Action: find_target_QK |Acc: 0.9785 | Params: 17.6079M
+Iter: 41 | Stack: 10 | Pruned: 15 | Curr Val: 0.4075 | Last Action: find_target_mlp |Acc: 0.9675 | Params: 17.5868M
+Iter: 42 | Stack: 9 | Pruned: 16 | Curr Val: 0.4081 | Last Action: find_target_V_proj |Acc: 0.9670 | Params: 17.5763M
+Iter: 43 | Stack: 8 | Pruned: 17 | Curr Val: 0.4111 | Last Action: find_target_QK |Acc: 0.9690 | Params: 17.5763M
+Iter: 44 | Stack: 7 | Pruned: 18 | Curr Val: 0.4016 | Last Action: find_target_head |Acc: 0.9605 | Params: 17.5500M
+Iter: 45 | Stack: 6 | Pruned: 19 | Curr Val: 0.4198 | Last Action: find_target_emb |Acc: 0.9420 | Params: 17.1791M
+Iter: 46 | Stack: 10 | Pruned: 19 | Curr Val: 0.4108 | Last Action: find_target_mlp |Acc: 0.9345 | Params: 17.1586M
+Iter: 47 | Stack: 9 | Pruned: 20 | Curr Val: 0.4052 | Last Action: find_target_V_proj |Acc: 0.9300 | Params: 17.1484M
+Iter: 48 | Stack: 8 | Pruned: 21 | Curr Val: 0.4152 | Last Action: find_target_QK |Acc: 0.9365 | Params: 17.1483M
+Iter: 49 | Stack: 7 | Pruned: 22 | Curr Val: 0.4061 | Last Action: find_target_head |Acc: 0.9285 | Params: 17.1227M
+Iter: 50 | Stack: 6 | Pruned: 23 | Curr Val: 0.4022 | Last Action: find_target_emb |Acc: 0.8960 | Params: 16.7504M
+Iter: 51 | Stack: 5 | Pruned: 24 | Curr Val: 0.4052 | Last Action: find_target_head |Acc: 0.9655 | Params: 17.5816M
+Iter: 52 | Stack: 4 | Pruned: 25 | Curr Val: 0.4044 | Last Action: find_target_emb |Acc: 0.9345 | Params: 17.2100M
+Iter: 53 | Stack: 3 | Pruned: 26 | Curr Val: 0.4031 | Last Action: find_target_V_proj |Acc: 0.9680 | Params: 17.6289M
+Iter: 54 | Stack: 2 | Pruned: 27 | Curr Val: 0.4106 | Last Action: find_target_QK |Acc: 0.9730 | Params: 17.6289M
+Iter: 55 | Stack: 1 | Pruned: 28 | Curr Val: 0.4041 | Last Action: find_target_head |Acc: 0.9665 | Params: 17.6026M
+Iter: 56 | Stack: 0 | Pruned: 29 | Curr Val: 0.3995 | Last Action: find_target_emb |Acc: 0.9330 | Params: 17.2305M
+--- Ricerca Completata ---
+Iterazioni totali: 56
+Rami potati (pruned): 30
+Miglior Valore Trovato: 0.4236
+Epoch 1:   0%|          | 0/352 [00:00<?, ?it/s]   REPORT POST-TAGLIO:
+      - Params: 17.49M (Riduzione Globale: 19.43%)
+      - Accuracy: 87.38% (Drop: 2.74 %)
+      - Tempo Ricerca: 428.3s
+Epoch 1: 100%|██████████| 352/352 [01:16<00:00,  4.58it/s]
+Train_loss: 0.1199
+Val loss: 0.4449	Accuracy: 0.8764
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:16<00:00,  4.57it/s]
+Train_loss: 0.1026
+Val loss: 0.4522	Accuracy: 0.8745
+
+Epoch 3: 100%|██████████| 352/352 [01:17<00:00,  4.56it/s]
+Train_loss: 0.0888
+Val loss: 0.4473	Accuracy: 0.8774
+
+   FINE ITERAZIONE 8
+      - Accuracy Recuperata: 87.64% (+0.25%)
+      - Tempo Fine-Tuning: 252.0s
+      - Tempo Totale Iter: 693.2s
+------------------------------------------------------------
+
+ ITERAZIONE 9/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.4303 | Last Action: Start |Acc: 0.9745 | Params: 17.4869M
+--- NUOVO BEST TROVATO! --- Valore: 0.4321 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.4321 | Last Action: find_target_mlp |Acc: 0.9740 | Params: 17.4659M
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.4318 | Last Action: find_target_mlp |Acc: 0.9720 | Params: 17.4449M
+--- NUOVO BEST TROVATO! --- Valore: 0.4322 (Precedente: 0.4321)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.4322 | Last Action: find_target_mlp |Acc: 0.9705 | Params: 17.4238M
+--- NUOVO BEST TROVATO! --- Valore: 0.4400 (Precedente: 0.4322)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.4400 | Last Action: find_target_mlp |Acc: 0.9740 | Params: 17.4028M
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.4337 | Last Action: find_target_mlp |Acc: 0.9680 | Params: 17.3818M
+--- NUOVO BEST TROVATO! --- Valore: 0.4402 (Precedente: 0.4400)
+Iter: 7 | Stack: 19 | Pruned: 1 | Curr Val: 0.4402 | Last Action: find_target_V_proj |Acc: 0.9715 | Params: 17.3713M
+--- NUOVO BEST TROVATO! --- Valore: 0.4487 (Precedente: 0.4402)
+Iter: 8 | Stack: 23 | Pruned: 1 | Curr Val: 0.4487 | Last Action: find_target_mlp |Acc: 0.9755 | Params: 17.3502M
+Iter: 9 | Stack: 22 | Pruned: 1 | Curr Val: 0.4411 | Last Action: find_target_V_proj |Acc: 0.9695 | Params: 17.3397M
+Iter: 10 | Stack: 21 | Pruned: 1 | Curr Val: 0.4449 | Last Action: find_target_QK |Acc: 0.9720 | Params: 17.3397M
+Iter: 11 | Stack: 20 | Pruned: 1 | Curr Val: 0.4362 | Last Action: find_target_head |Acc: 0.9640 | Params: 17.3134M
+Iter: 12 | Stack: 19 | Pruned: 1 | Curr Val: 0.4391 | Last Action: find_target_emb |Acc: 0.9355 | Params: 16.9483M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.4483 | Last Action: find_target_QK |Acc: 0.9770 | Params: 17.3712M
+Iter: 14 | Stack: 22 | Pruned: 1 | Curr Val: 0.4413 | Last Action: find_target_mlp |Acc: 0.9705 | Params: 17.3502M
+--- NUOVO BEST TROVATO! --- Valore: 0.4537 (Precedente: 0.4487)
+Iter: 15 | Stack: 21 | Pruned: 1 | Curr Val: 0.4537 | Last Action: find_target_V_proj |Acc: 0.9780 | Params: 17.3397M
+Iter: 16 | Stack: 20 | Pruned: 1 | Curr Val: 0.4464 | Last Action: find_target_QK |Acc: 0.9730 | Params: 17.3396M
+Iter: 17 | Stack: 19 | Pruned: 1 | Curr Val: 0.4385 | Last Action: find_target_head |Acc: 0.9655 | Params: 17.3133M
+Iter: 18 | Stack: 18 | Pruned: 1 | Curr Val: 0.4290 | Last Action: find_target_emb |Acc: 0.9290 | Params: 16.9483M
+Iter: 19 | Stack: 17 | Pruned: 1 | Curr Val: 0.4450 | Last Action: find_target_head |Acc: 0.9725 | Params: 17.3449M
+Iter: 20 | Stack: 16 | Pruned: 2 | Curr Val: 0.4344 | Last Action: find_target_emb |Acc: 0.9350 | Params: 16.9791M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: 0.4428 | Last Action: find_target_V_proj |Acc: 0.9750 | Params: 17.3923M
+Iter: 22 | Stack: 14 | Pruned: 4 | Curr Val: 0.4413 | Last Action: find_target_QK |Acc: 0.9740 | Params: 17.3922M
+Iter: 23 | Stack: 13 | Pruned: 5 | Curr Val: 0.4483 | Last Action: find_target_head |Acc: 0.9765 | Params: 17.3659M
+Iter: 24 | Stack: 12 | Pruned: 6 | Curr Val: 0.4440 | Last Action: find_target_emb |Acc: 0.9430 | Params: 16.9996M
+Iter: 25 | Stack: 11 | Pruned: 7 | Curr Val: 0.4409 | Last Action: find_target_V_proj |Acc: 0.9755 | Params: 17.4133M
+Iter: 26 | Stack: 10 | Pruned: 8 | Curr Val: 0.4357 | Last Action: find_target_QK |Acc: 0.9720 | Params: 17.4133M
+Iter: 27 | Stack: 9 | Pruned: 9 | Curr Val: 0.4315 | Last Action: find_target_head |Acc: 0.9670 | Params: 17.3870M
+Iter: 28 | Stack: 8 | Pruned: 10 | Curr Val: 0.4330 | Last Action: find_target_emb |Acc: 0.9375 | Params: 17.0201M
+Iter: 29 | Stack: 7 | Pruned: 11 | Curr Val: 0.4331 | Last Action: find_target_V_proj |Acc: 0.9720 | Params: 17.4343M
+Iter: 30 | Stack: 6 | Pruned: 12 | Curr Val: 0.4383 | Last Action: find_target_QK |Acc: 0.9755 | Params: 17.4343M
+Iter: 31 | Stack: 5 | Pruned: 13 | Curr Val: 0.4334 | Last Action: find_target_head |Acc: 0.9700 | Params: 17.4080M
+Iter: 32 | Stack: 4 | Pruned: 14 | Curr Val: 0.4381 | Last Action: find_target_emb |Acc: 0.9425 | Params: 17.0406M
+Iter: 33 | Stack: 3 | Pruned: 15 | Curr Val: 0.4275 | Last Action: find_target_V_proj |Acc: 0.9700 | Params: 17.4554M
+Iter: 34 | Stack: 2 | Pruned: 16 | Curr Val: 0.4335 | Last Action: find_target_QK |Acc: 0.9740 | Params: 17.4553M
+Iter: 35 | Stack: 1 | Pruned: 17 | Curr Val: 0.4285 | Last Action: find_target_head |Acc: 0.9685 | Params: 17.4290M
+Iter: 36 | Stack: 0 | Pruned: 18 | Curr Val: 0.4332 | Last Action: find_target_emb |Acc: 0.9410 | Params: 17.0611M
+--- Ricerca Completata ---
+Iterazioni totali: 36
+Rami potati (pruned): 19
+Miglior Valore Trovato: 0.4537
+Epoch 1:   0%|          | 0/352 [00:00<?, ?it/s]   REPORT POST-TAGLIO:
+      - Params: 17.34M (Riduzione Globale: 20.11%)
+      - Accuracy: 87.28% (Drop: 2.83 %)
+      - Tempo Ricerca: 275.4s
+Epoch 1: 100%|██████████| 352/352 [01:16<00:00,  4.60it/s]
+Train_loss: 0.1082
+Val loss: 0.4445	Accuracy: 0.8746
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:16<00:00,  4.59it/s]
+Epoch 3:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.0949
+Val loss: 0.4509	Accuracy: 0.8765
+
+Epoch 3: 100%|██████████| 352/352 [01:16<00:00,  4.58it/s]
+Train_loss: 0.0832
+Val loss: 0.4431	Accuracy: 0.8766
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [01:16<00:00,  4.60it/s]
+Epoch 5:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.0762
+Val loss: 0.4490	Accuracy: 0.8761
+
+Epoch 5: 100%|██████████| 352/352 [01:16<00:00,  4.60it/s]
+Train_loss: 0.0678
+Val loss: 0.4513	Accuracy: 0.8782
+
+   FINE ITERAZIONE 9
+      - Accuracy Recuperata: 87.66% (+0.38%)
+      - Tempo Fine-Tuning: 417.9s
+      - Tempo Totale Iter: 706.2s
+------------------------------------------------------------
+
+ ITERAZIONE 10/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.4508 | Last Action: Start |Acc: 0.9760 | Params: 17.3397M
+--- NUOVO BEST TROVATO! --- Valore: 0.4542 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.4542 | Last Action: find_target_mlp |Acc: 0.9765 | Params: 17.3187M
+--- NUOVO BEST TROVATO! --- Valore: 0.4627 (Precedente: 0.4542)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.4627 | Last Action: find_target_mlp |Acc: 0.9805 | Params: 17.2976M
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.4609 | Last Action: find_target_mlp |Acc: 0.9775 | Params: 17.2766M
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.4621 | Last Action: find_target_mlp |Acc: 0.9765 | Params: 17.2556M
+--- NUOVO BEST TROVATO! --- Valore: 0.4647 (Precedente: 0.4627)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.4647 | Last Action: find_target_mlp |Acc: 0.9765 | Params: 17.2346M
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.4644 | Last Action: find_target_mlp |Acc: 0.9745 | Params: 17.2135M
+--- NUOVO BEST TROVATO! --- Valore: 0.4731 (Precedente: 0.4647)
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.4731 | Last Action: find_target_V_proj |Acc: 0.9795 | Params: 17.2030M
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.4657 | Last Action: find_target_QK |Acc: 0.9745 | Params: 17.2030M
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.4690 | Last Action: find_target_head |Acc: 0.9745 | Params: 17.1767M
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.4677 | Last Action: find_target_emb |Acc: 0.9430 | Params: 16.8149M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.4675 | Last Action: find_target_V_proj |Acc: 0.9775 | Params: 17.2241M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.4727 | Last Action: find_target_QK |Acc: 0.9810 | Params: 17.2240M
+Iter: 14 | Stack: 22 | Pruned: 1 | Curr Val: 0.4635 | Last Action: find_target_mlp |Acc: 0.9730 | Params: 17.2030M
+Iter: 15 | Stack: 21 | Pruned: 1 | Curr Val: 0.4574 | Last Action: find_target_V_proj |Acc: 0.9680 | Params: 17.1925M
+Iter: 16 | Stack: 20 | Pruned: 1 | Curr Val: 0.4656 | Last Action: find_target_QK |Acc: 0.9735 | Params: 17.1924M
+Iter: 17 | Stack: 19 | Pruned: 1 | Curr Val: 0.4517 | Last Action: find_target_head |Acc: 0.9620 | Params: 17.1661M
+Iter: 18 | Stack: 18 | Pruned: 1 | Curr Val: 0.4505 | Last Action: find_target_emb |Acc: 0.9310 | Params: 16.8046M
+Iter: 19 | Stack: 17 | Pruned: 1 | Curr Val: 0.4634 | Last Action: find_target_head |Acc: 0.9725 | Params: 17.1977M
+--- NUOVO BEST TROVATO! --- Valore: 0.4795 (Precedente: 0.4731)
+Iter: 20 | Stack: 16 | Pruned: 2 | Curr Val: 0.4795 | Last Action: find_target_emb |Acc: 0.9525 | Params: 16.8355M
+Iter: 21 | Stack: 20 | Pruned: 2 | Curr Val: 0.4585 | Last Action: find_target_mlp |Acc: 0.9370 | Params: 16.8149M
+Iter: 22 | Stack: 19 | Pruned: 2 | Curr Val: 0.4690 | Last Action: find_target_V_proj |Acc: 0.9430 | Params: 16.8047M
+Iter: 23 | Stack: 18 | Pruned: 2 | Curr Val: 0.4751 | Last Action: find_target_QK |Acc: 0.9470 | Params: 16.8046M
+Iter: 24 | Stack: 17 | Pruned: 2 | Curr Val: 0.4731 | Last Action: find_target_head |Acc: 0.9435 | Params: 16.7790M
+Iter: 25 | Stack: 16 | Pruned: 2 | Curr Val: 0.4314 | Last Action: find_target_emb |Acc: 0.8870 | Params: 16.4153M
+Iter: 26 | Stack: 15 | Pruned: 2 | Curr Val: 0.4648 | Last Action: find_target_V_proj |Acc: 0.9775 | Params: 17.2451M
+Iter: 27 | Stack: 14 | Pruned: 3 | Curr Val: 0.4597 | Last Action: find_target_QK |Acc: 0.9740 | Params: 17.2450M
+Iter: 28 | Stack: 13 | Pruned: 4 | Curr Val: 0.4585 | Last Action: find_target_head |Acc: 0.9710 | Params: 17.2187M
+Iter: 29 | Stack: 12 | Pruned: 5 | Curr Val: 0.4655 | Last Action: find_target_emb |Acc: 0.9450 | Params: 16.8560M
+Iter: 30 | Stack: 11 | Pruned: 6 | Curr Val: 0.4533 | Last Action: find_target_V_proj |Acc: 0.9715 | Params: 17.2661M
+Iter: 31 | Stack: 10 | Pruned: 7 | Curr Val: 0.4644 | Last Action: find_target_QK |Acc: 0.9790 | Params: 17.2661M
+Iter: 32 | Stack: 9 | Pruned: 8 | Curr Val: 0.4663 | Last Action: find_target_head |Acc: 0.9780 | Params: 17.2398M
+Iter: 33 | Stack: 8 | Pruned: 9 | Curr Val: 0.4490 | Last Action: find_target_emb |Acc: 0.9360 | Params: 16.8765M
+Iter: 34 | Stack: 7 | Pruned: 10 | Curr Val: 0.4522 | Last Action: find_target_V_proj |Acc: 0.9725 | Params: 17.2871M
+Iter: 35 | Stack: 6 | Pruned: 11 | Curr Val: 0.4588 | Last Action: find_target_QK |Acc: 0.9770 | Params: 17.2871M
+Iter: 36 | Stack: 5 | Pruned: 12 | Curr Val: 0.4607 | Last Action: find_target_head |Acc: 0.9760 | Params: 17.2608M
+Iter: 37 | Stack: 4 | Pruned: 13 | Curr Val: 0.4510 | Last Action: find_target_emb |Acc: 0.9390 | Params: 16.8970M
+Iter: 38 | Stack: 3 | Pruned: 14 | Curr Val: 0.4518 | Last Action: find_target_V_proj |Acc: 0.9740 | Params: 17.3081M
+Iter: 39 | Stack: 2 | Pruned: 15 | Curr Val: 0.4628 | Last Action: find_target_QK |Acc: 0.9815 | Params: 17.3081M
+Iter: 40 | Stack: 1 | Pruned: 16 | Curr Val: 0.4595 | Last Action: find_target_head |Acc: 0.9770 | Params: 17.2818M
+Iter: 41 | Stack: 0 | Pruned: 17 | Curr Val: 0.4491 | Last Action: find_target_emb |Acc: 0.9395 | Params: 16.9175M
+--- Ricerca Completata ---
+Iterazioni totali: 41
+Rami potati (pruned): 18
+Miglior Valore Trovato: 0.4795
+   REPORT POST-TAGLIO:
+      - Params: 16.84M (Riduzione Globale: 22.43%)
+      - Accuracy: 86.00% (Drop: 4.12 %)
+      - Tempo Ricerca: 313.7s
+Epoch 1: 100%|██████████| 352/352 [01:14<00:00,  4.70it/s]
+Train_loss: 0.1464
+Val loss: 0.4666	Accuracy: 0.8684
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:14<00:00,  4.72it/s]
+Train_loss: 0.1178
+Val loss: 0.4648	Accuracy: 0.8714
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:14<00:00,  4.73it/s]
+Train_loss: 0.1032
+Val loss: 0.4640	Accuracy: 0.8712
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [01:14<00:00,  4.72it/s]
+Train_loss: 0.0920
+Val loss: 0.4616	Accuracy: 0.8750
+
+---Best model saved---
+Epoch 5: 100%|██████████| 352/352 [01:14<00:00,  4.73it/s]
+Train_loss: 0.0804
+Val loss: 0.4680	Accuracy: 0.8735
+
+Epoch 6: 100%|██████████| 352/352 [01:14<00:00,  4.73it/s]
+Train_loss: 0.0733
+Val loss: 0.4637	Accuracy: 0.8743
+
+   FINE ITERAZIONE 10
+      - Accuracy Recuperata: 87.50% (+1.50%)
+      - Tempo Fine-Tuning: 488.7s
+      - Tempo Totale Iter: 815.0s
+------------------------------------------------------------
+
+ ITERAZIONE 11/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.5206 | Last Action: Start |Acc: 0.9800 | Params: 16.8355M
+--- NUOVO BEST TROVATO! --- Valore: 0.5291 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.5291 | Last Action: find_target_mlp |Acc: 0.9840 | Params: 16.8149M
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.5266 | Last Action: find_target_mlp |Acc: 0.9805 | Params: 16.7944M
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.5248 | Last Action: find_target_mlp |Acc: 0.9775 | Params: 16.7739M
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.5282 | Last Action: find_target_mlp |Acc: 0.9780 | Params: 16.7534M
+--- NUOVO BEST TROVATO! --- Valore: 0.5301 (Precedente: 0.5291)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.5301 | Last Action: find_target_mlp |Acc: 0.9775 | Params: 16.7329M
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.5283 | Last Action: find_target_mlp |Acc: 0.9745 | Params: 16.7124M
+--- NUOVO BEST TROVATO! --- Valore: 0.5319 (Precedente: 0.5301)
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.5319 | Last Action: find_target_V_proj |Acc: 0.9760 | Params: 16.7021M
+--- NUOVO BEST TROVATO! --- Valore: 0.5363 (Precedente: 0.5319)
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.5363 | Last Action: find_target_QK |Acc: 0.9790 | Params: 16.7021M
+--- NUOVO BEST TROVATO! --- Valore: 0.5455 (Precedente: 0.5363)
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.5455 | Last Action: find_target_head |Acc: 0.9830 | Params: 16.6764M
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.5253 | Last Action: find_target_emb |Acc: 0.9380 | Params: 16.3153M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.5307 | Last Action: find_target_V_proj |Acc: 0.9770 | Params: 16.7226M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.5277 | Last Action: find_target_QK |Acc: 0.9750 | Params: 16.7226M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.5288 | Last Action: find_target_head |Acc: 0.9735 | Params: 16.6969M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.5349 | Last Action: find_target_emb |Acc: 0.9460 | Params: 16.3353M
+Iter: 16 | Stack: 15 | Pruned: 4 | Curr Val: 0.5325 | Last Action: find_target_V_proj |Acc: 0.9800 | Params: 16.7431M
+Iter: 17 | Stack: 14 | Pruned: 5 | Curr Val: 0.5258 | Last Action: find_target_QK |Acc: 0.9755 | Params: 16.7431M
+Iter: 18 | Stack: 13 | Pruned: 6 | Curr Val: 0.5195 | Last Action: find_target_head |Acc: 0.9690 | Params: 16.7174M
+Iter: 19 | Stack: 12 | Pruned: 7 | Curr Val: 0.5115 | Last Action: find_target_emb |Acc: 0.9325 | Params: 16.3553M
+Iter: 20 | Stack: 11 | Pruned: 8 | Curr Val: 0.5261 | Last Action: find_target_V_proj |Acc: 0.9775 | Params: 16.7637M
+Iter: 21 | Stack: 10 | Pruned: 9 | Curr Val: 0.5261 | Last Action: find_target_QK |Acc: 0.9775 | Params: 16.7636M
+Iter: 22 | Stack: 9 | Pruned: 10 | Curr Val: 0.5235 | Last Action: find_target_head |Acc: 0.9735 | Params: 16.7380M
+Iter: 23 | Stack: 8 | Pruned: 11 | Curr Val: 0.5158 | Last Action: find_target_emb |Acc: 0.9370 | Params: 16.3753M
+Iter: 24 | Stack: 7 | Pruned: 12 | Curr Val: 0.5279 | Last Action: find_target_V_proj |Acc: 0.9805 | Params: 16.7842M
+Iter: 25 | Stack: 6 | Pruned: 13 | Curr Val: 0.5227 | Last Action: find_target_QK |Acc: 0.9770 | Params: 16.7841M
+Iter: 26 | Stack: 5 | Pruned: 14 | Curr Val: 0.5224 | Last Action: find_target_head |Acc: 0.9745 | Params: 16.7585M
+Iter: 27 | Stack: 4 | Pruned: 15 | Curr Val: 0.5023 | Last Action: find_target_emb |Acc: 0.9300 | Params: 16.3953M
+Iter: 28 | Stack: 3 | Pruned: 16 | Curr Val: 0.5230 | Last Action: find_target_V_proj |Acc: 0.9790 | Params: 16.8047M
+Iter: 29 | Stack: 2 | Pruned: 17 | Curr Val: 0.5253 | Last Action: find_target_QK |Acc: 0.9805 | Params: 16.8046M
+Iter: 30 | Stack: 1 | Pruned: 18 | Curr Val: 0.5197 | Last Action: find_target_head |Acc: 0.9745 | Params: 16.7790M
+Iter: 31 | Stack: 0 | Pruned: 19 | Curr Val: 0.5190 | Last Action: find_target_emb |Acc: 0.9425 | Params: 16.4153M
+--- Ricerca Completata ---
+Iterazioni totali: 31
+Rami potati (pruned): 20
+Miglior Valore Trovato: 0.5455
+Epoch 1:   0%|          | 0/352 [00:00<?, ?it/s]   REPORT POST-TAGLIO:
+      - Params: 16.68M (Riduzione Globale: 23.16%)
+      - Accuracy: 87.15% (Drop: 2.97 %)
+      - Tempo Ricerca: 235.7s
+Epoch 1: 100%|██████████| 352/352 [01:14<00:00,  4.74it/s]
+Train_loss: 0.0891
+Val loss: 0.4677	Accuracy: 0.8719
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:13<00:00,  4.77it/s]
+Epoch 3:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.0791
+Val loss: 0.4700	Accuracy: 0.8754
+
+Epoch 3: 100%|██████████| 352/352 [01:13<00:00,  4.76it/s]
+Train_loss: 0.0696
+Val loss: 0.4726	Accuracy: 0.8716
+
+   FINE ITERAZIONE 11
+      - Accuracy Recuperata: 87.19% (+0.04%)
+      - Tempo Fine-Tuning: 242.5s
+      - Tempo Totale Iter: 490.8s
+------------------------------------------------------------
+
+ ITERAZIONE 12/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.5345 | Last Action: Start |Acc: 0.9755 | Params: 16.6764M
+--- NUOVO BEST TROVATO! --- Valore: 0.5482 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.5482 | Last Action: find_target_mlp |Acc: 0.9830 | Params: 16.6559M
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.5435 | Last Action: find_target_mlp |Acc: 0.9780 | Params: 16.6354M
+--- NUOVO BEST TROVATO! --- Valore: 0.5498 (Precedente: 0.5482)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.5498 | Last Action: find_target_mlp |Acc: 0.9805 | Params: 16.6149M
+--- NUOVO BEST TROVATO! --- Valore: 0.5540 (Precedente: 0.5498)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.5540 | Last Action: find_target_mlp |Acc: 0.9815 | Params: 16.5944M
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.5530 | Last Action: find_target_mlp |Acc: 0.9790 | Params: 16.5739M
+--- NUOVO BEST TROVATO! --- Valore: 0.5579 (Precedente: 0.5540)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.5579 | Last Action: find_target_mlp |Acc: 0.9805 | Params: 16.5533M
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.5503 | Last Action: find_target_V_proj |Acc: 0.9745 | Params: 16.5431M
+--- NUOVO BEST TROVATO! --- Valore: 0.5665 (Precedente: 0.5579)
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.5665 | Last Action: find_target_QK |Acc: 0.9855 | Params: 16.5430M
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.5596 | Last Action: find_target_head |Acc: 0.9785 | Params: 16.5174M
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.5505 | Last Action: find_target_emb |Acc: 0.9410 | Params: 16.1603M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.5595 | Last Action: find_target_V_proj |Acc: 0.9825 | Params: 16.5636M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.5551 | Last Action: find_target_QK |Acc: 0.9795 | Params: 16.5636M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.5525 | Last Action: find_target_head |Acc: 0.9755 | Params: 16.5379M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.5471 | Last Action: find_target_emb |Acc: 0.9405 | Params: 16.1803M
+Iter: 16 | Stack: 15 | Pruned: 4 | Curr Val: 0.5553 | Last Action: find_target_V_proj |Acc: 0.9815 | Params: 16.5841M
+Iter: 17 | Stack: 14 | Pruned: 5 | Curr Val: 0.5575 | Last Action: find_target_QK |Acc: 0.9830 | Params: 16.5841M
+Iter: 18 | Stack: 13 | Pruned: 6 | Curr Val: 0.5572 | Last Action: find_target_head |Acc: 0.9805 | Params: 16.5584M
+Iter: 19 | Stack: 12 | Pruned: 7 | Curr Val: 0.5559 | Last Action: find_target_emb |Acc: 0.9480 | Params: 16.2003M
+Iter: 20 | Stack: 11 | Pruned: 8 | Curr Val: 0.5548 | Last Action: find_target_V_proj |Acc: 0.9830 | Params: 16.6046M
+Iter: 21 | Stack: 10 | Pruned: 9 | Curr Val: 0.5512 | Last Action: find_target_QK |Acc: 0.9805 | Params: 16.6046M
+Iter: 22 | Stack: 9 | Pruned: 10 | Curr Val: 0.5545 | Last Action: find_target_head |Acc: 0.9805 | Params: 16.5789M
+Iter: 23 | Stack: 8 | Pruned: 11 | Curr Val: 0.5341 | Last Action: find_target_emb |Acc: 0.9355 | Params: 16.2203M
+Iter: 24 | Stack: 7 | Pruned: 12 | Curr Val: 0.5419 | Last Action: find_target_V_proj |Acc: 0.9760 | Params: 16.6251M
+Iter: 25 | Stack: 6 | Pruned: 13 | Curr Val: 0.5485 | Last Action: find_target_QK |Acc: 0.9805 | Params: 16.6251M
+Iter: 26 | Stack: 5 | Pruned: 14 | Curr Val: 0.5533 | Last Action: find_target_head |Acc: 0.9815 | Params: 16.5994M
+Iter: 27 | Stack: 4 | Pruned: 15 | Curr Val: 0.5445 | Last Action: find_target_emb |Acc: 0.9440 | Params: 16.2403M
+Iter: 28 | Stack: 3 | Pruned: 16 | Curr Val: 0.5392 | Last Action: find_target_V_proj |Acc: 0.9760 | Params: 16.6457M
+Iter: 29 | Stack: 2 | Pruned: 17 | Curr Val: 0.5473 | Last Action: find_target_QK |Acc: 0.9815 | Params: 16.6456M
+Iter: 30 | Stack: 1 | Pruned: 18 | Curr Val: 0.5462 | Last Action: find_target_head |Acc: 0.9785 | Params: 16.6199M
+Iter: 31 | Stack: 0 | Pruned: 19 | Curr Val: 0.5456 | Last Action: find_target_emb |Acc: 0.9465 | Params: 16.2603M
+--- Ricerca Completata ---
+Iterazioni totali: 31
+Rami potati (pruned): 20
+Miglior Valore Trovato: 0.5665
+Epoch 1:   0%|          | 0/352 [00:00<?, ?it/s]   REPORT POST-TAGLIO:
+      - Params: 16.54M (Riduzione Globale: 23.78%)
+      - Accuracy: 87.09% (Drop: 3.02 %)
+      - Tempo Ricerca: 235.6s
+Epoch 1: 100%|██████████| 352/352 [01:13<00:00,  4.78it/s]
+Train_loss: 0.0835
+Val loss: 0.4679	Accuracy: 0.8741
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:13<00:00,  4.78it/s]
+Train_loss: 0.0731
+Val loss: 0.4664	Accuracy: 0.8759
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:13<00:00,  4.79it/s]
+Train_loss: 0.0624
+Val loss: 0.4651	Accuracy: 0.8789
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [01:13<00:00,  4.79it/s]
+Train_loss: 0.0599
+Val loss: 0.4692	Accuracy: 0.8763
+
+Epoch 5: 100%|██████████| 352/352 [01:13<00:00,  4.79it/s]
+Train_loss: 0.0546
+Val loss: 0.4741	Accuracy: 0.8789
+
+   FINE ITERAZIONE 12
+      - Accuracy Recuperata: 87.89% (+0.80%)
+      - Tempo Fine-Tuning: 402.2s
+      - Tempo Totale Iter: 650.3s
+------------------------------------------------------------
+
+ ITERAZIONE 13/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.5673 | Last Action: Start |Acc: 0.9860 | Params: 16.5430M
+--- NUOVO BEST TROVATO! --- Valore: 0.5714 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.5714 | Last Action: find_target_mlp |Acc: 0.9870 | Params: 16.5225M
+--- NUOVO BEST TROVATO! --- Valore: 0.5748 (Precedente: 0.5714)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.5748 | Last Action: find_target_mlp |Acc: 0.9875 | Params: 16.5020M
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.5746 | Last Action: find_target_mlp |Acc: 0.9855 | Params: 16.4815M
+--- NUOVO BEST TROVATO! --- Valore: 0.5758 (Precedente: 0.5748)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.5758 | Last Action: find_target_mlp |Acc: 0.9845 | Params: 16.4610M
+--- NUOVO BEST TROVATO! --- Valore: 0.5829 (Precedente: 0.5758)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.5829 | Last Action: find_target_mlp |Acc: 0.9875 | Params: 16.4405M
+--- NUOVO BEST TROVATO! --- Valore: 0.5849 (Precedente: 0.5829)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.5849 | Last Action: find_target_mlp |Acc: 0.9870 | Params: 16.4200M
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.5797 | Last Action: find_target_V_proj |Acc: 0.9825 | Params: 16.4097M
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.5848 | Last Action: find_target_QK |Acc: 0.9860 | Params: 16.4097M
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.5786 | Last Action: find_target_head |Acc: 0.9795 | Params: 16.3840M
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.5764 | Last Action: find_target_emb |Acc: 0.9465 | Params: 16.0302M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.5777 | Last Action: find_target_V_proj |Acc: 0.9830 | Params: 16.4302M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.5770 | Last Action: find_target_QK |Acc: 0.9825 | Params: 16.4302M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.5811 | Last Action: find_target_head |Acc: 0.9830 | Params: 16.4045M
+Iter: 15 | Stack: 21 | Pruned: 2 | Curr Val: 0.5808 | Last Action: find_target_mlp |Acc: 0.9810 | Params: 16.3840M
+Iter: 16 | Stack: 20 | Pruned: 2 | Curr Val: 0.5788 | Last Action: find_target_V_proj |Acc: 0.9810 | Params: 16.3994M
+Iter: 17 | Stack: 19 | Pruned: 2 | Curr Val: 0.5785 | Last Action: find_target_QK |Acc: 0.9785 | Params: 16.3737M
+Iter: 18 | Stack: 18 | Pruned: 2 | Curr Val: 0.5796 | Last Action: find_target_head |Acc: 0.9765 | Params: 16.3430M
+Iter: 19 | Stack: 17 | Pruned: 2 | Curr Val: 0.5689 | Last Action: find_target_emb |Acc: 0.9385 | Params: 15.9951M
+Iter: 20 | Stack: 16 | Pruned: 2 | Curr Val: 0.5707 | Last Action: find_target_emb |Acc: 0.9445 | Params: 16.0502M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: 0.5779 | Last Action: find_target_V_proj |Acc: 0.9850 | Params: 16.4507M
+Iter: 22 | Stack: 14 | Pruned: 4 | Curr Val: 0.5809 | Last Action: find_target_QK |Acc: 0.9870 | Params: 16.4507M
+Iter: 23 | Stack: 18 | Pruned: 4 | Curr Val: 0.5843 | Last Action: find_target_mlp |Acc: 0.9875 | Params: 16.4302M
+Iter: 24 | Stack: 22 | Pruned: 4 | Curr Val: 0.5804 | Last Action: find_target_mlp |Acc: 0.9830 | Params: 16.4097M
+Iter: 25 | Stack: 21 | Pruned: 4 | Curr Val: 0.5818 | Last Action: find_target_V_proj |Acc: 0.9830 | Params: 16.3994M
+--- NUOVO BEST TROVATO! --- Valore: 0.5862 (Precedente: 0.5849)
+Iter: 26 | Stack: 20 | Pruned: 4 | Curr Val: 0.5862 | Last Action: find_target_QK |Acc: 0.9860 | Params: 16.3994M
+Iter: 27 | Stack: 19 | Pruned: 4 | Curr Val: 0.5829 | Last Action: find_target_head |Acc: 0.9815 | Params: 16.3737M
+Iter: 28 | Stack: 18 | Pruned: 4 | Curr Val: 0.5846 | Last Action: find_target_emb |Acc: 0.9510 | Params: 16.0202M
+Iter: 29 | Stack: 17 | Pruned: 4 | Curr Val: 0.5834 | Last Action: find_target_V_proj |Acc: 0.9860 | Params: 16.4199M
+--- NUOVO BEST TROVATO! --- Valore: 0.5891 (Precedente: 0.5862)
+Iter: 30 | Stack: 21 | Pruned: 4 | Curr Val: 0.5891 | Last Action: find_target_mlp |Acc: 0.9880 | Params: 16.3994M
+Iter: 31 | Stack: 20 | Pruned: 4 | Curr Val: 0.5743 | Last Action: find_target_V_proj |Acc: 0.9770 | Params: 16.3892M
+Iter: 32 | Stack: 19 | Pruned: 4 | Curr Val: 0.5846 | Last Action: find_target_QK |Acc: 0.9840 | Params: 16.3891M
+Iter: 33 | Stack: 18 | Pruned: 4 | Curr Val: 0.5821 | Last Action: find_target_head |Acc: 0.9800 | Params: 16.3635M
+Iter: 34 | Stack: 17 | Pruned: 4 | Curr Val: 0.5615 | Last Action: find_target_emb |Acc: 0.9350 | Params: 16.0102M
+Iter: 35 | Stack: 16 | Pruned: 4 | Curr Val: 0.5783 | Last Action: find_target_QK |Acc: 0.9825 | Params: 16.4199M
+Iter: 36 | Stack: 15 | Pruned: 5 | Curr Val: 0.5832 | Last Action: find_target_head |Acc: 0.9835 | Params: 16.3942M
+Iter: 37 | Stack: 14 | Pruned: 6 | Curr Val: 0.5789 | Last Action: find_target_emb |Acc: 0.9490 | Params: 16.0402M
+Iter: 38 | Stack: 13 | Pruned: 7 | Curr Val: 0.5857 | Last Action: find_target_head |Acc: 0.9880 | Params: 16.4250M
+Iter: 39 | Stack: 17 | Pruned: 7 | Curr Val: 0.5767 | Last Action: find_target_mlp |Acc: 0.9800 | Params: 16.4045M
+Iter: 40 | Stack: 16 | Pruned: 8 | Curr Val: 0.5761 | Last Action: find_target_V_proj |Acc: 0.9810 | Params: 16.4199M
+Iter: 41 | Stack: 15 | Pruned: 9 | Curr Val: 0.5802 | Last Action: find_target_QK |Acc: 0.9815 | Params: 16.3942M
+Iter: 42 | Stack: 14 | Pruned: 10 | Curr Val: 0.5740 | Last Action: find_target_head |Acc: 0.9745 | Params: 16.3635M
+Iter: 43 | Stack: 13 | Pruned: 11 | Curr Val: 0.5739 | Last Action: find_target_emb |Acc: 0.9435 | Params: 16.0151M
+Iter: 44 | Stack: 12 | Pruned: 12 | Curr Val: 0.5741 | Last Action: find_target_emb |Acc: 0.9485 | Params: 16.0702M
+Iter: 45 | Stack: 11 | Pruned: 13 | Curr Val: 0.5767 | Last Action: find_target_V_proj |Acc: 0.9860 | Params: 16.4713M
+Iter: 46 | Stack: 10 | Pruned: 14 | Curr Val: 0.5796 | Last Action: find_target_QK |Acc: 0.9880 | Params: 16.4712M
+Iter: 47 | Stack: 9 | Pruned: 15 | Curr Val: 0.5771 | Last Action: find_target_head |Acc: 0.9840 | Params: 16.4455M
+Iter: 48 | Stack: 8 | Pruned: 16 | Curr Val: 0.5699 | Last Action: find_target_emb |Acc: 0.9475 | Params: 16.0902M
+Iter: 49 | Stack: 7 | Pruned: 17 | Curr Val: 0.5740 | Last Action: find_target_V_proj |Acc: 0.9860 | Params: 16.4918M
+Iter: 50 | Stack: 6 | Pruned: 18 | Curr Val: 0.5762 | Last Action: find_target_QK |Acc: 0.9875 | Params: 16.4917M
+Iter: 51 | Stack: 5 | Pruned: 19 | Curr Val: 0.5722 | Last Action: find_target_head |Acc: 0.9825 | Params: 16.4661M
+Iter: 52 | Stack: 4 | Pruned: 20 | Curr Val: 0.5687 | Last Action: find_target_emb |Acc: 0.9485 | Params: 16.1102M
+Iter: 53 | Stack: 3 | Pruned: 21 | Curr Val: 0.5640 | Last Action: find_target_V_proj |Acc: 0.9810 | Params: 16.5123M
+Iter: 54 | Stack: 2 | Pruned: 22 | Curr Val: 0.5677 | Last Action: find_target_QK |Acc: 0.9835 | Params: 16.5122M
+Iter: 55 | Stack: 1 | Pruned: 23 | Curr Val: 0.5710 | Last Action: find_target_head |Acc: 0.9835 | Params: 16.4866M
+Iter: 56 | Stack: 0 | Pruned: 24 | Curr Val: 0.5653 | Last Action: find_target_emb |Acc: 0.9480 | Params: 16.1302M
+--- Ricerca Completata ---
+Iterazioni totali: 56
+Rami potati (pruned): 25
+Miglior Valore Trovato: 0.5891
+   REPORT POST-TAGLIO:
+      - Params: 16.40M (Riduzione Globale: 24.44%)
+      - Accuracy: 87.34% (Drop: 2.78 %)
+      - Tempo Ricerca: 436.6s
+Epoch 1: 100%|██████████| 352/352 [01:13<00:00,  4.80it/s]
+Train_loss: 0.0699
+Val loss: 0.4818	Accuracy: 0.8721
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:13<00:00,  4.80it/s]
+Epoch 3:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.0596
+Val loss: 0.4890	Accuracy: 0.8735
+
+Epoch 3: 100%|██████████| 352/352 [01:13<00:00,  4.80it/s]
+Train_loss: 0.0547
+Val loss: 0.4883	Accuracy: 0.8750
+
+   FINE ITERAZIONE 13
+      - Accuracy Recuperata: 87.21% (+-0.13%)
+      - Tempo Fine-Tuning: 240.4s
+      - Tempo Totale Iter: 689.6s
+------------------------------------------------------------
+
+ ITERAZIONE 14/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.5840 | Last Action: Start |Acc: 0.9845 | Params: 16.3994M
+--- NUOVO BEST TROVATO! --- Valore: 0.5837 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.5837 | Last Action: find_target_mlp |Acc: 0.9825 | Params: 16.3789M
+--- NUOVO BEST TROVATO! --- Valore: 0.5894 (Precedente: 0.5837)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.5894 | Last Action: find_target_mlp |Acc: 0.9845 | Params: 16.3584M
+--- NUOVO BEST TROVATO! --- Valore: 0.5928 (Precedente: 0.5894)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.5928 | Last Action: find_target_mlp |Acc: 0.9850 | Params: 16.3379M
+--- NUOVO BEST TROVATO! --- Valore: 0.5977 (Precedente: 0.5928)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.5977 | Last Action: find_target_mlp |Acc: 0.9865 | Params: 16.3174M
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.5968 | Last Action: find_target_mlp |Acc: 0.9840 | Params: 16.2969M
+--- NUOVO BEST TROVATO! --- Valore: 0.5995 (Precedente: 0.5977)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.5995 | Last Action: find_target_mlp |Acc: 0.9840 | Params: 16.2763M
+--- NUOVO BEST TROVATO! --- Valore: 0.6002 (Precedente: 0.5995)
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.6002 | Last Action: find_target_V_proj |Acc: 0.9835 | Params: 16.2661M
+--- NUOVO BEST TROVATO! --- Valore: 0.6031 (Precedente: 0.6002)
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.6031 | Last Action: find_target_QK |Acc: 0.9855 | Params: 16.2660M
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.5962 | Last Action: find_target_head |Acc: 0.9785 | Params: 16.2404M
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.5893 | Last Action: find_target_emb |Acc: 0.9425 | Params: 15.8902M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.5930 | Last Action: find_target_V_proj |Acc: 0.9805 | Params: 16.2866M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.5901 | Last Action: find_target_QK |Acc: 0.9785 | Params: 16.2865M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.5942 | Last Action: find_target_head |Acc: 0.9790 | Params: 16.2609M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.5958 | Last Action: find_target_emb |Acc: 0.9485 | Params: 15.9102M
+Iter: 16 | Stack: 15 | Pruned: 4 | Curr Val: 0.5896 | Last Action: find_target_V_proj |Acc: 0.9800 | Params: 16.3071M
+Iter: 17 | Stack: 14 | Pruned: 5 | Curr Val: 0.5881 | Last Action: find_target_QK |Acc: 0.9790 | Params: 16.3071M
+Iter: 18 | Stack: 13 | Pruned: 6 | Curr Val: 0.5915 | Last Action: find_target_head |Acc: 0.9790 | Params: 16.2814M
+Iter: 19 | Stack: 12 | Pruned: 7 | Curr Val: 0.5831 | Last Action: find_target_emb |Acc: 0.9420 | Params: 15.9302M
+Iter: 20 | Stack: 11 | Pruned: 8 | Curr Val: 0.5824 | Last Action: find_target_V_proj |Acc: 0.9770 | Params: 16.3276M
+Iter: 21 | Stack: 10 | Pruned: 9 | Curr Val: 0.5978 | Last Action: find_target_QK |Acc: 0.9875 | Params: 16.3276M
+Iter: 22 | Stack: 9 | Pruned: 10 | Curr Val: 0.5866 | Last Action: find_target_head |Acc: 0.9775 | Params: 16.3019M
+Iter: 23 | Stack: 8 | Pruned: 11 | Curr Val: 0.5979 | Last Action: find_target_emb |Acc: 0.9535 | Params: 15.9502M
+Iter: 24 | Stack: 7 | Pruned: 12 | Curr Val: 0.5844 | Last Action: find_target_V_proj |Acc: 0.9820 | Params: 16.3686M
+Iter: 25 | Stack: 6 | Pruned: 13 | Curr Val: 0.5937 | Last Action: find_target_QK |Acc: 0.9865 | Params: 16.3481M
+Iter: 26 | Stack: 5 | Pruned: 14 | Curr Val: 0.5853 | Last Action: find_target_head |Acc: 0.9785 | Params: 16.3224M
+Iter: 27 | Stack: 4 | Pruned: 15 | Curr Val: 0.5716 | Last Action: find_target_emb |Acc: 0.9380 | Params: 15.9702M
+Iter: 28 | Stack: 3 | Pruned: 16 | Curr Val: 0.5821 | Last Action: find_target_V_proj |Acc: 0.9805 | Params: 16.3686M
+Iter: 29 | Stack: 2 | Pruned: 17 | Curr Val: 0.5829 | Last Action: find_target_QK |Acc: 0.9810 | Params: 16.3686M
+Iter: 30 | Stack: 1 | Pruned: 18 | Curr Val: 0.5855 | Last Action: find_target_head |Acc: 0.9805 | Params: 16.3429M
+Iter: 31 | Stack: 0 | Pruned: 19 | Curr Val: 0.5917 | Last Action: find_target_emb |Acc: 0.9530 | Params: 15.9902M
+--- Ricerca Completata ---
+Iterazioni totali: 31
+Rami potati (pruned): 20
+Miglior Valore Trovato: 0.6031
+   REPORT POST-TAGLIO:
+      - Params: 16.27M (Riduzione Globale: 25.06%)
+      - Accuracy: 87.14% (Drop: 2.98 %)
+      - Tempo Ricerca: 235.5s
+Epoch 1: 100%|██████████| 352/352 [01:13<00:00,  4.80it/s]
+Train_loss: 0.0653
+Val loss: 0.4847	Accuracy: 0.8740
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:13<00:00,  4.81it/s]
+Epoch 3:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.0575
+Val loss: 0.4905	Accuracy: 0.8730
+
+Epoch 3: 100%|██████████| 352/352 [01:12<00:00,  4.82it/s]
+Train_loss: 0.0539
+Val loss: 0.4954	Accuracy: 0.8744
+
+   FINE ITERAZIONE 14
+      - Accuracy Recuperata: 87.40% (+0.27%)
+      - Tempo Fine-Tuning: 239.9s
+      - Tempo Totale Iter: 487.9s
+------------------------------------------------------------
+
+ ITERAZIONE 15/15
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.6002 | Last Action: Start |Acc: 0.9835 | Params: 16.2660M
+--- NUOVO BEST TROVATO! --- Valore: 0.6022 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.6022 | Last Action: find_target_mlp |Acc: 0.9830 | Params: 16.2455M
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.5997 | Last Action: find_target_mlp |Acc: 0.9795 | Params: 16.2250M
+--- NUOVO BEST TROVATO! --- Valore: 0.6084 (Precedente: 0.6022)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.6084 | Last Action: find_target_mlp |Acc: 0.9835 | Params: 16.2045M
+--- NUOVO BEST TROVATO! --- Valore: 0.6111 (Precedente: 0.6084)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.6111 | Last Action: find_target_mlp |Acc: 0.9835 | Params: 16.1840M
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.6109 | Last Action: find_target_mlp |Acc: 0.9815 | Params: 16.1635M
+--- NUOVO BEST TROVATO! --- Valore: 0.6115 (Precedente: 0.6111)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.6115 | Last Action: find_target_mlp |Acc: 0.9800 | Params: 16.1430M
+--- NUOVO BEST TROVATO! --- Valore: 0.6172 (Precedente: 0.6115)
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.6172 | Last Action: find_target_V_proj |Acc: 0.9830 | Params: 16.1327M
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.6128 | Last Action: find_target_QK |Acc: 0.9800 | Params: 16.1327M
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.6133 | Last Action: find_target_head |Acc: 0.9780 | Params: 16.1070M
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.5933 | Last Action: find_target_emb |Acc: 0.9335 | Params: 15.7601M
+--- NUOVO BEST TROVATO! --- Valore: 0.6174 (Precedente: 0.6172)
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.6174 | Last Action: find_target_V_proj |Acc: 0.9850 | Params: 16.1532M
+Iter: 13 | Stack: 23 | Pruned: 0 | Curr Val: 0.6077 | Last Action: find_target_mlp |Acc: 0.9765 | Params: 16.1327M
+Iter: 14 | Stack: 22 | Pruned: 0 | Curr Val: 0.6033 | Last Action: find_target_V_proj |Acc: 0.9745 | Params: 16.1430M
+Iter: 15 | Stack: 21 | Pruned: 0 | Curr Val: 0.6120 | Last Action: find_target_QK |Acc: 0.9785 | Params: 16.1224M
+Iter: 16 | Stack: 20 | Pruned: 0 | Curr Val: 0.6095 | Last Action: find_target_head |Acc: 0.9745 | Params: 16.0967M
+Iter: 17 | Stack: 19 | Pruned: 0 | Curr Val: 0.6100 | Last Action: find_target_emb |Acc: 0.9435 | Params: 15.7501M
+Iter: 18 | Stack: 18 | Pruned: 0 | Curr Val: 0.6012 | Last Action: find_target_QK |Acc: 0.9740 | Params: 16.1532M
+Iter: 19 | Stack: 17 | Pruned: 1 | Curr Val: 0.6128 | Last Action: find_target_head |Acc: 0.9795 | Params: 16.1275M
+Iter: 20 | Stack: 21 | Pruned: 1 | Curr Val: 0.6170 | Last Action: find_target_mlp |Acc: 0.9805 | Params: 16.1070M
+Iter: 21 | Stack: 20 | Pruned: 1 | Curr Val: 0.6091 | Last Action: find_target_V_proj |Acc: 0.9765 | Params: 16.1224M
+Iter: 22 | Stack: 19 | Pruned: 1 | Curr Val: 0.6140 | Last Action: find_target_QK |Acc: 0.9775 | Params: 16.0967M
+Iter: 23 | Stack: 18 | Pruned: 1 | Curr Val: 0.6115 | Last Action: find_target_head |Acc: 0.9730 | Params: 16.0659M
+Iter: 24 | Stack: 17 | Pruned: 1 | Curr Val: 0.5996 | Last Action: find_target_emb |Acc: 0.9345 | Params: 15.7250M
+Iter: 25 | Stack: 16 | Pruned: 1 | Curr Val: 0.5921 | Last Action: find_target_emb |Acc: 0.9345 | Params: 15.7801M
+Iter: 26 | Stack: 15 | Pruned: 2 | Curr Val: 0.6000 | Last Action: find_target_V_proj |Acc: 0.9750 | Params: 16.1737M
+Iter: 27 | Stack: 14 | Pruned: 3 | Curr Val: 0.6066 | Last Action: find_target_QK |Acc: 0.9795 | Params: 16.1737M
+Iter: 28 | Stack: 13 | Pruned: 4 | Curr Val: 0.6086 | Last Action: find_target_head |Acc: 0.9785 | Params: 16.1480M
+Iter: 29 | Stack: 12 | Pruned: 5 | Curr Val: 0.5978 | Last Action: find_target_emb |Acc: 0.9400 | Params: 15.8001M
+Iter: 30 | Stack: 11 | Pruned: 6 | Curr Val: 0.6026 | Last Action: find_target_V_proj |Acc: 0.9805 | Params: 16.2148M
+Iter: 31 | Stack: 10 | Pruned: 7 | Curr Val: 0.6046 | Last Action: find_target_QK |Acc: 0.9800 | Params: 16.1942M
+Iter: 32 | Stack: 9 | Pruned: 8 | Curr Val: 0.6036 | Last Action: find_target_head |Acc: 0.9770 | Params: 16.1685M
+Iter: 33 | Stack: 8 | Pruned: 9 | Curr Val: 0.5927 | Last Action: find_target_emb |Acc: 0.9385 | Params: 15.8201M
+Iter: 34 | Stack: 7 | Pruned: 10 | Curr Val: 0.6026 | Last Action: find_target_V_proj |Acc: 0.9805 | Params: 16.2148M
+Iter: 35 | Stack: 6 | Pruned: 11 | Curr Val: 0.6055 | Last Action: find_target_QK |Acc: 0.9825 | Params: 16.2147M
+Iter: 36 | Stack: 5 | Pruned: 12 | Curr Val: 0.6038 | Last Action: find_target_head |Acc: 0.9790 | Params: 16.1891M
+Iter: 37 | Stack: 4 | Pruned: 13 | Curr Val: 0.5831 | Last Action: find_target_emb |Acc: 0.9340 | Params: 15.8401M
+Iter: 38 | Stack: 3 | Pruned: 14 | Curr Val: 0.5993 | Last Action: find_target_V_proj |Acc: 0.9820 | Params: 16.2558M
+Iter: 39 | Stack: 2 | Pruned: 15 | Curr Val: 0.6079 | Last Action: find_target_QK |Acc: 0.9860 | Params: 16.2352M
+Iter: 40 | Stack: 1 | Pruned: 16 | Curr Val: 0.6047 | Last Action: find_target_head |Acc: 0.9815 | Params: 16.2096M
+Iter: 41 | Stack: 0 | Pruned: 17 | Curr Val: 0.6033 | Last Action: find_target_emb |Acc: 0.9490 | Params: 15.8601M
+--- Ricerca Completata ---
+Iterazioni totali: 41
+Rami potati (pruned): 18
+Miglior Valore Trovato: 0.6174
+Epoch 1:   0%|          | 0/352 [00:00<?, ?it/s]   REPORT POST-TAGLIO:
+      - Params: 16.15M (Riduzione Globale: 25.58%)
+      - Accuracy: 86.62% (Drop: 3.49 %)
+      - Tempo Ricerca: 315.8s
+Epoch 1: 100%|██████████| 352/352 [01:13<00:00,  4.81it/s]
+Train_loss: 0.0677
+Val loss: 0.4947	Accuracy: 0.8716
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:13<00:00,  4.82it/s]
+Train_loss: 0.0595
+Val loss: 0.4867	Accuracy: 0.8762
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:12<00:00,  4.84it/s]
+Train_loss: 0.0542
+Val loss: 0.4968	Accuracy: 0.8760
+
+Epoch 4: 100%|██████████| 352/352 [01:12<00:00,  4.83it/s]
+Train_loss: 0.0499
+Val loss: 0.4943	Accuracy: 0.8741
+
+   FINE ITERAZIONE 15
+      - Accuracy Recuperata: 87.62% (+1.00%)
+      - Tempo Fine-Tuning: 319.0s
+      - Tempo Totale Iter: 647.3s
+------------------------------------------------------------
+
+VALUTAZIONE FINALE (Test Set)
+               precision    recall  f1-score   support
+
+        apple      0.950     0.950     0.950       100
+aquarium_fish      0.931     0.940     0.935       100
+         baby      0.810     0.810     0.810       100
+         bear      0.818     0.810     0.814       100
+       beaver      0.785     0.840     0.812       100
+          bed      0.911     0.920     0.915       100
+          bee      0.968     0.920     0.944       100
+       beetle      0.832     0.940     0.883       100
+      bicycle      0.949     0.940     0.945       100
+       bottle      0.969     0.930     0.949       100
+         bowl      0.753     0.670     0.709       100
+          boy      0.616     0.690     0.651       100
+       bridge      0.912     0.930     0.921       100
+          bus      0.846     0.880     0.863       100
+    butterfly      0.930     0.930     0.930       100
+        camel      0.912     0.930     0.921       100
+          can      0.949     0.940     0.945       100
+       castle      0.940     0.940     0.940       100
+  caterpillar      0.946     0.880     0.912       100
+       cattle      0.840     0.890     0.864       100
+        chair      0.930     0.930     0.930       100
+   chimpanzee      0.959     0.930     0.944       100
+        clock      0.909     0.900     0.905       100
+        cloud      0.895     0.850     0.872       100
+    cockroach      0.978     0.910     0.943       100
+        couch      0.897     0.870     0.883       100
+         crab      0.848     0.890     0.868       100
+    crocodile      0.833     0.850     0.842       100
+          cup      0.918     0.900     0.909       100
+     dinosaur      0.854     0.880     0.867       100
+      dolphin      0.853     0.810     0.831       100
+     elephant      0.891     0.900     0.896       100
+     flatfish      0.810     0.850     0.829       100
+       forest      0.782     0.790     0.786       100
+          fox      0.880     0.880     0.880       100
+         girl      0.756     0.650     0.699       100
+      hamster      0.927     0.890     0.908       100
+        house      0.931     0.810     0.866       100
+     kangaroo      0.914     0.850     0.881       100
+     keyboard      0.950     0.960     0.955       100
+         lamp      0.837     0.870     0.853       100
+   lawn_mower      0.970     0.970     0.970       100
+      leopard      0.817     0.850     0.833       100
+         lion      0.957     0.900     0.928       100
+       lizard      0.744     0.900     0.814       100
+      lobster      0.824     0.840     0.832       100
+          man      0.732     0.820     0.774       100
+   maple_tree      0.667     0.720     0.692       100
+   motorcycle      0.933     0.970     0.951       100
+     mountain      0.913     0.950     0.931       100
+        mouse      0.724     0.760     0.741       100
+     mushroom      0.920     0.920     0.920       100
+     oak_tree      0.650     0.780     0.709       100
+       orange      0.960     0.960     0.960       100
+       orchid      0.896     0.950     0.922       100
+        otter      0.706     0.720     0.713       100
+    palm_tree      0.968     0.910     0.938       100
+         pear      0.917     0.880     0.898       100
+ pickup_truck      0.990     0.970     0.980       100
+    pine_tree      0.865     0.770     0.815       100
+        plain      0.907     0.880     0.893       100
+        plate      0.856     0.830     0.843       100
+        poppy      0.857     0.840     0.848       100
+    porcupine      0.847     0.830     0.838       100
+       possum      0.815     0.750     0.781       100
+       rabbit      0.811     0.860     0.835       100
+      raccoon      0.929     0.920     0.925       100
+          ray      0.870     0.800     0.833       100
+         road      0.924     0.970     0.946       100
+       rocket      0.901     0.910     0.905       100
+         rose      0.901     0.910     0.905       100
+          sea      0.842     0.850     0.846       100
+         seal      0.683     0.710     0.696       100
+        shark      0.878     0.860     0.869       100
+        shrew      0.833     0.750     0.789       100
+        skunk      0.970     0.980     0.975       100
+   skyscraper      0.980     0.960     0.970       100
+        snail      0.915     0.860     0.887       100
+        snake      0.853     0.930     0.890       100
+       spider      0.941     0.950     0.945       100
+     squirrel      0.853     0.870     0.861       100
+    streetcar      0.800     0.840     0.820       100
+    sunflower      1.000     0.990     0.995       100
+ sweet_pepper      0.867     0.910     0.888       100
+        table      0.850     0.910     0.879       100
+         tank      0.896     0.950     0.922       100
+    telephone      0.928     0.900     0.914       100
+   television      0.931     0.940     0.935       100
+        tiger      0.927     0.890     0.908       100
+      tractor      0.933     0.970     0.951       100
+        train      0.901     0.910     0.905       100
+        trout      0.931     0.950     0.941       100
+        tulip      0.845     0.820     0.832       100
+       turtle      0.933     0.830     0.878       100
+     wardrobe      0.970     0.970     0.970       100
+        whale      0.857     0.840     0.848       100
+  willow_tree      0.812     0.690     0.746       100
+         wolf      0.891     0.900     0.896       100
+        woman      0.793     0.730     0.760       100
+         worm      0.917     0.880     0.898       100
+
+     accuracy                          0.874     10000
+    macro avg      0.876     0.874     0.874     10000
+ weighted avg      0.876     0.874     0.874     10000
+
+Balanced Accuracy: 87.43%
+
+============================================================
+🏆 RISULTATI FINALI
+============================================================
+   - Tempo Totale: 177.5 min
+   - Parametri Iniziali: 21.70M
+   - Parametri Finali:   16.15M
+   - Riduzione Size:     25.58%
+   - Accuracy Test Set:  87.43%
+============================================================
+
+stavolta le iterazioni di fine tuning sono massimo 15, inoltre lambda nella funzione obbiettivo vale 1.5
+
+batch_size = 128
+N_iterations = 15
+lr = 0.5e-5
+weight_decay = 0.05
+images_per_class = 20
+depth_limit = 6
+max_epochs = 15
+patience = 2
+min_delta = 0.0001
+early_stop_path = "D:\\Tesi\\NASv2"
+seed = 42
+num_classes = 100
+search_threshold = 0.005

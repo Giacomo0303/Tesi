@@ -8,7 +8,7 @@ from NAS.NAS_Utils import count_params_no_mask
 from NASv2utils import updatePruningReport, createPruningReport, savePruningReport
 from NASv2utils import load_model, split_dataset, pruningNAS, recoveryFineTune, save_model_jit
 from NASv2utils import get_search_set
-import time
+import time, copy
 
 batch_size = 128
 N_iterations = 15
@@ -16,18 +16,27 @@ lr = 0.5e-5
 weight_decay = 0.05
 images_per_class = 20
 depth_limit = 6
-max_epochs = 5
+max_epochs = 15
 patience = 2
 min_delta = 0.0001
 early_stop_path = "D:\\Tesi\\NASv2"
 seed = 42
 num_classes = 100
 search_threshold = 0.005
+distillation = True
+
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = load_model(model_name="vit_small_patch16_224", num_classes=num_classes,
                        path="D:\\Tesi\\FirstFineTuning\\best_model.pth")
+    teacher_model = None
+
+    if distillation:
+        teacher_model = copy.deepcopy(model)
+        teacher_model.to(device)
+        teacher_model.eval()
+
     model = model.to(device)
 
     data_config = timm.data.resolve_model_data_config(model)
@@ -118,7 +127,7 @@ if __name__ == "__main__":
         model = comp_model
         ft_duration = recoveryFineTune(model=model, lr=lr, weight_decay=weight_decay, max_epochs=max_epochs,
                                        early_stop_path=early_stop_path, patience=patience, min_delta=min_delta,
-                                       device=device, train_loader=train_loader, val_loader=val_loader, loss_fn=loss_fn)
+                                       device=device, train_loader=train_loader, val_loader=val_loader, loss_fn=loss_fn, teacher_model=teacher_model)
 
         best_model_path = os.path.join(early_stop_path, "best_model.pth")
         checkpoint = torch.load(best_model_path)

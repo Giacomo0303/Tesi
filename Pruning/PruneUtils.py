@@ -7,25 +7,44 @@ def compute_grads(model, loss_fn, device, dataloader):
     n_batches = 0
     loss_value = 0.0
     y_true, y_pred = [], []
+    scaler = torch.amp.GradScaler()
+
+    for p in model.parameters():
+        if p.requires_grad:
+            # Creiamo l'attributo .imp sullo stesso device e con la stessa shape del parametro
+            p.imp = torch.zeros_like(p.data)
 
     for (x, y) in dataloader:
         x, y = x.to(device), y.to(device)
         n_batches += 1
-        y_true.append(y)
+        y_true.append(y.cpu())
+
+        #azzero i gradienti
+        model.zero_grad()
 
         with torch.amp.autocast(device_type=device, dtype=torch.float16):
             logits = model(x)
             loss = loss_fn(logits, y)
-            y_pred.append(torch.argmax(logits, dim=-1))
+            y_pred.append(torch.argmax(logits, dim=-1).cpu())
 
         # accumula i gradienti nei .grad
-        loss.float().backward()
+        scaler.scale(loss).backward()
         loss_value += loss.item()
 
-    # calcola il gradiente medio per ogni parametro
-    for params in model.parameters():
-        if params.grad is not None:
-            params.grad /= n_batches
+        for p in model.parameters():
+            if p.grad is not None:
+                # Calcolo g^2 per questo batch e lo aggiungo all'accumulatore
+                # .detach() è importante per non mantenere il grafo computazionale e risparmiare memoria
+                p.imp += p.grad.data.pow(2).detach()
+
+    for p in model.parameters():
+        if hasattr(p, 'imp'):
+            # Calcolo la media dei gradienti al quadrato (g^2)
+            p.imp /= n_batches
+
+            # Moltiplico per il quadrato del peso (w^2)
+            # p.data è il valore del peso (w)
+            p.imp *= p.data.pow(2)
 
     y_true = torch.cat(y_true)
     y_pred = torch.cat(y_pred)
@@ -35,36 +54,30 @@ def compute_grads(model, loss_fn, device, dataloader):
     return loss_value / n_batches, accuracy
 
 
-def importance_score(weights, grads):
+def importance_score(parts):
+
     accumul = 0.0
 
-    for weight_group, grad in zip(weights, grads):
-        accumul += torch.sum(weight_group * grad)
+    for part in parts:
+        # Somma tutti i valori scalari nel tensore/slice (riduzione a scalare)
+        accumul += torch.sum(part).item()
 
-    return (accumul ** 2).item()
-
-def importance_score_no_square(weights, grads):
-    accumul = 0.0
-
-    for weight_group, grad in zip(weights, grads):
-        accumul += torch.sum(weight_group * grad)
-
-    return accumul.item()
+    return accumul
 
 
-class WeightBias():
-    def __init__(self, weight: torch.Tensor, bias: torch.Tensor, w_grad: torch.Tensor, b_grad: torch.Tensor,
+class WeightImp():
+    def __init__(self, weight: torch.Tensor, bias: torch.Tensor, w_imp: torch.Tensor, b_imp: torch.Tensor,
                  w_mask: torch.Tensor, b_mask: torch.Tensor):
         self.weight = weight
         self.bias = bias
-        self.weight_grad = w_grad
-        self.bias_grad = b_grad
+        self.weight_imp = w_imp
+        self.bias_imp = b_imp
         self.weight_mask = w_mask
         self.bias_mask = b_mask
 
 
 class HeadAligned():
-    def __init__(self, Q: WeightBias, K: WeightBias, V: WeightBias, proj: WeightBias):
+    def __init__(self, Q: WeightImp, K: WeightImp, V: WeightImp, proj: WeightImp):
         self.Q = Q
         self.K = K
         self.V = V
@@ -92,6 +105,7 @@ def head_alignment(attn_block) -> HeadAligned:
     split_sections = [total_qk_size, total_qk_size, total_v_size]
 
     # --- 1. SELEZIONE SORGENTI ---
+    # Se pruning.identity è attivo, usiamo _orig, altrimenti i pesi standard
     if hasattr(qkv, "weight_orig"):
         qkv_w_src = qkv.weight_orig
         qkv_b_src = qkv.bias_orig
@@ -106,47 +120,45 @@ def head_alignment(attn_block) -> HeadAligned:
         proj_w_src = proj.weight
         proj_b_src = proj.bias
 
-    # --- 2. PESI (WEIGHTS) ---
+    # --- 2. QKV: PESI e BIAS ---
     q_w, k_w, v_w = torch.split(qkv_w_src, split_sections, dim=0)
+    q_b, k_b, v_b = torch.split(qkv_b_src, split_sections, dim=0)
+
+    # Reshape Pesi e Bias
     q_weights = q_w.reshape(n_heads, qk_dim, emb_in)
     k_weights = k_w.reshape(n_heads, qk_dim, emb_in)
     v_weights = v_w.reshape(n_heads, v_dim, emb_in)
 
-    # --- 3. BIAS ---
-    q_b, k_b, v_b = torch.split(qkv_b_src, split_sections, dim=0)
     q_bias = q_b.reshape(n_heads, qk_dim)
     k_bias = k_b.reshape(n_heads, qk_dim)
     v_bias = v_b.reshape(n_heads, v_dim)
 
-    # --- 4. GRADIENTI (Separati e Sicuri) ---
-    q_weights_grad, k_weights_grad, v_weights_grad = None, None, None
-    q_bias_grad, k_bias_grad, v_bias_grad = None, None, None
-    proj_grad, proj_bias_grad = None, None
+    # --- GESTIONE SICURA IMPORTANZE QKV ---
+    # Default a None
+    q_weights_imp, k_weights_imp, v_weights_imp = None, None, None
+    q_bias_imp, k_bias_imp, v_bias_imp = None, None, None
 
-    # Gradienti Pesi
-    if qkv_w_src.grad is not None:
-        q_g, k_g, v_g = torch.split(qkv_w_src.grad, split_sections, dim=0)
-        q_weights_grad = q_g.reshape(n_heads, qk_dim, emb_in)
-        k_weights_grad = k_g.reshape(n_heads, qk_dim, emb_in)
-        v_weights_grad = v_g.reshape(n_heads, v_dim, emb_in)
+    # Controlliamo se .imp esiste prima di usarlo (FIX PER L'ERRORE)
+    if hasattr(qkv_w_src, 'imp') and qkv_w_src.imp is not None:
+        q_imp, k_imp, v_imp = torch.split(qkv_w_src.imp, split_sections, dim=0)
+        q_weights_imp = q_imp.reshape(n_heads, qk_dim, emb_in)
+        k_weights_imp = k_imp.reshape(n_heads, qk_dim, emb_in)
+        v_weights_imp = v_imp.reshape(n_heads, v_dim, emb_in)
 
-    # Gradienti Bias (Controllo separato!)
-    if qkv_b_src.grad is not None:
-        q_bg, k_bg, v_bg = torch.split(qkv_b_src.grad, split_sections, dim=0)
-        q_bias_grad = q_bg.reshape(n_heads, qk_dim)
-        k_bias_grad = k_bg.reshape(n_heads, qk_dim)
-        v_bias_grad = v_bg.reshape(n_heads, v_dim)
+    if hasattr(qkv_b_src, 'imp') and qkv_b_src.imp is not None:
+        q_b_imp, k_b_imp, v_b_imp = torch.split(qkv_b_src.imp, split_sections, dim=0)
+        q_bias_imp = q_b_imp.reshape(n_heads, qk_dim)
+        k_bias_imp = k_b_imp.reshape(n_heads, qk_dim)
+        v_bias_imp = v_b_imp.reshape(n_heads, v_dim)
 
-    # Inizializziamo a 1 (nessun pruning)
+    # --- MASCHERE QKV ---
     q_w_mask = torch.ones_like(q_weights)
     k_w_mask = torch.ones_like(k_weights)
     v_w_mask = torch.ones_like(v_weights)
-
     q_b_mask = torch.ones_like(q_bias)
     k_b_mask = torch.ones_like(k_bias)
     v_b_mask = torch.ones_like(v_bias)
 
-    # Sovrascriviamo se esistono le maschere reali
     if hasattr(qkv, 'weight_mask') and qkv.weight_mask is not None:
         q_m, k_m, v_m = torch.split(qkv.weight_mask, split_sections, dim=0)
         q_w_mask = q_m.reshape(n_heads, qk_dim, emb_in)
@@ -159,28 +171,35 @@ def head_alignment(attn_block) -> HeadAligned:
         k_b_mask = k_bm.reshape(n_heads, qk_dim)
         v_b_mask = v_bm.reshape(n_heads, v_dim)
 
-    # --- 6. PROJ ---
+    # --- 3. PROJ ---
     proj_shape = (emb_out, n_heads, v_dim)
     proj_view = proj_w_src.reshape(proj_shape)
 
-    if proj_w_src.grad is not None:
-        proj_grad = proj_w_src.grad.reshape(proj_shape)
+    # Importanze Proj (Default None)
+    proj_imp = None
+    proj_b_imp = None
 
+    # Controlli sicuri anche qui
+    if hasattr(proj_w_src, 'imp') and proj_w_src.imp is not None:
+        proj_imp = proj_w_src.imp.reshape(proj_shape)
+
+    if hasattr(proj_b_src, 'imp') and proj_b_src.imp is not None:
+        proj_b_imp = proj_b_src.imp
+
+        # Maschere Proj
     proj_w_mask = torch.ones_like(proj_view)
     if hasattr(proj, 'weight_mask') and proj.weight_mask is not None:
         proj_w_mask = proj.weight_mask.reshape(proj_shape)
-
-    # Bias Proj
-    proj_b_grad = proj_b_src.grad  # Può essere None, va bene
 
     proj_b_mask = torch.ones_like(proj_b_src)
     if hasattr(proj, 'bias_mask') and proj.bias_mask is not None:
         proj_b_mask = proj.bias_mask
 
-    Q = WeightBias(q_weights, q_bias, q_weights_grad, q_bias_grad, q_w_mask, q_b_mask)
-    K = WeightBias(k_weights, k_bias, k_weights_grad, k_bias_grad, k_w_mask, k_b_mask)
-    V = WeightBias(v_weights, v_bias, v_weights_grad, v_bias_grad, v_w_mask, v_b_mask)
+    # Creazione Oggetti
+    Q = WeightImp(q_weights, q_bias, q_weights_imp, q_bias_imp, q_w_mask, q_b_mask)
+    K = WeightImp(k_weights, k_bias, k_weights_imp, k_bias_imp, k_w_mask, k_b_mask)
+    V = WeightImp(v_weights, v_bias, v_weights_imp, v_bias_imp, v_w_mask, v_b_mask)
 
-    proj_obj = WeightBias(proj_view, proj_b_src, proj_grad, proj_b_grad, proj_w_mask, proj_b_mask)
+    proj_obj = WeightImp(proj_view, proj_b_src, proj_imp, proj_b_imp, proj_w_mask, proj_b_mask)
 
     return HeadAligned(Q, K, V, proj_obj)

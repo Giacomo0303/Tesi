@@ -1,12 +1,15 @@
 import torch
+import torch.nn.functional as F
 from sklearn.metrics import balanced_accuracy_score, classification_report
 from tqdm import trange
+
 
 def save_model(net, current_epoch, path):
     torch.save({
         'epoch': current_epoch,
         'model_state_dict': net.state_dict(),
     }, path)
+
 
 class EarlyStopping:
     def __init__(self, path, patience=5, min_delta=0.0):
@@ -28,7 +31,8 @@ class EarlyStopping:
             print("---Best model saved---")
             save_model(model, current_epoch, f"{self.path}\\best_model.pth")
 
-def train_loop(model, dataloader, loss_fn, optimizer, device, pbar, scaler):
+
+def train_loop(model, dataloader, loss_fn, optimizer, device, pbar, scaler, teacher_model=None, T=4.0, alpha=0.9):
     num_batches = len(dataloader)
     epoch_loss = 0.0
 
@@ -37,8 +41,18 @@ def train_loop(model, dataloader, loss_fn, optimizer, device, pbar, scaler):
         X, y = X.to(device), y.to(device)
 
         with torch.autocast(device_type="cuda", dtype=torch.float16):
-            logits = model(X)
-            batch_loss = loss_fn(logits, y)
+            student_logits = model(X)
+            batch_loss = loss_fn(student_logits, y)
+
+            # distillation with temperature
+            if teacher_model is not None:
+                with torch.inference_mode():
+                    teacher_logits = teacher_model(X)
+
+                distillation_loss = F.kl_div(F.log_softmax(student_logits / T, dim=1),
+                                             F.softmax(teacher_logits / T, dim=1), reduction='batchmean') * (T ** 2)
+
+                batch_loss = (1 - alpha) * batch_loss + alpha * distillation_loss
 
         epoch_loss += batch_loss.item()
 
@@ -79,6 +93,7 @@ def eval_loop(model, dataloader, loss_fn, device, classes=None, report=False):
 
     return epoch_loss, accuracy, y_true, y_pred
 
+
 def check_top5_accuracy(model, dataloader, device):
     correct_top5 = 0
     samples_count = 0
@@ -101,9 +116,8 @@ def check_top5_accuracy(model, dataloader, device):
     return (correct_top5 / samples_count) * 100
 
 
-
 def train_model(model, epoch, optimizer, device, train_dataloader, loss_fn, early_stopping=None,
-                val_dataloader=None, scheduler=None):
+                val_dataloader=None, scheduler=None, teacher_model=None, T=4.0, alpha=0.9):
     train_loss, val_loss = [], []
     accuracy = []
     scaler = torch.amp.GradScaler()
@@ -114,12 +128,12 @@ def train_model(model, epoch, optimizer, device, train_dataloader, loss_fn, earl
         pbar = trange(num_batches)
         pbar.set_description(desc=f"Epoch {epoch}")
         epoch_loss = train_loop(model=model, dataloader=train_dataloader, loss_fn=loss_fn, optimizer=optimizer,
-                                device=device, pbar=pbar, scaler=scaler)
+                                device=device, pbar=pbar, scaler=scaler, teacher_model=teacher_model, T=T, alpha=alpha)
         train_loss.append(epoch_loss)
 
         if val_dataloader is not None:
             epoch_val_loss, epoch_accuracy, _, _ = eval_loop(model=model, dataloader=val_dataloader, loss_fn=loss_fn,
-                                                       device=device)
+                                                             device=device)
             val_loss.append(epoch_val_loss)
             accuracy.append(epoch_accuracy)
             val_str = f"Val loss: {epoch_val_loss:6.4f}\tAccuracy: {epoch_accuracy:6.4f}"
