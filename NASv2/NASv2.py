@@ -6,12 +6,12 @@ from FirstFineTuning.FineTuneUtils import eval_loop
 from NAS.HybridNAS import HybridNAS
 from NAS.NAS_Utils import count_params_no_mask
 from NASv2utils import updatePruningReport, createPruningReport, savePruningReport
-from NASv2utils import load_model, split_dataset, pruningNAS, recoveryFineTune, save_model_jit
+from NASv2utils import load_model, split_dataset, pruningNAS, recoveryFineTune, save_model
 from NASv2utils import get_search_set
 import time, copy
 
 batch_size = 128
-N_iterations = 15
+N_iterations = 1
 lr = 0.5e-5
 weight_decay = 0.05
 images_per_class = 20
@@ -24,7 +24,7 @@ seed = 42
 num_classes = 100
 search_threshold = 0.005
 distillation = True
-
+T = 2.0
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -160,5 +160,5 @@ if __name__ == "__main__":
     print(f"   - Accuracy Test Set:  {final_test_acc * 100:.2f}%")
     print(f"{'=' * 60}")
 
-    save_model_jit(model=model, device=device, path="D:\\Tesi\\NASv2\\best_model.pt")
+    save_model(model=model, path="D:\\Tesi\\NASv2\\best_model.pth")
 

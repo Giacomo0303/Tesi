@@ -2,8 +2,8 @@ import torch
 from sklearn.metrics import balanced_accuracy_score
 
 
-def compute_grads(model, loss_fn, device, dataloader):
-    model.zero_grad()
+def compute_imp(model, loss_fn, device, dataloader):
+    model.eval()
     n_batches = 0
     loss_value = 0.0
     y_true, y_pred = [], []
@@ -20,7 +20,7 @@ def compute_grads(model, loss_fn, device, dataloader):
         y_true.append(y.cpu())
 
         #azzero i gradienti
-        model.zero_grad()
+        model.zero_grad(set_to_none=True)
 
         with torch.amp.autocast(device_type=device, dtype=torch.float16):
             logits = model(x)
@@ -55,7 +55,6 @@ def compute_grads(model, loss_fn, device, dataloader):
 
 
 def importance_score(parts):
-
     accumul = 0.0
 
     for part in parts:

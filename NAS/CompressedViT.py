@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+from torch.nn import functional as F
 
 
 class PatchEmbed(nn.Module):
@@ -56,13 +57,20 @@ class MultiHeadSelfAttention(nn.Module):
         V = V.reshape(V.shape[0], V.shape[1], self.num_heads, self.v_dim).permute(0, 2, 1, 3)
 
         # [B, H, N, dim] x [B, H, dim, N] -> [B, H, N, N]
-        attn = torch.softmax(Q @ K.transpose(-2, -1) * self.scale, dim=-1)
+        #attn = torch.softmax(Q @ K.transpose(-2, -1) * self.scale, dim=-1)
 
         # [B, H, N, N] x [B, H, N, v_dim] -> [B, H, N, v_dim]
-        x = attn @ V
+        #x = attn @ V
 
         # [B, H, N, v_dim] -> [B, N, H*v_dim]
-        x = x.permute(0, 2, 1, 3).flatten(2)
+        #x = x.permute(0, 2, 1, 3).flatten(2)
+
+        # Usiamo l'implementazione nativa ottimizzata (Flash Attention)
+        # Invece di fare a mano: softmax(Q @ K.T ...) @ V
+        x = F.scaled_dot_product_attention(Q, K, V, scale=self.scale)
+        # Reshape finale: [B, H, N, V] -> [B, N, H*V]
+        x = x.transpose(1, 2).flatten(2)
+
         x = self.proj(x)
 
         return x

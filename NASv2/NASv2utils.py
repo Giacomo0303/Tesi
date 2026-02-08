@@ -8,6 +8,7 @@ from torchvision.datasets import CIFAR100
 from FirstFineTuning.FineTuneUtils import EarlyStopping, train_model
 from NAS.CompressedViT import CompressedViT
 from NAS.HybridNAS import HybridNAS
+from NAS.NAS_Utils import set_initial_masks
 
 
 def load_model(model_name, num_classes, path):
@@ -63,7 +64,7 @@ def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, dept
                     original_params=initial_params_count, threshold=threshold)
     state, best_val = nas.search(depth_limit=depth_limit)
     nas_duration = time.time() - nas_start
-
+    set_initial_masks(model)
     model = nas.apply_pruning(state, model)
     comp_model = CompressedViT(state, model, original_head_dim=original_head_dim).to(device)
 
@@ -83,33 +84,19 @@ def recoveryFineTune(model, lr, weight_decay, max_epochs, early_stop_path, patie
         model, max_epochs, optimizer=optim, device=device,
         train_dataloader=train_loader, loss_fn=loss_fn,
         scheduler=scheduler, val_dataloader=val_loader,
-        early_stopping=earlystop, teacher_model=teacher_model
+        early_stopping=earlystop, teacher_model=teacher_model, T=2.0
     )
     ft_duration = time.time() - ft_start
 
     return ft_duration
 
 
-def save_model_jit(model, device, path):
-    model.eval()
-    random_input = torch.randn(1, 3, 224, 224).to(device)
+def save_model(model, path):
     try:
-        traced_model = torch.jit.trace(model, random_input)
-        traced_model.save(path)
-        print("MODELLO SALVATO CORRETTAMENTE")
-
-        # Test di verifica immediato
-        loaded_jit = torch.jit.load(path)
-        loaded_jit.eval()
-        with torch.no_grad():
-            out_orig = model(random_input)
-            out_jit = loaded_jit(random_input)
-            # Verifica che i risultati siano identici
-            diff = (out_orig - out_jit).abs().max()
-            print(f"   Differenza max output Originale vs JIT: {diff:.6f}")  # Deve essere vicina a 0
-
+        torch.save(model, path)
+        print(f"✅ Modello completo salvato in: {path}")
     except Exception as e:
-        print(f"❌ Errore durante l'export JIT: {e}")
+        print(f"❌ Errore durante il salvataggio del modello: {e}")
 
 
 def createPruningReport(model):

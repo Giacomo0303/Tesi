@@ -1,5 +1,5 @@
-from NAS.NAS_Utils import find_target_emb, find_target_QK, find_target_V_proj, find_target_head, find_target_mlp, \
-    set_initial_masks, compute_obj
+from NAS.NAS_Utils import set_initial_masks, reset_masks, compute_obj
+from NAS.actions import EmbPruning, HeadPruning, QKPruning, VProjPruning, MLPPruning
 from Pruning.PruneUtils import head_alignment
 from copy import deepcopy
 
@@ -15,18 +15,11 @@ class HybridNAS:
         self.best_state = None
         self.threshold = threshold
         self.actions = [
-            find_target_emb,  # 5. Messo in fondo allo stack (bassa priorità immediata)
-            find_target_head,  # 4.
-            find_target_QK,  # 3.
-            find_target_V_proj,  # 2.
-            find_target_mlp  # 1. Cima dello stack (ALTA priorità: prova prima a sfoltire i neuroni)
-        ]
-        self.action_names = [
-            "find_target_emb",
-            "find_target_head",
-            "find_target_QK",
-            "find_target_V_proj",
-            "find_target_mlp"
+            EmbPruning(),
+            HeadPruning(),
+            QKPruning(),
+            VProjPruning(),
+            MLPPruning()
         ]
 
     def build_initial_state(self) -> dict:
@@ -57,38 +50,17 @@ class HybridNAS:
         return False
 
     def branch(self, state, model) -> list[dict]:
-        targets = []
+        next_states = []
         for action in self.actions:
-            targets.append(action(model))
-
-        next_states = [deepcopy(state) for i in range(len(self.actions))]
-        # pruning QK
-        block, dims = targets[2]
-        next_states[2]["blocks"][block]["qk_pruned_dims"].extend(dims)
-        next_states[2]["last_act"] = self.action_names[2]
-        # pruning V/proj
-        block, dims = targets[3]
-        next_states[3]["blocks"][block]["v_proj_pruned_dims"].extend(dims)
-        next_states[3]["last_act"] = self.action_names[3]
-        # head pruning
-        block, dim = targets[1]
-        next_states[1]["blocks"][block]["head_pruned_idx"].append(dim)
-        next_states[1]["last_act"] = self.action_names[1]
-        # mlp pruning
-        block, dims = targets[4]
-        next_states[4]["blocks"][block]["mlp_pruned_dims"].extend(dims)
-        next_states[4]["last_act"] = self.action_names[4]
-        # embed pruning
-        dims = targets[0]
-        next_states[0]["embed_pruned_dims"].extend(dims)
-        next_states[0]["last_act"] = self.action_names[0]
+            target = action.find_target(model)
+            next_state = action.apply(state, target)
+            if next_state is not None:
+                next_states.append(next_state)
 
         return next_states
 
     @staticmethod
     def apply_pruning(state, model):
-        set_initial_masks(model)
-
         # prune cls token and position embedding
         model.cls_token_mask[:, :, state["embed_pruned_dims"]] = 0.0
         model.pos_embed_mask[:, :, state["embed_pruned_dims"]] = 0.0
@@ -174,13 +146,17 @@ class HybridNAS:
         search_iterations = 0
         pruned_branches = 0
 
+        working_model = deepcopy(self.base_model)
+        set_initial_masks(working_model)
+
         print("--- Inizio Ricerca NAS ---")
+
 
         while len(stack) > 0:
             current_state = stack.pop()
-            model_copy = deepcopy(self.base_model)
-            model = self.apply_pruning(state=current_state, model=model_copy)
-            acc, params = self.eval_model(model, current_state, search_iterations)
+            reset_masks(working_model)
+            self.apply_pruning(state=current_state, model=working_model)
+            acc, params = self.eval_model(working_model, current_state, search_iterations)
 
             search_iterations += 1
 
@@ -193,7 +169,7 @@ class HybridNAS:
 
             # è fondamentale che il pruning venga fatto sullo stato corrente e non sui figli, così da garantire che il confronto sia fatto con il best value attuale
             if not (self.bound(current_state)):
-                next_states = self.branch(current_state, model)
+                next_states = self.branch(current_state, working_model)
                 for state in next_states:
                     state["depth"] = current_state["depth"] + 1
                     stack.append(state)
