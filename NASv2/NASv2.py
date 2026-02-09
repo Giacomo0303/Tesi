@@ -1,13 +1,11 @@
 import os
 import timm, torch
-from torchvision import transforms
+from Dataset.Cifar100 import Cifar100
 from torch.utils.data import DataLoader
 from FirstFineTuning.FineTuneUtils import eval_loop
-from NAS.HybridNAS import HybridNAS
 from NAS.NAS_Utils import count_params_no_mask
 from NASv2utils import updatePruningReport, createPruningReport, savePruningReport
-from NASv2utils import load_model, split_dataset, pruningNAS, recoveryFineTune, save_model
-from NASv2utils import get_search_set
+from NASv2utils import load_model, pruningNAS, recoveryFineTune, save_model
 import time, copy
 
 batch_size = 128
@@ -39,44 +37,17 @@ if __name__ == "__main__":
 
     model = model.to(device)
 
-    data_config = timm.data.resolve_model_data_config(model)
-    imagenet_mean, imagenet_std = data_config["mean"], data_config["std"]
-
-    test_transform = transforms.Compose(
-        [transforms.Resize((224, 224)), transforms.ToTensor(),
-         transforms.Normalize(mean=imagenet_mean, std=imagenet_std)])
-
-    val_transform = transforms.Compose(
-        [transforms.Resize((224, 224)), transforms.ToTensor(),
-         transforms.Normalize(mean=imagenet_mean, std=imagenet_std)])
-
-    train_transform = transforms.Compose([
-        transforms.Resize((224, 224)),
-        transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
-        transforms.RandomHorizontalFlip(),
-        transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=imagenet_mean, std=imagenet_std)
-    ])
-
-    train_set, val_set, test_set = split_dataset(transforms=[train_transform, val_transform, test_transform], seed=seed)
-
-    print(f"Train size: {len(train_set)}")
-    print(f"Val size: {len(val_set)}")
-    print(f"Test size: {len(test_set)}")
-
-    classes = train_set.dataset.classes
-
-    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=2, pin_memory=True)
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
-    test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False)
+    dataset = Cifar100(root_path="D:\\Tesi\\CIFAR100", img_size=224, batch_size=batch_size, mean_std="imagenet", model_name="vit_small_patch16_224", seed=seed)
+    train_loader = dataset.get_train_loader(num_workers=2)
+    val_loader = dataset.get_val_loader()
+    test_loader = dataset.get_test_loader()
 
     loss_fn = torch.nn.CrossEntropyLoss()
 
     initial_params_count = count_params_no_mask(model)
     curr_params = initial_params_count
 
-    _, initial_acc, _, _ = eval_loop(model, val_loader, loss_fn, device, classes)
+    _, initial_acc, _, _ = eval_loop(model, val_loader, loss_fn, device, dataset.classes)
     pruningReport = createPruningReport(model)
 
     print(f"\n{'=' * 60}")
@@ -95,8 +66,7 @@ if __name__ == "__main__":
         print(f"   [1/3] Campionamento Search Set & NAS Search...")
 
         # 1. Search Set & Loader
-        search_set = get_search_set(train_set, images_per_class, num_classes)
-        search_loader = DataLoader(search_set, batch_size=batch_size, shuffle=False, num_workers=1, pin_memory=True)
+        search_loader = dataset.get_search_loader(n_per_classes=images_per_class)
 
         # 2. HybridNAS Execution
         # Nota: original_head_dim=64 è hardcoded per ViT-Small
@@ -108,7 +78,7 @@ if __name__ == "__main__":
         savePruningReport(pruningReport, path="D:\\Tesi\\NASv2\\pruning_report.json")
 
         # --- METRICHE POST-PRUNING (A Freddo) ---
-        _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, classes)
+        _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, dataset.classes)
         curr_params = count_params_no_mask(comp_model)
 
         # Statistiche
@@ -134,7 +104,7 @@ if __name__ == "__main__":
         model.load_state_dict(checkpoint['model_state_dict'])
 
         # --- METRICHE FINALI ITERAZIONE ---
-        _, acc_final, _, _ = eval_loop(model, val_loader, loss_fn, device, classes)
+        _, acc_final, _, _ = eval_loop(model, val_loader, loss_fn, device, dataset.classes)
         recovered_points = (acc_final - acc_pruned) * 100
 
         print(f"   FINE ITERAZIONE {n + 1}")
@@ -145,7 +115,7 @@ if __name__ == "__main__":
 
 
     print(f"\nVALUTAZIONE FINALE (Test Set)")
-    _, final_test_acc, _, _ = eval_loop(model, test_loader, loss_fn, device, classes, report=True)
+    _, final_test_acc, _, _ = eval_loop(model, test_loader, loss_fn, device, dataset.classes, report=True)
 
     total_duration = time.time() - total_start_time
     final_reduction = 100 * (1 - (curr_params / initial_params_count))

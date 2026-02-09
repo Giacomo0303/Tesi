@@ -18,46 +18,6 @@ def load_model(model_name, num_classes, path):
     return model
 
 
-def get_search_set(train_set, n_per_classes, n_classes):
-    train_indices = np.arange(len(train_set))
-
-    targets = np.array(train_set.dataset.targets)
-    train_labels = targets[train_set.indices]
-
-    gen = np.random.default_rng()
-    final_indices = []
-
-    for cls in range(n_classes):
-        cls_indices = train_indices[train_labels == cls]
-
-        if len(cls_indices) >= n_per_classes:
-            selected_indices = gen.choice(cls_indices, size=n_per_classes, replace=False)
-        else:
-            selected_indices = cls_indices
-
-        final_indices.extend(selected_indices.tolist())
-
-    return Subset(train_set, final_indices)
-
-
-def split_dataset(transforms, seed):
-    total_size = 50000
-    train_size = int(0.9 * total_size)
-    val_size = total_size - train_size
-
-    train_set = CIFAR100(root="D:\\Tesi\\CIFAR100", train=True, download=True, transform=transforms[0])
-    val_set = CIFAR100(root="D:\\Tesi\\CIFAR100", train=True, download=True, transform=transforms[1])
-    test_set = CIFAR100(root="D:\\Tesi\\CIFAR100", train=False, download=True, transform=transforms[2])
-
-    generator = torch.Generator().manual_seed(seed)
-    train_split, val_split = random_split(train_set, [train_size, val_size], generator=generator)
-
-    train_set = Subset(train_set, train_split.indices)
-    val_set = Subset(val_set, val_split.indices)
-
-    return train_set, val_set, test_set
-
-
 def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, depth_limit, original_head_dim, threshold):
     nas_start = time.time()
     nas = HybridNAS(model, loss_fn=loss_fn, search_loader=search_loader, device=device,
