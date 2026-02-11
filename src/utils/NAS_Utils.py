@@ -1,14 +1,11 @@
-import time
-import numpy as np
-import timm
 import torch
+import time
+import timm
 import json
-from torch.utils.data import Subset, random_split
-from torchvision.datasets import CIFAR100
-from FirstFineTuning.FineTuneUtils import EarlyStopping, train_model
-from NAS.CompressedViT import CompressedViT
-from NAS.HybridNAS import HybridNAS
-from NAS.NAS_Utils import set_initial_masks
+from src.utils.FineTuneUtils import EarlyStopping, train_model
+from src.utils.CompressedViT import CompressedViT
+from src.NAS.HybridNAS import HybridNAS
+from src.utils.PruneUtils import set_initial_masks
 
 
 def load_model(model_name, num_classes, path):
@@ -32,7 +29,7 @@ def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, dept
 
 
 def recoveryFineTune(model, lr, weight_decay, max_epochs, early_stop_path, patience, min_delta, device, train_loader,
-                     val_loader, loss_fn, teacher_model = None):
+                     val_loader, loss_fn, teacher_model=None, T=3.0):
     ft_start = time.time()
     optim = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optim, T_max=max_epochs)
@@ -44,7 +41,7 @@ def recoveryFineTune(model, lr, weight_decay, max_epochs, early_stop_path, patie
         model, max_epochs, optimizer=optim, device=device,
         train_dataloader=train_loader, loss_fn=loss_fn,
         scheduler=scheduler, val_dataloader=val_loader,
-        early_stopping=earlystop, teacher_model=teacher_model, T=2.0
+        early_stopping=earlystop, teacher_model=teacher_model, T=T
     )
     ft_duration = time.time() - ft_start
 

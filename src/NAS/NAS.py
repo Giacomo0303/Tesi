@@ -1,11 +1,10 @@
 import os
-import timm, torch
-from Dataset.Cifar100 import Cifar100
-from torch.utils.data import DataLoader
-from FirstFineTuning.FineTuneUtils import eval_loop
-from NAS.NAS_Utils import count_params_no_mask
-from NASv2utils import updatePruningReport, createPruningReport, savePruningReport
-from NASv2utils import load_model, pruningNAS, recoveryFineTune, save_model
+import torch
+from src.Datasets.Cifar100 import Cifar100
+from src.utils.FineTuneUtils import eval_loop
+from src.utils.NAS_Utils import updatePruningReport, createPruningReport, savePruningReport, \
+    load_model, pruningNAS, recoveryFineTune, save_model
+from src.utils.PruneUtils import count_params_no_mask
 import time, copy
 
 batch_size = 128
@@ -17,7 +16,7 @@ depth_limit = 6
 max_epochs = 15
 patience = 2
 min_delta = 0.0001
-early_stop_path = "D:\\Tesi\\NASv2"
+early_stop_path = "/NASv2"
 seed = 42
 num_classes = 100
 search_threshold = 0.005
@@ -27,7 +26,7 @@ T = 2.0
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = load_model(model_name="vit_small_patch16_224", num_classes=num_classes,
-                       path="D:\\Tesi\\FirstFineTuning\\best_model.pth")
+                       path="D:\\Tesi\\src\\FineTuning\\best_model.pth")
     teacher_model = None
 
     if distillation:
@@ -37,7 +36,8 @@ if __name__ == "__main__":
 
     model = model.to(device)
 
-    dataset = Cifar100(root_path="D:\\Tesi\\CIFAR100", img_size=224, batch_size=batch_size, mean_std="imagenet", model_name="vit_small_patch16_224", seed=seed)
+    dataset = Cifar100(root_path="D:\\Tesi\\Data\\CIFAR100", img_size=224, batch_size=batch_size, mean_std="imagenet",
+                       model_name="vit_small_patch16_224", seed=seed)
     train_loader = dataset.get_train_loader(num_workers=2)
     val_loader = dataset.get_val_loader()
     test_loader = dataset.get_test_loader()
@@ -70,12 +70,13 @@ if __name__ == "__main__":
 
         # 2. HybridNAS Execution
         # Nota: original_head_dim=64 è hardcoded per ViT-Small
-        comp_model, nas_duration, state = pruningNAS(model=model, loss_fn=loss_fn, search_loader=search_loader, device=device,
-                                              initial_params_count=initial_params_count, depth_limit=depth_limit,
-                                              original_head_dim=64, threshold=search_threshold)
+        comp_model, nas_duration, state = pruningNAS(model=model, loss_fn=loss_fn, search_loader=search_loader,
+                                                     device=device,
+                                                     initial_params_count=initial_params_count, depth_limit=depth_limit,
+                                                     original_head_dim=64, threshold=search_threshold)
 
         pruningReport = updatePruningReport(pruningReport, state)
-        savePruningReport(pruningReport, path="D:\\Tesi\\NASv2\\pruning_report.json")
+        savePruningReport(pruningReport, path="D:\\Tesi\\src\\NAS\\ResultsNew")
 
         # --- METRICHE POST-PRUNING (A Freddo) ---
         _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, dataset.classes)
@@ -97,7 +98,8 @@ if __name__ == "__main__":
         model = comp_model
         ft_duration = recoveryFineTune(model=model, lr=lr, weight_decay=weight_decay, max_epochs=max_epochs,
                                        early_stop_path=early_stop_path, patience=patience, min_delta=min_delta,
-                                       device=device, train_loader=train_loader, val_loader=val_loader, loss_fn=loss_fn, teacher_model=teacher_model)
+                                       device=device, train_loader=train_loader, val_loader=val_loader, loss_fn=loss_fn,
+                                       teacher_model=teacher_model, T=T)
 
         best_model_path = os.path.join(early_stop_path, "best_model.pth")
         checkpoint = torch.load(best_model_path)
@@ -112,7 +114,6 @@ if __name__ == "__main__":
         print(f"      - Tempo Fine-Tuning: {ft_duration:.1f}s")
         print(f"      - Tempo Totale Iter: {(time.time() - iter_start_time):.1f}s")
         print(f"{'-' * 60}")
-
 
     print(f"\nVALUTAZIONE FINALE (Test Set)")
     _, final_test_acc, _, _ = eval_loop(model, test_loader, loss_fn, device, dataset.classes, report=True)
@@ -130,5 +131,4 @@ if __name__ == "__main__":
     print(f"   - Accuracy Test Set:  {final_test_acc * 100:.2f}%")
     print(f"{'=' * 60}")
 
-    save_model(model=model, path="D:\\Tesi\\NASv2\\best_model.pth")
-
+    save_model(model=model, path="/src/NAS/best_model.pth")

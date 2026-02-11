@@ -1,11 +1,10 @@
 import copy
-
 import numpy as np
 from torch.utils.data import random_split, Subset, DataLoader
 from torchvision.datasets import CIFAR100
 from torch import Generator
-from Dataset.Dataset import BaseDataset
 from torchvision import transforms
+from src.Datasets.Dataset import BaseDataset
 
 
 class Cifar100(BaseDataset):

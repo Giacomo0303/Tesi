@@ -1,10 +1,9 @@
 import torch
-from Dataset.Cifar100 import Cifar100
-from FirstFineTuning.FineTuneUtils import eval_loop
-from NASv2.NASv2utils import load_model
-from NAS.NAS_Utils import count_params_no_mask
+from src.Datasets.Cifar100 import Cifar100
+from src.utils.FineTuneUtils import eval_loop
 from time import time
 from torch.utils.flop_counter import FlopCounterMode
+from src.utils.NAS_Utils import load_model
 
 
 def get_flops(model, inp, with_backward=False):
@@ -25,13 +24,13 @@ dummy_input = torch.randn(1, 3, 224, 224).to(device)
 
 # Caricamento Dati
 # Nota: Aggiungi seed se richiesto dal costruttore
-dataset = Cifar100(root_path="D://Tesi//CIFAR100", img_size=224, batch_size=128, mean_std="imagenet",
+dataset = Cifar100(root_path="/CIFAR100", img_size=224, batch_size=128, mean_std="imagenet",
                    model_name="vit_small_patch16_224", seed=42)
 test_loader = dataset.get_test_loader()
 
 # 1. MODELLO ORIGINALE
 original_model = load_model(model_name="vit_small_patch16_224", num_classes=dataset.num_classes,
-                            path="D:\\Tesi\\FirstFineTuning\\best_model.pth")
+                            path="/FirstFineTuning/best_model.pth")
 original_model.to(device)
 original_model.eval()
 
@@ -47,7 +46,7 @@ original_time = time_end - time_start
 
 
 # 2. MODELLO PRUNED
-pruned_model = torch.load("D:\\Tesi\\NASv2\\best_model.pth", weights_only=False) # Assicurati sia l'intero modello
+pruned_model = torch.load("/NASv2/best_model.pth", weights_only=False) # Assicurati sia l'intero modello
 pruned_model.to(device)
 pruned_model.eval()
 
@@ -101,8 +100,3 @@ print(f"{'Tempo Test Set (s)':<25} | {original_time:<15.2f} | {pruned_time:<15.2
 print(f"{'Throughput (img/s)':<25} | {throughput_orig:<15.1f} | {throughput_pruned:<15.1f} | +{delta_throughput:<10.1f}% (Speedup)")
 
 print("="*85 + "\n")
-
-# Se vuoi vedere il conteggio parametri (se hai la funzione importata)
-# params_orig = count_params_no_mask(original_model) / 1e6
-# params_pruned = count_params_no_mask(pruned_model) / 1e6
-# print(f"Parametri (M): Orig={params_orig:.2f}M vs Pruned={params_pruned:.2f}M")

@@ -1,7 +1,6 @@
 import os
 from shutil import rmtree
-from Dataset.Dataset import BaseDataset
-
+from src.Datasets.Dataset import BaseDataset
 
 class Places365Simplified(BaseDataset):
     def __init__(self, root_path, img_size, batch_size, mean_std, model_name, seed):

@@ -1,8 +1,7 @@
 from abc import abstractmethod, ABC
 from copy import deepcopy
 import torch
-
-from Pruning.PruneUtils import head_alignment, importance_score
+from src.utils.PruneUtils import head_alignment, importance_score
 
 
 class SearchAction(ABC):

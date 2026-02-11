@@ -1,6 +1,6 @@
-from NAS.NAS_Utils import set_initial_masks, reset_masks, compute_obj
-from NAS.actions import EmbPruning, HeadPruning, QKPruning, VProjPruning, MLPPruning
-from Pruning.PruneUtils import head_alignment
+from src.utils.PruneUtils import set_initial_masks
+from src.utils.actions import EmbPruning, HeadPruning, QKPruning, VProjPruning, MLPPruning
+from src.utils.PruneUtils import head_alignment, compute_obj, reset_masks
 from copy import deepcopy
 
 
