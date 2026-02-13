@@ -8,25 +8,31 @@ from src.utils.PruneUtils import count_params_no_mask
 import time, copy
 
 batch_size = 128
-N_iterations = 1
+N_iterations = 20
 lr = 0.5e-5
 weight_decay = 0.05
-images_per_class = 20
+images_per_class = 25
 depth_limit = 6
-max_epochs = 15
+max_epochs = 20
 patience = 2
 min_delta = 0.0001
-early_stop_path = "/NASv2"
+early_stop_path = "D:\\Tesi\\src\\NAS\\"
 seed = 42
-num_classes = 100
 search_threshold = 0.005
 distillation = True
-T = 2.0
+T = 4.0
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    model = load_model(model_name="vit_small_patch16_224", num_classes=num_classes,
-                       path="D:\\Tesi\\src\\FineTuning\\best_model.pth")
+
+    dataset = Cifar100(root_path="D:\\Tesi\\Data\\CIFAR100", img_size=224, batch_size=batch_size, mean_std="imagenet",
+                       model_name="vit_small_patch16_224", seed=seed)
+    train_loader = dataset.get_train_loader(num_workers=2)
+    val_loader = dataset.get_val_loader()
+    test_loader = dataset.get_test_loader()
+
+    model = load_model(model_name="vit_small_patch16_224", num_classes=dataset.num_classes,
+                       path="D:\\Tesi\\src\\FineTuning\\vit_small_cifar100.pth")
     teacher_model = None
 
     if distillation:
@@ -35,12 +41,6 @@ if __name__ == "__main__":
         teacher_model.eval()
 
     model = model.to(device)
-
-    dataset = Cifar100(root_path="D:\\Tesi\\Data\\CIFAR100", img_size=224, batch_size=batch_size, mean_std="imagenet",
-                       model_name="vit_small_patch16_224", seed=seed)
-    train_loader = dataset.get_train_loader(num_workers=2)
-    val_loader = dataset.get_val_loader()
-    test_loader = dataset.get_test_loader()
 
     loss_fn = torch.nn.CrossEntropyLoss()
 
@@ -76,7 +76,7 @@ if __name__ == "__main__":
                                                      original_head_dim=64, threshold=search_threshold)
 
         pruningReport = updatePruningReport(pruningReport, state)
-        savePruningReport(pruningReport, path="D:\\Tesi\\src\\NAS\\ResultsNew")
+        savePruningReport(pruningReport, path="D:\\Tesi\\src\\NAS\\ResultsFinal\\pruning_report.json")
 
         # --- METRICHE POST-PRUNING (A Freddo) ---
         _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, dataset.classes)
@@ -131,4 +131,4 @@ if __name__ == "__main__":
     print(f"   - Accuracy Test Set:  {final_test_acc * 100:.2f}%")
     print(f"{'=' * 60}")
 
-    save_model(model=model, path="/src/NAS/best_model.pth")
+    save_model(model=model, path="D:\\Tesi\\src\\NAS\\ResultsFinal\\pruned_model.pth")

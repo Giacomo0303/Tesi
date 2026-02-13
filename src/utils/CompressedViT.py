@@ -65,8 +65,6 @@ class MultiHeadSelfAttention(nn.Module):
         # [B, H, N, v_dim] -> [B, N, H*v_dim]
         #x = x.permute(0, 2, 1, 3).flatten(2)
 
-        # Usiamo l'implementazione nativa ottimizzata (Flash Attention)
-        # Invece di fare a mano: softmax(Q @ K.T ...) @ V
         x = F.scaled_dot_product_attention(Q, K, V, scale=self.scale)
         # Reshape finale: [B, H, N, V] -> [B, N, H*V]
         x = x.transpose(1, 2).flatten(2)

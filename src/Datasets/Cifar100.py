@@ -43,7 +43,7 @@ class Cifar100(BaseDataset):
         val_set.transform = self.get_transform(train=False)
 
         search_set = copy.copy(train_set)
-        search_set.transform = self.get_transform(train=False)
+        search_set.transform = self.get_transform(train=True)
 
         train_set = Subset(train_set, train_split.indices)
         val_set = Subset(val_set, val_split.indices)

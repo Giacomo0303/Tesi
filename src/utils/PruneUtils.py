@@ -308,7 +308,7 @@ def count_params_no_mask(model):
     return float(sum(p.numel() for p in model.parameters()) / 1e6)
 
 
-def compute_obj(model, loss_fn, device, dataloader, original_params, lambda_=1.5):
+def compute_obj(model, loss_fn, device, dataloader, original_params, lambda_=1.0):
     _, accuracy = compute_imp(model=model, dataloader=dataloader, loss_fn=loss_fn, device=device)
     params = count_parameters(model)
 

@@ -1,0 +1,1068 @@
+C:\Users\giaco\AppData\Local\Programs\Python\Python312\python.exe D:\Tesi\src\NAS\NAS.py
+
+============================================================
+AVVIO PIPELINE ITERATIVE NAS (CIFAR-100)
+============================================================
+Baseline Model:
+   - Params: 21.70M
+   - Accuracy: 90.12%
+============================================================
+
+
+ ITERAZIONE 1/10
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: -0.0819 | Last Action: Start |Acc: 0.9448 | Params: 21.7042M
+--- NUOVO BEST TROVATO! --- Valore: -0.0795 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: -0.0795 | Last Action: MLP pruning |Acc: 0.9448 | Params: 21.6796M
+--- NUOVO BEST TROVATO! --- Valore: -0.0770 (Precedente: -0.0795)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: -0.0770 | Last Action: MLP pruning |Acc: 0.9448 | Params: 21.6549M
+--- NUOVO BEST TROVATO! --- Valore: -0.0745 (Precedente: -0.0770)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: -0.0745 | Last Action: MLP pruning |Acc: 0.9448 | Params: 21.6303M
+--- NUOVO BEST TROVATO! --- Valore: -0.0721 (Precedente: -0.0745)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: -0.0721 | Last Action: MLP pruning |Acc: 0.9448 | Params: 21.6057M
+--- NUOVO BEST TROVATO! --- Valore: -0.0702 (Precedente: -0.0721)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: -0.0702 | Last Action: MLP pruning |Acc: 0.9444 | Params: 21.5811M
+--- NUOVO BEST TROVATO! --- Valore: -0.0671 (Precedente: -0.0702)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: -0.0671 | Last Action: MLP pruning |Acc: 0.9448 | Params: 21.5565M
+--- NUOVO BEST TROVATO! --- Valore: -0.0629 (Precedente: -0.0671)
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: -0.0629 | Last Action: V/Proj pruning |Acc: 0.9468 | Params: 21.5442M
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: -0.0653 | Last Action: QK pruning |Acc: 0.9452 | Params: 21.5442M
+--- NUOVO BEST TROVATO! --- Valore: -0.0579 (Precedente: -0.0629)
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: -0.0579 | Last Action: Head pruning |Acc: 0.9460 | Params: 21.4826M
+--- NUOVO BEST TROVATO! --- Valore: -0.0358 (Precedente: -0.0579)
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: -0.0358 | Last Action: Emb pruning |Acc: 0.9372 | Params: 21.1322M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: -0.0659 | Last Action: V/Proj pruning |Acc: 0.9464 | Params: 21.5688M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: -0.0678 | Last Action: QK pruning |Acc: 0.9452 | Params: 21.5688M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: -0.0604 | Last Action: Head pruning |Acc: 0.9460 | Params: 21.5072M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: -0.0382 | Last Action: Emb pruning |Acc: 0.9372 | Params: 21.1563M
+Iter: 16 | Stack: 20 | Pruned: 3 | Curr Val: -0.0358 | Last Action: MLP pruning |Acc: 0.9372 | Params: 21.1322M
+--- NUOVO BEST TROVATO! --- Valore: -0.0352 (Precedente: -0.0358)
+Iter: 17 | Stack: 19 | Pruned: 3 | Curr Val: -0.0352 | Last Action: V/Proj pruning |Acc: 0.9368 | Params: 21.1201M
+Iter: 18 | Stack: 18 | Pruned: 3 | Curr Val: -0.0370 | Last Action: QK pruning |Acc: 0.9356 | Params: 21.1201M
+--- NUOVO BEST TROVATO! --- Valore: -0.0302 (Precedente: -0.0352)
+Iter: 19 | Stack: 17 | Pruned: 3 | Curr Val: -0.0302 | Last Action: Head pruning |Acc: 0.9360 | Params: 21.0598M
+--- NUOVO BEST TROVATO! --- Valore: -0.0104 (Precedente: -0.0302)
+Iter: 20 | Stack: 16 | Pruned: 3 | Curr Val: -0.0104 | Last Action: Emb pruning |Acc: 0.9252 | Params: 20.7068M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: -0.0684 | Last Action: V/Proj pruning |Acc: 0.9464 | Params: 21.5934M
+Iter: 22 | Stack: 14 | Pruned: 4 | Curr Val: -0.0702 | Last Action: QK pruning |Acc: 0.9452 | Params: 21.5934M
+Iter: 23 | Stack: 13 | Pruned: 5 | Curr Val: -0.0622 | Last Action: Head pruning |Acc: 0.9464 | Params: 21.5318M
+Iter: 24 | Stack: 12 | Pruned: 6 | Curr Val: -0.0407 | Last Action: Emb pruning |Acc: 0.9372 | Params: 21.1804M
+Iter: 25 | Stack: 11 | Pruned: 7 | Curr Val: -0.0709 | Last Action: V/Proj pruning |Acc: 0.9464 | Params: 21.6180M
+Iter: 26 | Stack: 10 | Pruned: 8 | Curr Val: -0.0733 | Last Action: QK pruning |Acc: 0.9448 | Params: 21.6180M
+Iter: 27 | Stack: 9 | Pruned: 9 | Curr Val: -0.0647 | Last Action: Head pruning |Acc: 0.9464 | Params: 21.5565M
+Iter: 28 | Stack: 8 | Pruned: 10 | Curr Val: -0.0432 | Last Action: Emb pruning |Acc: 0.9372 | Params: 21.2045M
+Iter: 29 | Stack: 7 | Pruned: 11 | Curr Val: -0.0733 | Last Action: V/Proj pruning |Acc: 0.9464 | Params: 21.6426M
+Iter: 30 | Stack: 6 | Pruned: 12 | Curr Val: -0.0746 | Last Action: QK pruning |Acc: 0.9456 | Params: 21.6426M
+Iter: 31 | Stack: 5 | Pruned: 13 | Curr Val: -0.0672 | Last Action: Head pruning |Acc: 0.9464 | Params: 21.5811M
+Iter: 32 | Stack: 4 | Pruned: 14 | Curr Val: -0.0456 | Last Action: Emb pruning |Acc: 0.9372 | Params: 21.2286M
+Iter: 33 | Stack: 3 | Pruned: 15 | Curr Val: -0.0752 | Last Action: V/Proj pruning |Acc: 0.9468 | Params: 21.6673M
+Iter: 34 | Stack: 2 | Pruned: 16 | Curr Val: -0.0770 | Last Action: QK pruning |Acc: 0.9456 | Params: 21.6672M
+Iter: 35 | Stack: 1 | Pruned: 17 | Curr Val: -0.0696 | Last Action: Head pruning |Acc: 0.9464 | Params: 21.6057M
+Iter: 36 | Stack: 0 | Pruned: 18 | Curr Val: -0.0481 | Last Action: Emb pruning |Acc: 0.9372 | Params: 21.2527M
+--- Ricerca Completata ---
+Iterazioni totali: 36
+Rami potati (pruned): 19
+Miglior Valore Trovato: -0.0104
+   REPORT POST-TAGLIO:
+      - Params: 20.71M (Riduzione Globale: 4.60%)
+      - Accuracy: 87.94% (Drop: 2.18 %)
+      - Tempo Ricerca: 265.1s
+Epoch 1: 100%|██████████| 352/352 [01:03<00:00,  5.52it/s]
+Train_loss: 0.2645
+Val loss: 0.3654	Accuracy: 0.8945
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:03<00:00,  5.53it/s]
+Train_loss: 0.2240
+Val loss: 0.3512	Accuracy: 0.8967
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:03<00:00,  5.51it/s]
+Train_loss: 0.1983
+Val loss: 0.3536	Accuracy: 0.8965
+
+Epoch 4: 100%|██████████| 352/352 [01:03<00:00,  5.54it/s]
+Train_loss: 0.1763
+Val loss: 0.3483	Accuracy: 0.8984
+
+---Best model saved---
+Epoch 5: 100%|██████████| 352/352 [01:03<00:00,  5.52it/s]
+Train_loss: 0.1588
+Val loss: 0.3452	Accuracy: 0.8979
+
+---Best model saved---
+Epoch 6: 100%|██████████| 352/352 [01:03<00:00,  5.52it/s]
+Epoch 7:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.1453
+Val loss: 0.3511	Accuracy: 0.8982
+
+Epoch 7: 100%|██████████| 352/352 [01:03<00:00,  5.53it/s]
+Train_loss: 0.1329
+Val loss: 0.3524	Accuracy: 0.8994
+
+   FINE ITERAZIONE 1
+      - Accuracy Recuperata: 89.79% (+1.86%)
+      - Tempo Fine-Tuning: 489.4s
+      - Tempo Totale Iter: 765.8s
+------------------------------------------------------------
+
+ ITERAZIONE 2/10
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.0573 | Last Action: Start |Acc: 0.9696 | Params: 20.7068M
+--- NUOVO BEST TROVATO! --- Valore: 0.0597 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.0597 | Last Action: MLP pruning |Acc: 0.9696 | Params: 20.6833M
+--- NUOVO BEST TROVATO! --- Valore: 0.0622 (Precedente: 0.0597)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.0622 | Last Action: MLP pruning |Acc: 0.9696 | Params: 20.6597M
+--- NUOVO BEST TROVATO! --- Valore: 0.0647 (Precedente: 0.0622)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.0647 | Last Action: MLP pruning |Acc: 0.9696 | Params: 20.6361M
+--- NUOVO BEST TROVATO! --- Valore: 0.0671 (Precedente: 0.0647)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.0671 | Last Action: MLP pruning |Acc: 0.9696 | Params: 20.6125M
+--- NUOVO BEST TROVATO! --- Valore: 0.0696 (Precedente: 0.0671)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.0696 | Last Action: MLP pruning |Acc: 0.9696 | Params: 20.5889M
+--- NUOVO BEST TROVATO! --- Valore: 0.0721 (Precedente: 0.0696)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.0721 | Last Action: MLP pruning |Acc: 0.9696 | Params: 20.5653M
+--- NUOVO BEST TROVATO! --- Valore: 0.0727 (Precedente: 0.0721)
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.0727 | Last Action: V/Proj pruning |Acc: 0.9692 | Params: 20.5535M
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.0716 | Last Action: QK pruning |Acc: 0.9684 | Params: 20.5535M
+--- NUOVO BEST TROVATO! --- Valore: 0.0790 (Precedente: 0.0727)
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.0790 | Last Action: Head pruning |Acc: 0.9692 | Params: 20.4945M
+--- NUOVO BEST TROVATO! --- Valore: 0.1028 (Precedente: 0.0790)
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.1028 | Last Action: Emb pruning |Acc: 0.9600 | Params: 20.1420M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.0709 | Last Action: V/Proj pruning |Acc: 0.9696 | Params: 20.5771M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.0709 | Last Action: QK pruning |Acc: 0.9696 | Params: 20.5771M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.0765 | Last Action: Head pruning |Acc: 0.9692 | Params: 20.5181M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.1003 | Last Action: Emb pruning |Acc: 0.9600 | Params: 20.1651M
+Iter: 16 | Stack: 20 | Pruned: 3 | Curr Val: 0.1028 | Last Action: MLP pruning |Acc: 0.9600 | Params: 20.1420M
+--- NUOVO BEST TROVATO! --- Valore: 0.1034 (Precedente: 0.1028)
+Iter: 17 | Stack: 19 | Pruned: 3 | Curr Val: 0.1034 | Last Action: V/Proj pruning |Acc: 0.9596 | Params: 20.1305M
+Iter: 18 | Stack: 18 | Pruned: 3 | Curr Val: 0.1016 | Last Action: QK pruning |Acc: 0.9584 | Params: 20.1304M
+Iter: 19 | Stack: 17 | Pruned: 3 | Curr Val: 0.1024 | Last Action: Head pruning |Acc: 0.9548 | Params: 20.0727M
+--- NUOVO BEST TROVATO! --- Valore: 0.1074 (Precedente: 0.1034)
+Iter: 20 | Stack: 16 | Pruned: 3 | Curr Val: 0.1074 | Last Action: Emb pruning |Acc: 0.9328 | Params: 19.7177M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: 0.0678 | Last Action: V/Proj pruning |Acc: 0.9692 | Params: 20.6007M
+Iter: 22 | Stack: 14 | Pruned: 4 | Curr Val: 0.0684 | Last Action: QK pruning |Acc: 0.9696 | Params: 20.6007M
+Iter: 23 | Stack: 13 | Pruned: 5 | Curr Val: 0.0740 | Last Action: Head pruning |Acc: 0.9692 | Params: 20.5417M
+Iter: 24 | Stack: 12 | Pruned: 6 | Curr Val: 0.0978 | Last Action: Emb pruning |Acc: 0.9600 | Params: 20.1882M
+Iter: 25 | Stack: 11 | Pruned: 7 | Curr Val: 0.0653 | Last Action: V/Proj pruning |Acc: 0.9692 | Params: 20.6243M
+Iter: 26 | Stack: 10 | Pruned: 8 | Curr Val: 0.0641 | Last Action: QK pruning |Acc: 0.9684 | Params: 20.6242M
+Iter: 27 | Stack: 9 | Pruned: 9 | Curr Val: 0.0715 | Last Action: Head pruning |Acc: 0.9692 | Params: 20.5653M
+Iter: 28 | Stack: 8 | Pruned: 10 | Curr Val: 0.0953 | Last Action: Emb pruning |Acc: 0.9600 | Params: 20.2112M
+Iter: 29 | Stack: 7 | Pruned: 11 | Curr Val: 0.0622 | Last Action: V/Proj pruning |Acc: 0.9688 | Params: 20.6479M
+Iter: 30 | Stack: 6 | Pruned: 12 | Curr Val: 0.0634 | Last Action: QK pruning |Acc: 0.9696 | Params: 20.6478M
+Iter: 31 | Stack: 5 | Pruned: 13 | Curr Val: 0.0690 | Last Action: Head pruning |Acc: 0.9692 | Params: 20.5889M
+Iter: 32 | Stack: 4 | Pruned: 14 | Curr Val: 0.0929 | Last Action: Emb pruning |Acc: 0.9600 | Params: 20.2343M
+Iter: 33 | Stack: 3 | Pruned: 15 | Curr Val: 0.0598 | Last Action: V/Proj pruning |Acc: 0.9688 | Params: 20.6715M
+Iter: 34 | Stack: 2 | Pruned: 16 | Curr Val: 0.0610 | Last Action: QK pruning |Acc: 0.9696 | Params: 20.6714M
+Iter: 35 | Stack: 1 | Pruned: 17 | Curr Val: 0.0666 | Last Action: Head pruning |Acc: 0.9692 | Params: 20.6124M
+Iter: 36 | Stack: 0 | Pruned: 18 | Curr Val: 0.0904 | Last Action: Emb pruning |Acc: 0.9600 | Params: 20.2574M
+--- Ricerca Completata ---
+Iterazioni totali: 36
+Rami potati (pruned): 19
+Miglior Valore Trovato: 0.1074
+   REPORT POST-TAGLIO:
+      - Params: 19.72M (Riduzione Globale: 9.15%)
+      - Accuracy: 87.13% (Drop: 2.99 %)
+      - Tempo Ricerca: 257.8s
+Epoch 1: 100%|██████████| 352/352 [01:01<00:00,  5.68it/s]
+Train_loss: 0.2365
+Val loss: 0.3862	Accuracy: 0.8893
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:02<00:00,  5.67it/s]
+Train_loss: 0.2015
+Val loss: 0.3788	Accuracy: 0.8932
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:02<00:00,  5.67it/s]
+Train_loss: 0.1745
+Val loss: 0.3689	Accuracy: 0.8931
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [01:02<00:00,  5.68it/s]
+Epoch 5:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.1565
+Val loss: 0.3728	Accuracy: 0.8934
+
+Epoch 5: 100%|██████████| 352/352 [01:01<00:00,  5.68it/s]
+Train_loss: 0.1412
+Val loss: 0.3725	Accuracy: 0.8947
+
+   FINE ITERAZIONE 2
+      - Accuracy Recuperata: 89.31% (+2.19%)
+      - Tempo Fine-Tuning: 340.6s
+      - Tempo Totale Iter: 609.7s
+------------------------------------------------------------
+
+ ITERAZIONE 3/10
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.1566 | Last Action: Start |Acc: 0.9652 | Params: 19.7177M
+--- NUOVO BEST TROVATO! --- Valore: 0.1591 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.1591 | Last Action: MLP pruning |Acc: 0.9652 | Params: 19.6951M
+--- NUOVO BEST TROVATO! --- Valore: 0.1616 (Precedente: 0.1591)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.1616 | Last Action: MLP pruning |Acc: 0.9652 | Params: 19.6726M
+--- NUOVO BEST TROVATO! --- Valore: 0.1635 (Precedente: 0.1616)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.1635 | Last Action: MLP pruning |Acc: 0.9648 | Params: 19.6500M
+--- NUOVO BEST TROVATO! --- Valore: 0.1659 (Precedente: 0.1635)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.1659 | Last Action: MLP pruning |Acc: 0.9648 | Params: 19.6275M
+--- NUOVO BEST TROVATO! --- Valore: 0.1690 (Precedente: 0.1659)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.1690 | Last Action: MLP pruning |Acc: 0.9652 | Params: 19.6049M
+--- NUOVO BEST TROVATO! --- Valore: 0.1715 (Precedente: 0.1690)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.1715 | Last Action: MLP pruning |Acc: 0.9652 | Params: 19.5823M
+--- NUOVO BEST TROVATO! --- Valore: 0.1734 (Precedente: 0.1715)
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.1734 | Last Action: V/Proj pruning |Acc: 0.9656 | Params: 19.5711M
+--- NUOVO BEST TROVATO! --- Valore: 0.1758 (Precedente: 0.1734)
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.1758 | Last Action: QK pruning |Acc: 0.9672 | Params: 19.5710M
+--- NUOVO BEST TROVATO! --- Valore: 0.1766 (Precedente: 0.1758)
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.1766 | Last Action: Head pruning |Acc: 0.9636 | Params: 19.5146M
+--- NUOVO BEST TROVATO! --- Valore: 0.1854 (Precedente: 0.1766)
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.1854 | Last Action: Emb pruning |Acc: 0.9432 | Params: 19.1601M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.1709 | Last Action: V/Proj pruning |Acc: 0.9656 | Params: 19.5936M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.1733 | Last Action: QK pruning |Acc: 0.9672 | Params: 19.5936M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.1741 | Last Action: Head pruning |Acc: 0.9636 | Params: 19.5372M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.1830 | Last Action: Emb pruning |Acc: 0.9432 | Params: 19.1821M
+Iter: 16 | Stack: 20 | Pruned: 3 | Curr Val: 0.1854 | Last Action: MLP pruning |Acc: 0.9432 | Params: 19.1601M
+Iter: 17 | Stack: 19 | Pruned: 3 | Curr Val: 0.1848 | Last Action: V/Proj pruning |Acc: 0.9420 | Params: 19.1490M
+Iter: 18 | Stack: 18 | Pruned: 3 | Curr Val: 0.1830 | Last Action: QK pruning |Acc: 0.9408 | Params: 19.1490M
+--- NUOVO BEST TROVATO! --- Valore: 0.1942 (Precedente: 0.1854)
+Iter: 19 | Stack: 17 | Pruned: 3 | Curr Val: 0.1942 | Last Action: Head pruning |Acc: 0.9440 | Params: 19.0939M
+--- NUOVO BEST TROVATO! --- Valore: 0.1972 (Precedente: 0.1942)
+Iter: 20 | Stack: 16 | Pruned: 3 | Curr Val: 0.1972 | Last Action: Emb pruning |Acc: 0.9196 | Params: 18.7368M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: 0.1684 | Last Action: V/Proj pruning |Acc: 0.9656 | Params: 19.6162M
+Iter: 22 | Stack: 14 | Pruned: 4 | Curr Val: 0.1708 | Last Action: QK pruning |Acc: 0.9672 | Params: 19.6161M
+Iter: 23 | Stack: 13 | Pruned: 5 | Curr Val: 0.1722 | Last Action: Head pruning |Acc: 0.9640 | Params: 19.5597M
+Iter: 24 | Stack: 12 | Pruned: 6 | Curr Val: 0.1811 | Last Action: Emb pruning |Acc: 0.9436 | Params: 19.2042M
+Iter: 25 | Stack: 11 | Pruned: 7 | Curr Val: 0.1659 | Last Action: V/Proj pruning |Acc: 0.9656 | Params: 19.6387M
+Iter: 26 | Stack: 10 | Pruned: 8 | Curr Val: 0.1683 | Last Action: QK pruning |Acc: 0.9672 | Params: 19.6387M
+Iter: 27 | Stack: 9 | Pruned: 9 | Curr Val: 0.1697 | Last Action: Head pruning |Acc: 0.9640 | Params: 19.5823M
+Iter: 28 | Stack: 8 | Pruned: 10 | Curr Val: 0.1786 | Last Action: Emb pruning |Acc: 0.9436 | Params: 19.2262M
+Iter: 29 | Stack: 7 | Pruned: 11 | Curr Val: 0.1634 | Last Action: V/Proj pruning |Acc: 0.9656 | Params: 19.6613M
+Iter: 30 | Stack: 6 | Pruned: 12 | Curr Val: 0.1652 | Last Action: QK pruning |Acc: 0.9668 | Params: 19.6613M
+Iter: 31 | Stack: 5 | Pruned: 13 | Curr Val: 0.1672 | Last Action: Head pruning |Acc: 0.9640 | Params: 19.6048M
+Iter: 32 | Stack: 4 | Pruned: 14 | Curr Val: 0.1773 | Last Action: Emb pruning |Acc: 0.9444 | Params: 19.2483M
+Iter: 33 | Stack: 3 | Pruned: 15 | Curr Val: 0.1609 | Last Action: V/Proj pruning |Acc: 0.9656 | Params: 19.6839M
+Iter: 34 | Stack: 2 | Pruned: 16 | Curr Val: 0.1627 | Last Action: QK pruning |Acc: 0.9668 | Params: 19.6838M
+Iter: 35 | Stack: 1 | Pruned: 17 | Curr Val: 0.1642 | Last Action: Head pruning |Acc: 0.9636 | Params: 19.6274M
+Iter: 36 | Stack: 0 | Pruned: 18 | Curr Val: 0.1736 | Last Action: Emb pruning |Acc: 0.9436 | Params: 19.2703M
+--- Ricerca Completata ---
+Iterazioni totali: 36
+Rami potati (pruned): 19
+Miglior Valore Trovato: 0.1972
+Epoch 1:   0%|          | 0/352 [00:00<?, ?it/s]   REPORT POST-TAGLIO:
+      - Params: 18.74M (Riduzione Globale: 13.67%)
+      - Accuracy: 85.50% (Drop: 4.62 %)
+      - Tempo Ricerca: 254.3s
+Epoch 1: 100%|██████████| 352/352 [01:01<00:00,  5.76it/s]
+Train_loss: 0.2787
+Val loss: 0.4204	Accuracy: 0.8761
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:01<00:00,  5.77it/s]
+Train_loss: 0.2250
+Val loss: 0.4162	Accuracy: 0.8788
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:01<00:00,  5.76it/s]
+Train_loss: 0.1990
+Val loss: 0.4011	Accuracy: 0.8791
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [01:01<00:00,  5.74it/s]
+Train_loss: 0.1752
+Val loss: 0.3985	Accuracy: 0.8809
+
+---Best model saved---
+Epoch 5: 100%|██████████| 352/352 [01:00<00:00,  5.78it/s]
+Train_loss: 0.1610
+Val loss: 0.3998	Accuracy: 0.8830
+
+Epoch 6: 100%|██████████| 352/352 [01:01<00:00,  5.75it/s]
+Train_loss: 0.1437
+Val loss: 0.3989	Accuracy: 0.8838
+
+   FINE ITERAZIONE 3
+      - Accuracy Recuperata: 88.09% (+2.59%)
+      - Tempo Fine-Tuning: 403.0s
+      - Tempo Totale Iter: 668.4s
+------------------------------------------------------------
+
+ ITERAZIONE 4/10
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.2653 | Last Action: Start |Acc: 0.9640 | Params: 18.7368M
+--- NUOVO BEST TROVATO! --- Valore: 0.2677 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.2677 | Last Action: MLP pruning |Acc: 0.9640 | Params: 18.7152M
+--- NUOVO BEST TROVATO! --- Valore: 0.2702 (Precedente: 0.2677)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.2702 | Last Action: MLP pruning |Acc: 0.9640 | Params: 18.6937M
+--- NUOVO BEST TROVATO! --- Valore: 0.2727 (Precedente: 0.2702)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.2727 | Last Action: MLP pruning |Acc: 0.9640 | Params: 18.6721M
+--- NUOVO BEST TROVATO! --- Valore: 0.2746 (Precedente: 0.2727)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.2746 | Last Action: MLP pruning |Acc: 0.9636 | Params: 18.6506M
+--- NUOVO BEST TROVATO! --- Valore: 0.2777 (Precedente: 0.2746)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.2777 | Last Action: MLP pruning |Acc: 0.9640 | Params: 18.6291M
+--- NUOVO BEST TROVATO! --- Valore: 0.2808 (Precedente: 0.2777)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.2808 | Last Action: MLP pruning |Acc: 0.9644 | Params: 18.6075M
+--- NUOVO BEST TROVATO! --- Valore: 0.2827 (Precedente: 0.2808)
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.2827 | Last Action: V/Proj pruning |Acc: 0.9648 | Params: 18.5968M
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.2821 | Last Action: QK pruning |Acc: 0.9644 | Params: 18.5967M
+--- NUOVO BEST TROVATO! --- Valore: 0.2866 (Precedente: 0.2827)
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.2866 | Last Action: Head pruning |Acc: 0.9632 | Params: 18.5429M
+--- NUOVO BEST TROVATO! --- Valore: 0.2983 (Precedente: 0.2866)
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.2983 | Last Action: Emb pruning |Acc: 0.9432 | Params: 18.1863M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.2802 | Last Action: V/Proj pruning |Acc: 0.9648 | Params: 18.6183M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.2796 | Last Action: QK pruning |Acc: 0.9644 | Params: 18.6183M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.2847 | Last Action: Head pruning |Acc: 0.9636 | Params: 18.5644M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.2952 | Last Action: Emb pruning |Acc: 0.9428 | Params: 18.2073M
+Iter: 16 | Stack: 20 | Pruned: 3 | Curr Val: 0.2977 | Last Action: MLP pruning |Acc: 0.9428 | Params: 18.1863M
+--- NUOVO BEST TROVATO! --- Valore: 0.3014 (Precedente: 0.2983)
+Iter: 17 | Stack: 19 | Pruned: 3 | Curr Val: 0.3014 | Last Action: V/Proj pruning |Acc: 0.9444 | Params: 18.1758M
+Iter: 18 | Stack: 18 | Pruned: 3 | Curr Val: 0.2983 | Last Action: QK pruning |Acc: 0.9424 | Params: 18.1757M
+--- NUOVO BEST TROVATO! --- Valore: 0.3065 (Precedente: 0.3014)
+Iter: 19 | Stack: 17 | Pruned: 3 | Curr Val: 0.3065 | Last Action: Head pruning |Acc: 0.9436 | Params: 18.1231M
+Iter: 20 | Stack: 16 | Pruned: 3 | Curr Val: 0.2962 | Last Action: Emb pruning |Acc: 0.9092 | Params: 17.7640M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: 0.2777 | Last Action: V/Proj pruning |Acc: 0.9648 | Params: 18.6398M
+Iter: 22 | Stack: 14 | Pruned: 4 | Curr Val: 0.2771 | Last Action: QK pruning |Acc: 0.9644 | Params: 18.6398M
+Iter: 23 | Stack: 13 | Pruned: 5 | Curr Val: 0.2821 | Last Action: Head pruning |Acc: 0.9636 | Params: 18.5859M
+Iter: 24 | Stack: 12 | Pruned: 6 | Curr Val: 0.2921 | Last Action: Emb pruning |Acc: 0.9424 | Params: 18.2283M
+Iter: 25 | Stack: 11 | Pruned: 7 | Curr Val: 0.2752 | Last Action: V/Proj pruning |Acc: 0.9648 | Params: 18.6614M
+Iter: 26 | Stack: 10 | Pruned: 8 | Curr Val: 0.2746 | Last Action: QK pruning |Acc: 0.9644 | Params: 18.6613M
+Iter: 27 | Stack: 9 | Pruned: 9 | Curr Val: 0.2796 | Last Action: Head pruning |Acc: 0.9636 | Params: 18.6075M
+Iter: 28 | Stack: 8 | Pruned: 10 | Curr Val: 0.2902 | Last Action: Emb pruning |Acc: 0.9428 | Params: 18.2494M
+Iter: 29 | Stack: 7 | Pruned: 11 | Curr Val: 0.2727 | Last Action: V/Proj pruning |Acc: 0.9648 | Params: 18.6829M
+Iter: 30 | Stack: 6 | Pruned: 12 | Curr Val: 0.2727 | Last Action: QK pruning |Acc: 0.9648 | Params: 18.6829M
+Iter: 31 | Stack: 5 | Pruned: 13 | Curr Val: 0.2777 | Last Action: Head pruning |Acc: 0.9640 | Params: 18.6290M
+Iter: 32 | Stack: 4 | Pruned: 14 | Curr Val: 0.2889 | Last Action: Emb pruning |Acc: 0.9436 | Params: 18.2704M
+Iter: 33 | Stack: 3 | Pruned: 15 | Curr Val: 0.2708 | Last Action: V/Proj pruning |Acc: 0.9652 | Params: 18.7045M
+Iter: 34 | Stack: 2 | Pruned: 16 | Curr Val: 0.2702 | Last Action: QK pruning |Acc: 0.9648 | Params: 18.7044M
+Iter: 35 | Stack: 1 | Pruned: 17 | Curr Val: 0.2752 | Last Action: Head pruning |Acc: 0.9640 | Params: 18.6505M
+Iter: 36 | Stack: 0 | Pruned: 18 | Curr Val: 0.2877 | Last Action: Emb pruning |Acc: 0.9444 | Params: 18.2914M
+--- Ricerca Completata ---
+Iterazioni totali: 36
+Rami potati (pruned): 19
+Miglior Valore Trovato: 0.3065
+   REPORT POST-TAGLIO:
+      - Params: 18.12M (Riduzione Globale: 16.50%)
+      - Accuracy: 86.01% (Drop: 4.11 %)
+      - Tempo Ricerca: 252.9s
+Epoch 1: 100%|██████████| 352/352 [01:00<00:00,  5.82it/s]
+Train_loss: 0.2317
+Val loss: 0.4296	Accuracy: 0.8737
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [01:00<00:00,  5.81it/s]
+Train_loss: 0.1950
+Val loss: 0.4295	Accuracy: 0.8737
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [01:00<00:00,  5.85it/s]
+Train_loss: 0.1724
+Val loss: 0.4199	Accuracy: 0.8758
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [01:00<00:00,  5.84it/s]
+Epoch 5:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.1547
+Val loss: 0.4273	Accuracy: 0.8752
+
+Epoch 5: 100%|██████████| 352/352 [01:00<00:00,  5.85it/s]
+Train_loss: 0.1413
+Val loss: 0.4297	Accuracy: 0.8759
+
+   FINE ITERAZIONE 4
+      - Accuracy Recuperata: 87.58% (+1.57%)
+      - Tempo Fine-Tuning: 331.8s
+      - Tempo Totale Iter: 595.8s
+------------------------------------------------------------
+
+ ITERAZIONE 5/10
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.3385 | Last Action: Start |Acc: 0.9648 | Params: 18.1231M
+--- NUOVO BEST TROVATO! --- Valore: 0.3410 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.3410 | Last Action: MLP pruning |Acc: 0.9648 | Params: 18.1021M
+--- NUOVO BEST TROVATO! --- Valore: 0.3429 (Precedente: 0.3410)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.3429 | Last Action: MLP pruning |Acc: 0.9644 | Params: 18.0811M
+--- NUOVO BEST TROVATO! --- Valore: 0.3455 (Precedente: 0.3429)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.3455 | Last Action: MLP pruning |Acc: 0.9644 | Params: 18.0601M
+--- NUOVO BEST TROVATO! --- Valore: 0.3480 (Precedente: 0.3455)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.3480 | Last Action: MLP pruning |Acc: 0.9644 | Params: 18.0391M
+--- NUOVO BEST TROVATO! --- Valore: 0.3499 (Precedente: 0.3480)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.3499 | Last Action: MLP pruning |Acc: 0.9640 | Params: 18.0180M
+--- NUOVO BEST TROVATO! --- Valore: 0.3524 (Precedente: 0.3499)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.3524 | Last Action: MLP pruning |Acc: 0.9640 | Params: 17.9970M
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.3519 | Last Action: V/Proj pruning |Acc: 0.9632 | Params: 17.9917M
+--- NUOVO BEST TROVATO! --- Valore: 0.3543 (Precedente: 0.3524)
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.3543 | Last Action: QK pruning |Acc: 0.9644 | Params: 17.9864M
+--- NUOVO BEST TROVATO! --- Valore: 0.3564 (Precedente: 0.3543)
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.3564 | Last Action: Head pruning |Acc: 0.9616 | Params: 17.9339M
+--- NUOVO BEST TROVATO! --- Valore: 0.3748 (Precedente: 0.3564)
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.3748 | Last Action: Emb pruning |Acc: 0.9452 | Params: 17.5793M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.3499 | Last Action: V/Proj pruning |Acc: 0.9636 | Params: 18.0128M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.3524 | Last Action: QK pruning |Acc: 0.9648 | Params: 18.0075M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.3539 | Last Action: Head pruning |Acc: 0.9616 | Params: 17.9549M
+Iter: 15 | Stack: 16 | Pruned: 3 | Curr Val: 0.3717 | Last Action: Emb pruning |Acc: 0.9448 | Params: 17.5998M
+--- NUOVO BEST TROVATO! --- Valore: 0.3754 (Precedente: 0.3748)
+Iter: 16 | Stack: 20 | Pruned: 3 | Curr Val: 0.3754 | Last Action: MLP pruning |Acc: 0.9456 | Params: 17.5793M
+Iter: 17 | Stack: 19 | Pruned: 3 | Curr Val: 0.3748 | Last Action: V/Proj pruning |Acc: 0.9448 | Params: 17.5742M
+--- NUOVO BEST TROVATO! --- Valore: 0.3767 (Precedente: 0.3754)
+Iter: 18 | Stack: 18 | Pruned: 3 | Curr Val: 0.3767 | Last Action: QK pruning |Acc: 0.9456 | Params: 17.5690M
+--- NUOVO BEST TROVATO! --- Valore: 0.3788 (Precedente: 0.3767)
+Iter: 19 | Stack: 17 | Pruned: 3 | Curr Val: 0.3788 | Last Action: Head pruning |Acc: 0.9428 | Params: 17.5177M
+Iter: 20 | Stack: 16 | Pruned: 3 | Curr Val: 0.3524 | Last Action: Emb pruning |Acc: 0.8976 | Params: 17.1606M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: 0.3474 | Last Action: V/Proj pruning |Acc: 0.9636 | Params: 18.0338M
+Iter: 22 | Stack: 14 | Pruned: 4 | Curr Val: 0.3498 | Last Action: QK pruning |Acc: 0.9648 | Params: 18.0285M
+Iter: 23 | Stack: 13 | Pruned: 5 | Curr Val: 0.3526 | Last Action: Head pruning |Acc: 0.9624 | Params: 17.9759M
+Iter: 24 | Stack: 12 | Pruned: 6 | Curr Val: 0.3704 | Last Action: Emb pruning |Acc: 0.9456 | Params: 17.6204M
+Iter: 25 | Stack: 11 | Pruned: 7 | Curr Val: 0.3449 | Last Action: V/Proj pruning |Acc: 0.9636 | Params: 18.0548M
+Iter: 26 | Stack: 10 | Pruned: 8 | Curr Val: 0.3473 | Last Action: QK pruning |Acc: 0.9648 | Params: 18.0495M
+Iter: 27 | Stack: 9 | Pruned: 9 | Curr Val: 0.3500 | Last Action: Head pruning |Acc: 0.9624 | Params: 17.9969M
+Iter: 28 | Stack: 8 | Pruned: 10 | Curr Val: 0.3673 | Last Action: Emb pruning |Acc: 0.9452 | Params: 17.6409M
+Iter: 29 | Stack: 7 | Pruned: 11 | Curr Val: 0.3424 | Last Action: V/Proj pruning |Acc: 0.9636 | Params: 18.0758M
+Iter: 30 | Stack: 6 | Pruned: 12 | Curr Val: 0.3448 | Last Action: QK pruning |Acc: 0.9648 | Params: 18.0705M
+Iter: 31 | Stack: 5 | Pruned: 13 | Curr Val: 0.3475 | Last Action: Head pruning |Acc: 0.9624 | Params: 18.0180M
+Iter: 32 | Stack: 4 | Pruned: 14 | Curr Val: 0.3654 | Last Action: Emb pruning |Acc: 0.9456 | Params: 17.6614M
+Iter: 33 | Stack: 3 | Pruned: 15 | Curr Val: 0.3393 | Last Action: V/Proj pruning |Acc: 0.9632 | Params: 18.0969M
+Iter: 34 | Stack: 2 | Pruned: 16 | Curr Val: 0.3423 | Last Action: QK pruning |Acc: 0.9648 | Params: 18.0916M
+Iter: 35 | Stack: 1 | Pruned: 17 | Curr Val: 0.3450 | Last Action: Head pruning |Acc: 0.9624 | Params: 18.0390M
+Iter: 36 | Stack: 0 | Pruned: 18 | Curr Val: 0.3629 | Last Action: Emb pruning |Acc: 0.9456 | Params: 17.6819M
+--- Ricerca Completata ---
+Iterazioni totali: 36
+Rami potati (pruned): 19
+Miglior Valore Trovato: 0.3788
+   REPORT POST-TAGLIO:
+      - Params: 17.52M (Riduzione Globale: 19.29%)
+      - Accuracy: 85.50% (Drop: 4.61 %)
+      - Tempo Ricerca: 251.2s
+Epoch 1: 100%|██████████| 352/352 [00:58<00:00,  6.04it/s]
+Train_loss: 0.2334
+Val loss: 0.4475	Accuracy: 0.8672
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [00:57<00:00,  6.08it/s]
+Train_loss: 0.1963
+Val loss: 0.4370	Accuracy: 0.8684
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [00:58<00:00,  6.06it/s]
+Train_loss: 0.1753
+Val loss: 0.4328	Accuracy: 0.8682
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [00:57<00:00,  6.07it/s]
+Train_loss: 0.1568
+Val loss: 0.4296	Accuracy: 0.8721
+
+---Best model saved---
+Epoch 5: 100%|██████████| 352/352 [00:57<00:00,  6.08it/s]
+Epoch 6:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.1400
+Val loss: 0.4306	Accuracy: 0.8722
+
+Epoch 6: 100%|██████████| 352/352 [00:57<00:00,  6.07it/s]
+Train_loss: 0.1283
+Val loss: 0.4293	Accuracy: 0.8740
+
+---Best model saved---
+Epoch 7: 100%|██████████| 352/352 [00:58<00:00,  6.04it/s]
+Train_loss: 0.1176
+Val loss: 0.4339	Accuracy: 0.8724
+
+Epoch 8: 100%|██████████| 352/352 [00:57<00:00,  6.08it/s]
+Train_loss: 0.1086
+Val loss: 0.4414	Accuracy: 0.8693
+
+   FINE ITERAZIONE 5
+      - Accuracy Recuperata: 87.40% (+1.90%)
+      - Tempo Fine-Tuning: 511.8s
+      - Tempo Totale Iter: 773.8s
+------------------------------------------------------------
+
+ ITERAZIONE 6/10
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.4299 | Last Action: Start |Acc: 0.9768 | Params: 17.5177M
+--- NUOVO BEST TROVATO! --- Valore: 0.4324 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.4324 | Last Action: MLP pruning |Acc: 0.9768 | Params: 17.4972M
+--- NUOVO BEST TROVATO! --- Valore: 0.4349 (Precedente: 0.4324)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.4349 | Last Action: MLP pruning |Acc: 0.9768 | Params: 17.4767M
+--- NUOVO BEST TROVATO! --- Valore: 0.4375 (Precedente: 0.4349)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.4375 | Last Action: MLP pruning |Acc: 0.9768 | Params: 17.4562M
+--- NUOVO BEST TROVATO! --- Valore: 0.4400 (Precedente: 0.4375)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.4400 | Last Action: MLP pruning |Acc: 0.9768 | Params: 17.4357M
+--- NUOVO BEST TROVATO! --- Valore: 0.4426 (Precedente: 0.4400)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.4426 | Last Action: MLP pruning |Acc: 0.9768 | Params: 17.4152M
+--- NUOVO BEST TROVATO! --- Valore: 0.4451 (Precedente: 0.4426)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.4451 | Last Action: MLP pruning |Acc: 0.9768 | Params: 17.3947M
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.4445 | Last Action: V/Proj pruning |Acc: 0.9764 | Params: 17.3947M
+--- NUOVO BEST TROVATO! --- Valore: 0.4458 (Precedente: 0.4451)
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.4458 | Last Action: QK pruning |Acc: 0.9764 | Params: 17.3844M
+--- NUOVO BEST TROVATO! --- Valore: 0.4475 (Precedente: 0.4458)
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.4475 | Last Action: Head pruning |Acc: 0.9732 | Params: 17.3331M
+--- NUOVO BEST TROVATO! --- Valore: 0.4498 (Precedente: 0.4475)
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.4498 | Last Action: Emb pruning |Acc: 0.9452 | Params: 16.9806M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.4420 | Last Action: V/Proj pruning |Acc: 0.9764 | Params: 17.4152M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.4427 | Last Action: QK pruning |Acc: 0.9760 | Params: 17.4049M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.4455 | Last Action: Head pruning |Acc: 0.9736 | Params: 17.3536M
+Iter: 15 | Stack: 21 | Pruned: 2 | Curr Val: 0.4481 | Last Action: MLP pruning |Acc: 0.9736 | Params: 17.3331M
+Iter: 16 | Stack: 20 | Pruned: 2 | Curr Val: 0.4474 | Last Action: V/Proj pruning |Acc: 0.9736 | Params: 17.3382M
+Iter: 17 | Stack: 19 | Pruned: 2 | Curr Val: 0.4482 | Last Action: QK pruning |Acc: 0.9728 | Params: 17.3228M
+Iter: 18 | Stack: 18 | Pruned: 2 | Curr Val: 0.4492 | Last Action: Head pruning |Acc: 0.9692 | Params: 17.2715M
+--- NUOVO BEST TROVATO! --- Valore: 0.4550 (Precedente: 0.4498)
+Iter: 19 | Stack: 17 | Pruned: 2 | Curr Val: 0.4550 | Last Action: Emb pruning |Acc: 0.9436 | Params: 16.9205M
+Iter: 20 | Stack: 16 | Pruned: 2 | Curr Val: 0.4485 | Last Action: Emb pruning |Acc: 0.9460 | Params: 17.0006M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: 0.4394 | Last Action: V/Proj pruning |Acc: 0.9764 | Params: 17.4357M
+Iter: 22 | Stack: 14 | Pruned: 4 | Curr Val: 0.4401 | Last Action: QK pruning |Acc: 0.9760 | Params: 17.4254M
+Iter: 23 | Stack: 13 | Pruned: 5 | Curr Val: 0.4424 | Last Action: Head pruning |Acc: 0.9732 | Params: 17.3741M
+Iter: 24 | Stack: 12 | Pruned: 6 | Curr Val: 0.4453 | Last Action: Emb pruning |Acc: 0.9456 | Params: 17.0206M
+Iter: 25 | Stack: 11 | Pruned: 7 | Curr Val: 0.4369 | Last Action: V/Proj pruning |Acc: 0.9764 | Params: 17.4562M
+Iter: 26 | Stack: 10 | Pruned: 8 | Curr Val: 0.4376 | Last Action: QK pruning |Acc: 0.9760 | Params: 17.4459M
+Iter: 27 | Stack: 9 | Pruned: 9 | Curr Val: 0.4404 | Last Action: Head pruning |Acc: 0.9736 | Params: 17.3946M
+Iter: 28 | Stack: 8 | Pruned: 10 | Curr Val: 0.4416 | Last Action: Emb pruning |Acc: 0.9448 | Params: 17.0406M
+Iter: 29 | Stack: 7 | Pruned: 11 | Curr Val: 0.4344 | Last Action: V/Proj pruning |Acc: 0.9764 | Params: 17.4767M
+Iter: 30 | Stack: 6 | Pruned: 12 | Curr Val: 0.4356 | Last Action: QK pruning |Acc: 0.9764 | Params: 17.4664M
+Iter: 31 | Stack: 5 | Pruned: 13 | Curr Val: 0.4378 | Last Action: Head pruning |Acc: 0.9736 | Params: 17.4151M
+Iter: 32 | Stack: 4 | Pruned: 14 | Curr Val: 0.4384 | Last Action: Emb pruning |Acc: 0.9444 | Params: 17.0606M
+Iter: 33 | Stack: 3 | Pruned: 15 | Curr Val: 0.4318 | Last Action: V/Proj pruning |Acc: 0.9764 | Params: 17.4972M
+Iter: 34 | Stack: 2 | Pruned: 16 | Curr Val: 0.4331 | Last Action: QK pruning |Acc: 0.9764 | Params: 17.4869M
+Iter: 35 | Stack: 1 | Pruned: 17 | Curr Val: 0.4347 | Last Action: Head pruning |Acc: 0.9732 | Params: 17.4356M
+Iter: 36 | Stack: 0 | Pruned: 18 | Curr Val: 0.4377 | Last Action: Emb pruning |Acc: 0.9456 | Params: 17.0806M
+--- Ricerca Completata ---
+Iterazioni totali: 36
+Rami potati (pruned): 19
+Miglior Valore Trovato: 0.4550
+Epoch 1:   0%|          | 0/352 [00:00<?, ?it/s]   REPORT POST-TAGLIO:
+      - Params: 16.92M (Riduzione Globale: 22.04%)
+      - Accuracy: 84.82% (Drop: 5.29 %)
+      - Tempo Ricerca: 246.4s
+Epoch 1: 100%|██████████| 352/352 [00:57<00:00,  6.08it/s]
+Train_loss: 0.1998
+Val loss: 0.4740	Accuracy: 0.8621
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [00:57<00:00,  6.09it/s]
+Train_loss: 0.1685
+Val loss: 0.4707	Accuracy: 0.8643
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [00:57<00:00,  6.10it/s]
+Train_loss: 0.1477
+Val loss: 0.4745	Accuracy: 0.8632
+
+Epoch 4: 100%|██████████| 352/352 [00:57<00:00,  6.09it/s]
+Train_loss: 0.1318
+Val loss: 0.4720	Accuracy: 0.8633
+
+   FINE ITERAZIONE 6
+      - Accuracy Recuperata: 86.43% (+1.60%)
+      - Tempo Fine-Tuning: 254.8s
+      - Tempo Totale Iter: 512.1s
+------------------------------------------------------------
+
+ ITERAZIONE 7/10
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.4978 | Last Action: Start |Acc: 0.9720 | Params: 16.9205M
+--- NUOVO BEST TROVATO! --- Valore: 0.4986 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.4986 | Last Action: MLP pruning |Acc: 0.9708 | Params: 16.9005M
+--- NUOVO BEST TROVATO! --- Valore: 0.5035 (Precedente: 0.4986)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.5035 | Last Action: MLP pruning |Acc: 0.9724 | Params: 16.8805M
+--- NUOVO BEST TROVATO! --- Valore: 0.5061 (Precedente: 0.5035)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.5061 | Last Action: MLP pruning |Acc: 0.9724 | Params: 16.8605M
+--- NUOVO BEST TROVATO! --- Valore: 0.5069 (Precedente: 0.5061)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.5069 | Last Action: MLP pruning |Acc: 0.9712 | Params: 16.8405M
+--- NUOVO BEST TROVATO! --- Valore: 0.5089 (Precedente: 0.5069)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.5089 | Last Action: MLP pruning |Acc: 0.9708 | Params: 16.8205M
+--- NUOVO BEST TROVATO! --- Valore: 0.5120 (Precedente: 0.5089)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.5120 | Last Action: MLP pruning |Acc: 0.9712 | Params: 16.8005M
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.5102 | Last Action: V/Proj pruning |Acc: 0.9704 | Params: 16.8055M
+--- NUOVO BEST TROVATO! --- Valore: 0.5133 (Precedente: 0.5120)
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.5133 | Last Action: QK pruning |Acc: 0.9712 | Params: 16.7905M
+--- NUOVO BEST TROVATO! --- Valore: 0.5150 (Precedente: 0.5133)
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.5150 | Last Action: Head pruning |Acc: 0.9680 | Params: 16.7404M
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.5086 | Last Action: Emb pruning |Acc: 0.9336 | Params: 16.3900M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.5082 | Last Action: V/Proj pruning |Acc: 0.9708 | Params: 16.8255M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.5114 | Last Action: QK pruning |Acc: 0.9716 | Params: 16.8105M
+Iter: 14 | Stack: 22 | Pruned: 1 | Curr Val: 0.5133 | Last Action: MLP pruning |Acc: 0.9712 | Params: 16.7905M
+Iter: 15 | Stack: 21 | Pruned: 1 | Curr Val: 0.5127 | Last Action: V/Proj pruning |Acc: 0.9712 | Params: 16.7955M
+Iter: 16 | Stack: 20 | Pruned: 1 | Curr Val: 0.5117 | Last Action: QK pruning |Acc: 0.9692 | Params: 16.7804M
+--- NUOVO BEST TROVATO! --- Valore: 0.5157 (Precedente: 0.5150)
+Iter: 17 | Stack: 19 | Pruned: 1 | Curr Val: 0.5157 | Last Action: Head pruning |Acc: 0.9676 | Params: 16.7304M
+Iter: 18 | Stack: 18 | Pruned: 1 | Curr Val: 0.5080 | Last Action: Emb pruning |Acc: 0.9324 | Params: 16.3802M
+Iter: 19 | Stack: 17 | Pruned: 1 | Curr Val: 0.5113 | Last Action: Head pruning |Acc: 0.9672 | Params: 16.7604M
+Iter: 20 | Stack: 21 | Pruned: 1 | Curr Val: 0.5144 | Last Action: MLP pruning |Acc: 0.9676 | Params: 16.7404M
+Iter: 21 | Stack: 20 | Pruned: 1 | Curr Val: 0.5137 | Last Action: V/Proj pruning |Acc: 0.9680 | Params: 16.7504M
+Iter: 22 | Stack: 19 | Pruned: 1 | Curr Val: 0.5157 | Last Action: QK pruning |Acc: 0.9676 | Params: 16.7304M
+--- NUOVO BEST TROVATO! --- Valore: 0.5168 (Precedente: 0.5157)
+Iter: 23 | Stack: 18 | Pruned: 1 | Curr Val: 0.5168 | Last Action: Head pruning |Acc: 0.9640 | Params: 16.6804M
+Iter: 24 | Stack: 17 | Pruned: 1 | Curr Val: 0.5033 | Last Action: Emb pruning |Acc: 0.9252 | Params: 16.3315M
+Iter: 25 | Stack: 16 | Pruned: 1 | Curr Val: 0.5036 | Last Action: Emb pruning |Acc: 0.9320 | Params: 16.4095M
+Iter: 26 | Stack: 15 | Pruned: 2 | Curr Val: 0.5063 | Last Action: V/Proj pruning |Acc: 0.9712 | Params: 16.8455M
+Iter: 27 | Stack: 14 | Pruned: 3 | Curr Val: 0.5082 | Last Action: QK pruning |Acc: 0.9712 | Params: 16.8305M
+Iter: 28 | Stack: 13 | Pruned: 4 | Curr Val: 0.5087 | Last Action: Head pruning |Acc: 0.9672 | Params: 16.7804M
+Iter: 29 | Stack: 12 | Pruned: 5 | Curr Val: 0.4998 | Last Action: Emb pruning |Acc: 0.9312 | Params: 16.4290M
+Iter: 30 | Stack: 11 | Pruned: 6 | Curr Val: 0.5037 | Last Action: V/Proj pruning |Acc: 0.9712 | Params: 16.8655M
+Iter: 31 | Stack: 10 | Pruned: 7 | Curr Val: 0.5056 | Last Action: QK pruning |Acc: 0.9712 | Params: 16.8505M
+Iter: 32 | Stack: 9 | Pruned: 8 | Curr Val: 0.5067 | Last Action: Head pruning |Acc: 0.9676 | Params: 16.8004M
+Iter: 33 | Stack: 8 | Pruned: 9 | Curr Val: 0.4984 | Last Action: Emb pruning |Acc: 0.9320 | Params: 16.4485M
+Iter: 34 | Stack: 7 | Pruned: 10 | Curr Val: 0.5005 | Last Action: V/Proj pruning |Acc: 0.9708 | Params: 16.8855M
+Iter: 35 | Stack: 6 | Pruned: 11 | Curr Val: 0.5007 | Last Action: QK pruning |Acc: 0.9696 | Params: 16.8705M
+Iter: 36 | Stack: 5 | Pruned: 12 | Curr Val: 0.5035 | Last Action: Head pruning |Acc: 0.9672 | Params: 16.8204M
+Iter: 37 | Stack: 4 | Pruned: 13 | Curr Val: 0.4934 | Last Action: Emb pruning |Acc: 0.9304 | Params: 16.4680M
+Iter: 38 | Stack: 3 | Pruned: 14 | Curr Val: 0.4986 | Last Action: V/Proj pruning |Acc: 0.9712 | Params: 16.9055M
+Iter: 39 | Stack: 2 | Pruned: 15 | Curr Val: 0.5011 | Last Action: QK pruning |Acc: 0.9716 | Params: 16.8905M
+Iter: 40 | Stack: 1 | Pruned: 16 | Curr Val: 0.5009 | Last Action: Head pruning |Acc: 0.9672 | Params: 16.8404M
+Iter: 41 | Stack: 0 | Pruned: 17 | Curr Val: 0.4921 | Last Action: Emb pruning |Acc: 0.9312 | Params: 16.4874M
+--- Ricerca Completata ---
+Iterazioni totali: 41
+Rami potati (pruned): 18
+Miglior Valore Trovato: 0.5168
+Epoch 1:   0%|          | 0/352 [00:00<?, ?it/s]   REPORT POST-TAGLIO:
+      - Params: 16.68M (Riduzione Globale: 23.15%)
+      - Accuracy: 85.85% (Drop: 4.26 %)
+      - Tempo Ricerca: 280.7s
+Epoch 1: 100%|██████████| 352/352 [00:57<00:00,  6.17it/s]
+Train_loss: 0.1660
+Val loss: 0.4686	Accuracy: 0.8639
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [00:57<00:00,  6.16it/s]
+Train_loss: 0.1433
+Val loss: 0.4680	Accuracy: 0.8658
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [00:58<00:00,  6.07it/s]
+Train_loss: 0.1304
+Val loss: 0.4645	Accuracy: 0.8684
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [00:57<00:00,  6.14it/s]
+Train_loss: 0.1154
+Val loss: 0.4626	Accuracy: 0.8705
+
+---Best model saved---
+Epoch 5: 100%|██████████| 352/352 [00:57<00:00,  6.15it/s]
+Train_loss: 0.1070
+Val loss: 0.4635	Accuracy: 0.8699
+
+Epoch 6: 100%|██████████| 352/352 [00:56<00:00,  6.18it/s]
+Train_loss: 0.0980
+Val loss: 0.4688	Accuracy: 0.8709
+
+   FINE ITERAZIONE 7
+      - Accuracy Recuperata: 87.05% (+1.19%)
+      - Tempo Fine-Tuning: 379.4s
+      - Tempo Totale Iter: 670.8s
+------------------------------------------------------------
+
+ ITERAZIONE 8/10
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.5465 | Last Action: Start |Acc: 0.9840 | Params: 16.6804M
+--- NUOVO BEST TROVATO! --- Valore: 0.5491 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.5491 | Last Action: MLP pruning |Acc: 0.9840 | Params: 16.6604M
+--- NUOVO BEST TROVATO! --- Valore: 0.5517 (Precedente: 0.5491)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.5517 | Last Action: MLP pruning |Acc: 0.9840 | Params: 16.6404M
+--- NUOVO BEST TROVATO! --- Valore: 0.5543 (Precedente: 0.5517)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.5543 | Last Action: MLP pruning |Acc: 0.9840 | Params: 16.6204M
+--- NUOVO BEST TROVATO! --- Valore: 0.5569 (Precedente: 0.5543)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.5569 | Last Action: MLP pruning |Acc: 0.9840 | Params: 16.6004M
+--- NUOVO BEST TROVATO! --- Valore: 0.5589 (Precedente: 0.5569)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.5589 | Last Action: MLP pruning |Acc: 0.9836 | Params: 16.5804M
+--- NUOVO BEST TROVATO! --- Valore: 0.5615 (Precedente: 0.5589)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.5615 | Last Action: MLP pruning |Acc: 0.9836 | Params: 16.5604M
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.5601 | Last Action: V/Proj pruning |Acc: 0.9840 | Params: 16.5754M
+--- NUOVO BEST TROVATO! --- Valore: 0.5616 (Precedente: 0.5615)
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.5616 | Last Action: QK pruning |Acc: 0.9828 | Params: 16.5503M
+--- NUOVO BEST TROVATO! --- Valore: 0.5635 (Precedente: 0.5616)
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.5635 | Last Action: Head pruning |Acc: 0.9796 | Params: 16.5003M
+--- NUOVO BEST TROVATO! --- Valore: 0.5673 (Precedente: 0.5635)
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.5673 | Last Action: Emb pruning |Acc: 0.9516 | Params: 16.1560M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.5581 | Last Action: V/Proj pruning |Acc: 0.9844 | Params: 16.5954M
+Iter: 13 | Stack: 18 | Pruned: 1 | Curr Val: 0.5596 | Last Action: QK pruning |Acc: 0.9832 | Params: 16.5703M
+Iter: 14 | Stack: 17 | Pruned: 2 | Curr Val: 0.5626 | Last Action: Head pruning |Acc: 0.9808 | Params: 16.5203M
+Iter: 15 | Stack: 21 | Pruned: 2 | Curr Val: 0.5647 | Last Action: MLP pruning |Acc: 0.9804 | Params: 16.5003M
+Iter: 16 | Stack: 20 | Pruned: 2 | Curr Val: 0.5627 | Last Action: V/Proj pruning |Acc: 0.9804 | Params: 16.5153M
+Iter: 17 | Stack: 19 | Pruned: 2 | Curr Val: 0.5653 | Last Action: QK pruning |Acc: 0.9804 | Params: 16.4953M
+Iter: 18 | Stack: 18 | Pruned: 2 | Curr Val: 0.5428 | Last Action: Head pruning |Acc: 0.9604 | Params: 16.4403M
+--- NUOVO BEST TROVATO! --- Valore: 0.5691 (Precedente: 0.5673)
+Iter: 19 | Stack: 17 | Pruned: 2 | Curr Val: 0.5691 | Last Action: Emb pruning |Acc: 0.9476 | Params: 16.0975M
+Iter: 20 | Stack: 16 | Pruned: 2 | Curr Val: 0.5628 | Last Action: Emb pruning |Acc: 0.9504 | Params: 16.1755M
+Iter: 21 | Stack: 15 | Pruned: 3 | Curr Val: 0.5555 | Last Action: V/Proj pruning |Acc: 0.9844 | Params: 16.6154M
+Iter: 22 | Stack: 14 | Pruned: 4 | Curr Val: 0.5576 | Last Action: QK pruning |Acc: 0.9836 | Params: 16.5903M
+Iter: 23 | Stack: 13 | Pruned: 5 | Curr Val: 0.5594 | Last Action: Head pruning |Acc: 0.9804 | Params: 16.5403M
+Iter: 24 | Stack: 12 | Pruned: 6 | Curr Val: 0.5615 | Last Action: Emb pruning |Acc: 0.9512 | Params: 16.1950M
+Iter: 25 | Stack: 11 | Pruned: 7 | Curr Val: 0.5529 | Last Action: V/Proj pruning |Acc: 0.9844 | Params: 16.6354M
+Iter: 26 | Stack: 10 | Pruned: 8 | Curr Val: 0.5550 | Last Action: QK pruning |Acc: 0.9836 | Params: 16.6103M
+Iter: 27 | Stack: 9 | Pruned: 9 | Curr Val: 0.5562 | Last Action: Head pruning |Acc: 0.9800 | Params: 16.5603M
+Iter: 28 | Stack: 8 | Pruned: 10 | Curr Val: 0.5601 | Last Action: Emb pruning |Acc: 0.9520 | Params: 16.2145M
+Iter: 29 | Stack: 7 | Pruned: 11 | Curr Val: 0.5503 | Last Action: V/Proj pruning |Acc: 0.9844 | Params: 16.6554M
+Iter: 30 | Stack: 6 | Pruned: 12 | Curr Val: 0.5524 | Last Action: QK pruning |Acc: 0.9836 | Params: 16.6303M
+Iter: 31 | Stack: 5 | Pruned: 13 | Curr Val: 0.5536 | Last Action: Head pruning |Acc: 0.9800 | Params: 16.5803M
+Iter: 32 | Stack: 4 | Pruned: 14 | Curr Val: 0.5569 | Last Action: Emb pruning |Acc: 0.9516 | Params: 16.2340M
+Iter: 33 | Stack: 3 | Pruned: 15 | Curr Val: 0.5477 | Last Action: V/Proj pruning |Acc: 0.9844 | Params: 16.6754M
+Iter: 34 | Stack: 2 | Pruned: 16 | Curr Val: 0.5498 | Last Action: QK pruning |Acc: 0.9836 | Params: 16.6503M
+Iter: 35 | Stack: 1 | Pruned: 17 | Curr Val: 0.5510 | Last Action: Head pruning |Acc: 0.9800 | Params: 16.6003M
+Iter: 36 | Stack: 0 | Pruned: 18 | Curr Val: 0.5531 | Last Action: Emb pruning |Acc: 0.9508 | Params: 16.2535M
+--- Ricerca Completata ---
+Iterazioni totali: 36
+Rami potati (pruned): 19
+Miglior Valore Trovato: 0.5691
+   REPORT POST-TAGLIO:
+      - Params: 16.10M (Riduzione Globale: 25.83%)
+      - Accuracy: 83.57% (Drop: 6.54 %)
+      - Tempo Ricerca: 245.8s
+Epoch 1: 100%|██████████| 352/352 [00:56<00:00,  6.24it/s]
+Train_loss: 0.2059
+Val loss: 0.5230	Accuracy: 0.8548
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [00:56<00:00,  6.25it/s]
+Train_loss: 0.1692
+Val loss: 0.5128	Accuracy: 0.8571
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [00:56<00:00,  6.25it/s]
+Train_loss: 0.1466
+Val loss: 0.5066	Accuracy: 0.8604
+
+---Best model saved---
+Epoch 4: 100%|██████████| 352/352 [00:56<00:00,  6.26it/s]
+Train_loss: 0.1303
+Val loss: 0.5008	Accuracy: 0.8606
+
+---Best model saved---
+Epoch 5: 100%|██████████| 352/352 [00:56<00:00,  6.24it/s]
+Epoch 6:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.1186
+Val loss: 0.5125	Accuracy: 0.8607
+
+Epoch 6: 100%|██████████| 352/352 [00:56<00:00,  6.28it/s]
+Train_loss: 0.1100
+Val loss: 0.5087	Accuracy: 0.8646
+
+   FINE ITERAZIONE 8
+      - Accuracy Recuperata: 86.06% (+2.49%)
+      - Tempo Fine-Tuning: 372.9s
+      - Tempo Totale Iter: 629.6s
+------------------------------------------------------------
+
+ ITERAZIONE 9/10
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.6111 | Last Action: Start |Acc: 0.9756 | Params: 16.0975M
+--- NUOVO BEST TROVATO! --- Valore: 0.6131 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.6131 | Last Action: MLP pruning |Acc: 0.9752 | Params: 16.0780M
+--- NUOVO BEST TROVATO! --- Valore: 0.6157 (Precedente: 0.6131)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.6157 | Last Action: MLP pruning |Acc: 0.9752 | Params: 16.0585M
+--- NUOVO BEST TROVATO! --- Valore: 0.6178 (Precedente: 0.6157)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.6178 | Last Action: MLP pruning |Acc: 0.9748 | Params: 16.0390M
+--- NUOVO BEST TROVATO! --- Valore: 0.6216 (Precedente: 0.6178)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.6216 | Last Action: MLP pruning |Acc: 0.9756 | Params: 16.0195M
+--- NUOVO BEST TROVATO! --- Valore: 0.6218 (Precedente: 0.6216)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.6218 | Last Action: MLP pruning |Acc: 0.9740 | Params: 16.0001M
+--- NUOVO BEST TROVATO! --- Valore: 0.6257 (Precedente: 0.6218)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.6257 | Last Action: MLP pruning |Acc: 0.9748 | Params: 15.9806M
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.6225 | Last Action: V/Proj pruning |Acc: 0.9740 | Params: 15.9952M
+--- NUOVO BEST TROVATO! --- Valore: 0.6264 (Precedente: 0.6257)
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.6264 | Last Action: QK pruning |Acc: 0.9744 | Params: 15.9708M
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.5861 | Last Action: Head pruning |Acc: 0.9432 | Params: 15.9220M
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.6121 | Last Action: Emb pruning |Acc: 0.9296 | Params: 15.5798M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.6216 | Last Action: V/Proj pruning |Acc: 0.9752 | Params: 16.0147M
+Iter: 13 | Stack: 23 | Pruned: 0 | Curr Val: 0.6225 | Last Action: MLP pruning |Acc: 0.9740 | Params: 15.9952M
+Iter: 14 | Stack: 22 | Pruned: 0 | Curr Val: 0.6211 | Last Action: V/Proj pruning |Acc: 0.9744 | Params: 16.0098M
+Iter: 15 | Stack: 21 | Pruned: 0 | Curr Val: 0.6262 | Last Action: QK pruning |Acc: 0.9756 | Params: 15.9854M
+Iter: 16 | Stack: 20 | Pruned: 0 | Curr Val: 0.5828 | Last Action: Head pruning |Acc: 0.9424 | Params: 15.9367M
+Iter: 17 | Stack: 19 | Pruned: 0 | Curr Val: 0.6108 | Last Action: Emb pruning |Acc: 0.9300 | Params: 15.5940M
+Iter: 18 | Stack: 18 | Pruned: 0 | Curr Val: 0.6255 | Last Action: QK pruning |Acc: 0.9756 | Params: 15.9903M
+--- NUOVO BEST TROVATO! --- Valore: 0.6276 (Precedente: 0.6264)
+Iter: 19 | Stack: 22 | Pruned: 0 | Curr Val: 0.6276 | Last Action: MLP pruning |Acc: 0.9752 | Params: 15.9708M
+Iter: 20 | Stack: 21 | Pruned: 0 | Curr Val: 0.6262 | Last Action: V/Proj pruning |Acc: 0.9756 | Params: 15.9854M
+Iter: 21 | Stack: 20 | Pruned: 0 | Curr Val: 0.6253 | Last Action: QK pruning |Acc: 0.9732 | Params: 15.9659M
+Iter: 22 | Stack: 19 | Pruned: 0 | Curr Val: 0.5868 | Last Action: Head pruning |Acc: 0.9428 | Params: 15.9122M
+Iter: 23 | Stack: 18 | Pruned: 0 | Curr Val: 0.6203 | Last Action: Emb pruning |Acc: 0.9340 | Params: 15.5703M
+Iter: 24 | Stack: 17 | Pruned: 0 | Curr Val: 0.5828 | Last Action: Head pruning |Acc: 0.9428 | Params: 15.9415M
+Iter: 25 | Stack: 16 | Pruned: 1 | Curr Val: 0.6076 | Last Action: Emb pruning |Acc: 0.9284 | Params: 15.5988M
+Iter: 26 | Stack: 15 | Pruned: 2 | Curr Val: 0.6184 | Last Action: V/Proj pruning |Acc: 0.9748 | Params: 16.0342M
+Iter: 27 | Stack: 14 | Pruned: 3 | Curr Val: 0.6223 | Last Action: QK pruning |Acc: 0.9752 | Params: 16.0097M
+Iter: 28 | Stack: 13 | Pruned: 4 | Curr Val: 0.5771 | Last Action: Head pruning |Acc: 0.9408 | Params: 15.9610M
+Iter: 29 | Stack: 12 | Pruned: 5 | Curr Val: 0.6069 | Last Action: Emb pruning |Acc: 0.9296 | Params: 15.6177M
+Iter: 30 | Stack: 11 | Pruned: 6 | Curr Val: 0.6158 | Last Action: V/Proj pruning |Acc: 0.9748 | Params: 16.0536M
+Iter: 31 | Stack: 10 | Pruned: 7 | Curr Val: 0.6197 | Last Action: QK pruning |Acc: 0.9752 | Params: 16.0292M
+Iter: 32 | Stack: 9 | Pruned: 8 | Curr Val: 0.5763 | Last Action: Head pruning |Acc: 0.9420 | Params: 15.9805M
+Iter: 33 | Stack: 8 | Pruned: 9 | Curr Val: 0.6042 | Last Action: Emb pruning |Acc: 0.9296 | Params: 15.6367M
+Iter: 34 | Stack: 7 | Pruned: 10 | Curr Val: 0.6143 | Last Action: V/Proj pruning |Acc: 0.9756 | Params: 16.0731M
+Iter: 35 | Stack: 6 | Pruned: 11 | Curr Val: 0.6176 | Last Action: QK pruning |Acc: 0.9756 | Params: 16.0487M
+Iter: 36 | Stack: 5 | Pruned: 12 | Curr Val: 0.5749 | Last Action: Head pruning |Acc: 0.9428 | Params: 16.0000M
+Iter: 37 | Stack: 4 | Pruned: 13 | Curr Val: 0.6022 | Last Action: Emb pruning |Acc: 0.9300 | Params: 15.6557M
+Iter: 38 | Stack: 3 | Pruned: 14 | Curr Val: 0.6111 | Last Action: V/Proj pruning |Acc: 0.9752 | Params: 16.0926M
+Iter: 39 | Stack: 2 | Pruned: 15 | Curr Val: 0.6162 | Last Action: QK pruning |Acc: 0.9764 | Params: 16.0682M
+Iter: 40 | Stack: 1 | Pruned: 16 | Curr Val: 0.5722 | Last Action: Head pruning |Acc: 0.9428 | Params: 16.0195M
+Iter: 41 | Stack: 0 | Pruned: 17 | Curr Val: 0.6021 | Last Action: Emb pruning |Acc: 0.9316 | Params: 15.6747M
+--- Ricerca Completata ---
+Iterazioni totali: 41
+Rami potati (pruned): 18
+Miglior Valore Trovato: 0.6276
+   REPORT POST-TAGLIO:
+      - Params: 15.97M (Riduzione Globale: 26.42%)
+      - Accuracy: 86.13% (Drop: 3.99 %)
+      - Tempo Ricerca: 276.0s
+Epoch 1: 100%|██████████| 352/352 [00:56<00:00,  6.28it/s]
+Train_loss: 0.1230
+Val loss: 0.5030	Accuracy: 0.8619
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [00:55<00:00,  6.29it/s]
+Epoch 3:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.1095
+Val loss: 0.5039	Accuracy: 0.8622
+
+Epoch 3: 100%|██████████| 352/352 [00:55<00:00,  6.29it/s]
+Train_loss: 0.0993
+Val loss: 0.5086	Accuracy: 0.8655
+
+   FINE ITERAZIONE 9
+      - Accuracy Recuperata: 86.19% (+0.07%)
+      - Tempo Fine-Tuning: 185.6s
+      - Tempo Totale Iter: 472.4s
+------------------------------------------------------------
+
+ ITERAZIONE 10/10
+   [1/3] Campionamento Search Set & NAS Search...
+--- Inizio Ricerca NAS ---
+Iter: 1 | Stack: 0 | Pruned: 0 | Curr Val: 0.6264 | Last Action: Start |Acc: 0.9744 | Params: 15.9708M
+--- NUOVO BEST TROVATO! --- Valore: 0.6290 (Precedente: -inf)
+Iter: 2 | Stack: 4 | Pruned: 0 | Curr Val: 0.6290 | Last Action: MLP pruning |Acc: 0.9744 | Params: 15.9513M
+--- NUOVO BEST TROVATO! --- Valore: 0.6311 (Precedente: 0.6290)
+Iter: 3 | Stack: 8 | Pruned: 0 | Curr Val: 0.6311 | Last Action: MLP pruning |Acc: 0.9740 | Params: 15.9318M
+--- NUOVO BEST TROVATO! --- Valore: 0.6337 (Precedente: 0.6311)
+Iter: 4 | Stack: 12 | Pruned: 0 | Curr Val: 0.6337 | Last Action: MLP pruning |Acc: 0.9740 | Params: 15.9123M
+--- NUOVO BEST TROVATO! --- Valore: 0.6370 (Precedente: 0.6337)
+Iter: 5 | Stack: 16 | Pruned: 0 | Curr Val: 0.6370 | Last Action: MLP pruning |Acc: 0.9744 | Params: 15.8928M
+--- NUOVO BEST TROVATO! --- Valore: 0.6402 (Precedente: 0.6370)
+Iter: 6 | Stack: 20 | Pruned: 0 | Curr Val: 0.6402 | Last Action: MLP pruning |Acc: 0.9748 | Params: 15.8733M
+--- NUOVO BEST TROVATO! --- Valore: 0.6429 (Precedente: 0.6402)
+Iter: 7 | Stack: 24 | Pruned: 0 | Curr Val: 0.6429 | Last Action: MLP pruning |Acc: 0.9748 | Params: 15.8538M
+Iter: 8 | Stack: 23 | Pruned: 0 | Curr Val: 0.6415 | Last Action: V/Proj pruning |Acc: 0.9752 | Params: 15.8685M
+Iter: 9 | Stack: 22 | Pruned: 0 | Curr Val: 0.6412 | Last Action: QK pruning |Acc: 0.9732 | Params: 15.8489M
+Iter: 10 | Stack: 21 | Pruned: 0 | Curr Val: 0.6180 | Last Action: Head pruning |Acc: 0.9528 | Params: 15.7953M
+Iter: 11 | Stack: 20 | Pruned: 0 | Curr Val: 0.6423 | Last Action: Emb pruning |Acc: 0.9380 | Params: 15.4564M
+Iter: 12 | Stack: 19 | Pruned: 0 | Curr Val: 0.6394 | Last Action: V/Proj pruning |Acc: 0.9756 | Params: 15.8879M
+Iter: 13 | Stack: 23 | Pruned: 0 | Curr Val: 0.6409 | Last Action: MLP pruning |Acc: 0.9748 | Params: 15.8685M
+Iter: 14 | Stack: 22 | Pruned: 0 | Curr Val: 0.6377 | Last Action: V/Proj pruning |Acc: 0.9740 | Params: 15.8831M
+Iter: 15 | Stack: 21 | Pruned: 0 | Curr Val: 0.6404 | Last Action: QK pruning |Acc: 0.9740 | Params: 15.8635M
+Iter: 16 | Stack: 20 | Pruned: 0 | Curr Val: 0.6123 | Last Action: Head pruning |Acc: 0.9504 | Params: 15.8099M
+Iter: 17 | Stack: 19 | Pruned: 0 | Curr Val: 0.6317 | Last Action: Emb pruning |Acc: 0.9324 | Params: 15.4706M
+Iter: 18 | Stack: 18 | Pruned: 0 | Curr Val: 0.6391 | Last Action: QK pruning |Acc: 0.9736 | Params: 15.8684M
+Iter: 19 | Stack: 22 | Pruned: 0 | Curr Val: 0.6412 | Last Action: MLP pruning |Acc: 0.9732 | Params: 15.8489M
+Iter: 20 | Stack: 21 | Pruned: 0 | Curr Val: 0.6404 | Last Action: V/Proj pruning |Acc: 0.9740 | Params: 15.8635M
+--- NUOVO BEST TROVATO! --- Valore: 0.6431 (Precedente: 0.6429)
+Iter: 21 | Stack: 20 | Pruned: 0 | Curr Val: 0.6431 | Last Action: QK pruning |Acc: 0.9736 | Params: 15.8391M
+Iter: 22 | Stack: 19 | Pruned: 0 | Curr Val: 0.6107 | Last Action: Head pruning |Acc: 0.9480 | Params: 15.7953M
+Iter: 23 | Stack: 18 | Pruned: 0 | Curr Val: 0.6418 | Last Action: Emb pruning |Acc: 0.9372 | Params: 15.4516M
+Iter: 24 | Stack: 17 | Pruned: 0 | Curr Val: 0.6135 | Last Action: Head pruning |Acc: 0.9516 | Params: 15.8148M
+Iter: 25 | Stack: 16 | Pruned: 1 | Curr Val: 0.6397 | Last Action: Emb pruning |Acc: 0.9380 | Params: 15.4754M
+Iter: 26 | Stack: 20 | Pruned: 1 | Curr Val: 0.6417 | Last Action: MLP pruning |Acc: 0.9376 | Params: 15.4564M
+Iter: 27 | Stack: 19 | Pruned: 1 | Curr Val: 0.6409 | Last Action: V/Proj pruning |Acc: 0.9384 | Params: 15.4706M
+Iter: 28 | Stack: 18 | Pruned: 1 | Curr Val: 0.6343 | Last Action: QK pruning |Acc: 0.9324 | Params: 15.4516M
+Iter: 29 | Stack: 17 | Pruned: 1 | Curr Val: 0.5778 | Last Action: Head pruning |Acc: 0.8920 | Params: 15.3994M
+Iter: 30 | Stack: 16 | Pruned: 1 | Curr Val: 0.6081 | Last Action: Emb pruning |Acc: 0.8808 | Params: 15.0579M
+Iter: 31 | Stack: 15 | Pruned: 1 | Curr Val: 0.6362 | Last Action: V/Proj pruning |Acc: 0.9752 | Params: 15.9074M
+Iter: 32 | Stack: 14 | Pruned: 2 | Curr Val: 0.6365 | Last Action: QK pruning |Acc: 0.9736 | Params: 15.8879M
+Iter: 33 | Stack: 13 | Pruned: 3 | Curr Val: 0.6114 | Last Action: Head pruning |Acc: 0.9520 | Params: 15.8343M
+Iter: 34 | Stack: 12 | Pruned: 4 | Curr Val: 0.6364 | Last Action: Emb pruning |Acc: 0.9376 | Params: 15.4943M
+Iter: 35 | Stack: 11 | Pruned: 5 | Curr Val: 0.6323 | Last Action: V/Proj pruning |Acc: 0.9744 | Params: 15.9269M
+Iter: 36 | Stack: 10 | Pruned: 6 | Curr Val: 0.6338 | Last Action: QK pruning |Acc: 0.9736 | Params: 15.9074M
+Iter: 37 | Stack: 9 | Pruned: 7 | Curr Val: 0.6088 | Last Action: Head pruning |Acc: 0.9520 | Params: 15.8538M
+Iter: 38 | Stack: 8 | Pruned: 8 | Curr Val: 0.6344 | Last Action: Emb pruning |Acc: 0.9380 | Params: 15.5133M
+Iter: 39 | Stack: 7 | Pruned: 9 | Curr Val: 0.6297 | Last Action: V/Proj pruning |Acc: 0.9744 | Params: 15.9464M
+Iter: 40 | Stack: 6 | Pruned: 10 | Curr Val: 0.6318 | Last Action: QK pruning |Acc: 0.9740 | Params: 15.9269M
+Iter: 41 | Stack: 5 | Pruned: 11 | Curr Val: 0.6067 | Last Action: Head pruning |Acc: 0.9524 | Params: 15.8733M
+Iter: 42 | Stack: 4 | Pruned: 12 | Curr Val: 0.6317 | Last Action: Emb pruning |Acc: 0.9380 | Params: 15.5323M
+Iter: 43 | Stack: 3 | Pruned: 13 | Curr Val: 0.6271 | Last Action: V/Proj pruning |Acc: 0.9744 | Params: 15.9659M
+Iter: 44 | Stack: 2 | Pruned: 14 | Curr Val: 0.6285 | Last Action: QK pruning |Acc: 0.9736 | Params: 15.9464M
+Iter: 45 | Stack: 1 | Pruned: 15 | Curr Val: 0.6046 | Last Action: Head pruning |Acc: 0.9528 | Params: 15.8928M
+Iter: 46 | Stack: 0 | Pruned: 16 | Curr Val: 0.6315 | Last Action: Emb pruning |Acc: 0.9396 | Params: 15.5513M
+--- Ricerca Completata ---
+Iterazioni totali: 46
+Rami potati (pruned): 17
+Miglior Valore Trovato: 0.6431
+Epoch 1:   0%|          | 0/352 [00:00<?, ?it/s]   REPORT POST-TAGLIO:
+      - Params: 15.84M (Riduzione Globale: 27.02%)
+      - Accuracy: 85.90% (Drop: 4.22 %)
+      - Tempo Ricerca: 310.7s
+Epoch 1: 100%|██████████| 352/352 [00:55<00:00,  6.30it/s]
+Train_loss: 0.1163
+Val loss: 0.5087	Accuracy: 0.8616
+
+---Best model saved---
+Epoch 2: 100%|██████████| 352/352 [00:55<00:00,  6.30it/s]
+Train_loss: 0.1037
+Val loss: 0.5082	Accuracy: 0.8605
+
+---Best model saved---
+Epoch 3: 100%|██████████| 352/352 [00:55<00:00,  6.29it/s]
+Epoch 4:   0%|          | 0/352 [00:00<?, ?it/s]Train_loss: 0.0924
+Val loss: 0.5101	Accuracy: 0.8627
+
+Epoch 4: 100%|██████████| 352/352 [00:55<00:00,  6.32it/s]
+Train_loss: 0.0853
+Val loss: 0.5162	Accuracy: 0.8647
+
+   FINE ITERAZIONE 10
+      - Accuracy Recuperata: 86.05% (+0.16%)
+      - Tempo Fine-Tuning: 246.7s
+      - Tempo Totale Iter: 568.1s
+------------------------------------------------------------
+
+VALUTAZIONE FINALE (Test Set)
+               precision    recall  f1-score   support
+
+        apple      0.950     0.950     0.950       100
+aquarium_fish      0.921     0.930     0.925       100
+         baby      0.809     0.760     0.784       100
+         bear      0.818     0.810     0.814       100
+       beaver      0.784     0.800     0.792       100
+          bed      0.892     0.910     0.901       100
+          bee      0.930     0.930     0.930       100
+       beetle      0.861     0.870     0.866       100
+      bicycle      0.941     0.960     0.950       100
+       bottle      0.950     0.960     0.955       100
+         bowl      0.725     0.660     0.691       100
+          boy      0.560     0.610     0.584       100
+       bridge      0.870     0.940     0.904       100
+          bus      0.817     0.850     0.833       100
+    butterfly      0.940     0.940     0.940       100
+        camel      0.893     0.920     0.906       100
+          can      0.861     0.930     0.894       100
+       castle      0.957     0.900     0.928       100
+  caterpillar      0.926     0.880     0.903       100
+       cattle      0.923     0.840     0.880       100
+        chair      0.940     0.940     0.940       100
+   chimpanzee      0.933     0.970     0.951       100
+        clock      0.879     0.940     0.908       100
+        cloud      0.911     0.820     0.863       100
+    cockroach      0.957     0.880     0.917       100
+        couch      0.920     0.800     0.856       100
+         crab      0.832     0.890     0.860       100
+    crocodile      0.854     0.820     0.837       100
+          cup      0.880     0.880     0.880       100
+     dinosaur      0.820     0.910     0.863       100
+      dolphin      0.840     0.840     0.840       100
+     elephant      0.883     0.910     0.897       100
+     flatfish      0.881     0.890     0.886       100
+       forest      0.792     0.840     0.816       100
+          fox      0.945     0.860     0.901       100
+         girl      0.710     0.660     0.684       100
+      hamster      0.944     0.850     0.895       100
+        house      0.859     0.850     0.854       100
+     kangaroo      0.891     0.820     0.854       100
+     keyboard      0.970     0.970     0.970       100
+         lamp      0.881     0.890     0.886       100
+   lawn_mower      0.940     0.940     0.940       100
+      leopard      0.821     0.870     0.845       100
+         lion      0.918     0.900     0.909       100
+       lizard      0.850     0.910     0.879       100
+      lobster      0.835     0.860     0.847       100
+          man      0.734     0.800     0.766       100
+   maple_tree      0.682     0.730     0.705       100
+   motorcycle      0.933     0.970     0.951       100
+     mountain      0.856     0.950     0.900       100
+        mouse      0.719     0.820     0.766       100
+     mushroom      0.918     0.890     0.904       100
+     oak_tree      0.690     0.690     0.690       100
+       orange      0.980     0.970     0.975       100
+       orchid      0.869     0.930     0.899       100
+        otter      0.691     0.650     0.670       100
+    palm_tree      0.959     0.930     0.944       100
+         pear      0.903     0.930     0.916       100
+ pickup_truck      0.969     0.930     0.949       100
+    pine_tree      0.814     0.790     0.802       100
+        plain      0.933     0.830     0.878       100
+        plate      0.879     0.800     0.838       100
+        poppy      0.865     0.900     0.882       100
+    porcupine      0.849     0.790     0.819       100
+       possum      0.780     0.780     0.780       100
+       rabbit      0.848     0.840     0.844       100
+      raccoon      0.937     0.890     0.913       100
+          ray      0.884     0.840     0.862       100
+         road      0.932     0.960     0.946       100
+       rocket      0.904     0.940     0.922       100
+         rose      0.906     0.870     0.888       100
+          sea      0.869     0.860     0.864       100
+         seal      0.655     0.740     0.695       100
+        shark      0.857     0.840     0.848       100
+        shrew      0.699     0.720     0.709       100
+        skunk      0.915     0.970     0.942       100
+   skyscraper      0.941     0.960     0.950       100
+        snail      0.916     0.870     0.892       100
+        snake      0.843     0.910     0.875       100
+       spider      0.864     0.950     0.905       100
+     squirrel      0.810     0.850     0.829       100
+    streetcar      0.832     0.840     0.836       100
+    sunflower      0.961     0.980     0.970       100
+ sweet_pepper      0.947     0.890     0.918       100
+        table      0.864     0.890     0.877       100
+         tank      0.979     0.940     0.959       100
+    telephone      0.937     0.890     0.913       100
+   television      0.942     0.970     0.956       100
+        tiger      0.889     0.880     0.884       100
+      tractor      0.900     0.990     0.943       100
+        train      0.877     0.930     0.903       100
+        trout      0.920     0.920     0.920       100
+        tulip      0.890     0.810     0.848       100
+       turtle      0.916     0.870     0.892       100
+     wardrobe      0.950     0.960     0.955       100
+        whale      0.835     0.810     0.822       100
+  willow_tree      0.822     0.740     0.779       100
+         wolf      0.957     0.880     0.917       100
+        woman      0.792     0.760     0.776       100
+         worm      0.897     0.870     0.883       100
+
+     accuracy                          0.870     10000
+    macro avg      0.871     0.870     0.870     10000
+ weighted avg      0.871     0.870     0.870     10000
+
+Balanced Accuracy: 86.97%
+
+============================================================
+🏆 RISULTATI FINALI
+============================================================
+   - Tempo Totale: 104.6 min
+   - Parametri Iniziali: 21.70M
+   - Parametri Finali:   15.84M
+   - Riduzione Size:     27.02%
+   - Accuracy Test Set:  86.97%
+============================================================
+✅ Modello completo salvato in: D:\Tesi\src\NAS\ResultsFinal\pruned_model.pth
+
+batch_size = 128
+N_iterations = 10
+lr = 0.5e-5
+weight_decay = 0.05
+images_per_class = 25
+depth_limit = 6
+max_epochs = 20
+patience = 2
+min_delta = 0.0001
+early_stop_path = "D:\\Tesi\\src\\NAS\\"
+seed = 42
+search_threshold = 0.005
+distillation = False
+T = 2.0
+
+lambda = 1.5
+
+=====================================================================================
+📊 CONFRONTO PRESTAZIONI: ViT Original vs ViT Pruned
+=====================================================================================
+Metrica                        | Originale       | Pruned          | Delta
+-------------------------------------------------------------------------------------
+
+[ 1. COMPLESSITÀ TEORICA (Math) ]
+GFLOPs (Inference)             | 9.1971          | 6.8290          | -25.75     % (Riduzione)
+
+[ 2. HARDWARE BENCHMARK (Puro GPU, No CPU/Disco) ]
+Throughput (img/s)             | 1136.3          | 1397.9          | +23.02     % (Speedup)
+Batch Latency (ms)             | 112.6           | 91.6            | -18.71     % (Velocità)
+
+[ 3. PIPELINE END-TO-END (Con Dataloader) ]
+Accuracy (Top-1)               | 90.18         % | 86.97         % | -3.21      p.p.
+Throughput Raw (img/s)         | 851.3           | 954.2           | +12.08     % (Speedup)
+Tempo Test Set Totale (s)      | 11.75           | 10.48           | -10.78     %
+=====================================================================================
