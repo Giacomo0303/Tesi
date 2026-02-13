@@ -32,7 +32,7 @@ if __name__ == "__main__":
     test_loader = dataset.get_test_loader()
 
     model = load_model(model_name="vit_small_patch16_224", num_classes=dataset.num_classes,
-                       path="D:\\Tesi\\src\\FineTuning\\vit_small_cifar100.pth")
+                       path="D:\\Tesi\\src\\FineTuning\\best_model.pth")
     teacher_model = None
 
     if distillation:
