@@ -1,5 +1,6 @@
 import torch
 import torch.nn.functional as F
+from matplotlib import pyplot as plt
 from sklearn.metrics import balanced_accuracy_score, classification_report
 from tqdm import trange
 
@@ -148,3 +149,36 @@ def train_model(model, epoch, optimizer, device, train_dataloader, loss_fn, earl
             scheduler.step()
 
     return train_loss, val_loss, accuracy
+
+
+def plot_training_results(train_loss, val_loss, accuracy):
+    plt.style.use('seaborn-v0_8-whitegrid')
+    epochs = range(1, len(train_loss) + 1)
+
+    # Creazione della figura con due subplots
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+
+    # --- Grafico 1: Loss (Train vs Val) ---
+    ax1.plot(epochs, train_loss, 'b-o', label='Training Loss', markersize=4, linewidth=1.5)
+    ax1.plot(epochs, val_loss, 'r-s', label='Validation Loss', markersize=4, linewidth=1.5)
+    ax1.set_title('Andamento della Loss', fontsize=14, fontweight='bold')
+    ax1.set_xlabel('Epoca', fontsize=12)
+    ax1.set_ylabel('Loss', fontsize=12)
+    ax1.legend(frameon=True, shadow=True)
+    ax1.grid(True, linestyle='--', alpha=0.7)
+
+    # --- Grafico 2: Accuracy ---
+    ax2.plot(epochs, [a * 100 for a in accuracy], 'g-^', label='Balanced Accuracy', markersize=4, linewidth=1.5)
+    ax2.set_title('Andamento dell\'Accuratezza', fontsize=14, fontweight='bold')
+    ax2.set_xlabel('Epoca', fontsize=12)
+    ax2.set_ylabel('Accuracy (%)', fontsize=12)
+    ax2.set_ylim(0, 100)  # Spesso utile per vedere il margine di miglioramento reale
+    ax2.legend(frameon=True, shadow=True, loc='lower right')
+    ax2.grid(True, linestyle='--', alpha=0.7)
+
+    # Ottimizzazione dello spazio tra i grafici
+    plt.tight_layout()
+
+    # Salvataggio opzionale per la tesi
+    # plt.savefig("training_results.pdf", bbox_inches='tight')
+    plt.show()
