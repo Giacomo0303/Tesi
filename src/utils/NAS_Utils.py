@@ -1,3 +1,6 @@
+import os
+import re
+
 import torch
 import time
 import timm
@@ -6,6 +9,7 @@ from src.utils.FineTuneUtils import EarlyStopping, train_model
 from src.utils.CompressedViT import CompressedViT
 from src.NAS.HybridNAS import HybridNAS
 from src.utils.PruneUtils import set_initial_masks
+from src.utils.XAIutils import analize_mlp, analize_qk, analize_vproj, analize_head
 
 
 def load_model(model_name, num_classes, path):
@@ -104,26 +108,59 @@ class PruningReport:
             self.updateDim(state["blocks"][block]["v_proj_pruned_dims"], self.blocks[block]["VProj"])
             self.updateDim(state["blocks"][block]["mlp_pruned_dims"], self.blocks[block]["MLP"])
 
-    def savePruningReport(self, path):
-        # Costruiamo il dizionario finale per l'export
-        export_data = {}
 
-        # 1. Sezione Embedding
+    def savePruningReport(self, path):
+        export_data = {}
         export_data["Embedding"] = {
+            "kept": self.Embedding["kept"],
+            "pruned": self.Embedding["pruned"],
             "num_pruned": len(self.Embedding["pruned"])
         }
-
-        # 2. Sezione Blocchi
         export_data["blocks"] = []
         for block in self.blocks:
             block_export = {}
-            # Iteriamo sulle chiavi standard (Heads, QK, VProj, MLP)
             for key in ["Heads", "QK", "VProj", "MLP"]:
                 block_export[key] = {
+                    "kept": block[key]["kept"],
+                    "pruned": block[key]["pruned"],
                     "num_pruned": len(block[key]["pruned"])
                 }
             export_data["blocks"].append(block_export)
 
-        # 3. Salvataggio su file
+        json_str = json.dumps(export_data, indent=4)
+
+        def collapse_list(match):
+            inner_content = re.sub(r'\s+', ' ', match.group(1)).strip()
+            return f"[{inner_content}]"
+
+        compact_json_str = re.sub(r'\[([\d\s,]*)\]', collapse_list, json_str)
+
         with open(path, 'w') as f:
-            json.dump(export_data, f, indent=4)
+            f.write(compact_json_str)
+
+
+import os
+
+
+def save_plots(original_model, finetuned_model, pruning_report, save_path, iter):
+    mlp_dir = os.path.join(save_path, "MLP")
+    qk_dir = os.path.join(save_path, "QK")
+    vproj_dir = os.path.join(save_path, "VProj")
+    head_dir = os.path.join(save_path, "Head")
+
+    os.makedirs(mlp_dir, exist_ok=True)
+    os.makedirs(qk_dir, exist_ok=True)
+    os.makedirs(vproj_dir, exist_ok=True)
+    os.makedirs(head_dir, exist_ok=True)
+
+    analize_mlp(original_model, finetuned_model, pruning_report, pruned=True,
+                save_path=os.path.join(mlp_dir, f"mlp_iter_{iter}.png"))
+
+    analize_qk(original_model, finetuned_model, pruning_report, pruned=True,
+               save_path=os.path.join(qk_dir, f"qk_iter_{iter}.png"))
+
+    analize_vproj(original_model, finetuned_model, pruning_report, pruned=True,
+                  save_path=os.path.join(vproj_dir, f"vproj_iter_{iter}.png"))
+
+    analize_head(original_model, finetuned_model, pruning_report, pruned=True,
+                 save_path=os.path.join(head_dir, f"head_iter_{iter}.png"))
