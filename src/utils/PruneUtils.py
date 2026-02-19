@@ -28,7 +28,6 @@ def compute_imp(model, loss_fn, device, dataloader):
             loss = loss_fn(logits, y)
             y_pred.append(torch.argmax(logits, dim=-1).cpu())
 
-        # accumula i gradienti nei .grad
         scaler.scale(loss).backward()
         loss_value += loss.item()
 

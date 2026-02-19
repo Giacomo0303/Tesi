@@ -14,7 +14,7 @@ N_epochs = 30
 original_model = timm.create_model(model_name=model_name, pretrained=True)
 
 finetuned_model = load_model(model_name="vit_small_patch16_224", num_classes=num_classes,
-                             path="D:\\Tesi\\src\\FineTuning\\best_model.pth")
+                             path="D:\\Tesi\\src\\FineTuning\\vit_small_cifar100.pth")
 
 pruning_report = json.load(open(report_path))
 

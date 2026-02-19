@@ -2,13 +2,12 @@ import os
 import torch
 from src.Datasets.Cifar100 import Cifar100
 from src.utils.FineTuneUtils import eval_loop
-from src.utils.NAS_Utils import updatePruningReport, createPruningReport, savePruningReport, \
-    load_model, pruningNAS, recoveryFineTune, save_model
+from src.utils.NAS_Utils import load_model, pruningNAS, recoveryFineTune, save_model, PruningReport
 from src.utils.PruneUtils import count_params_no_mask
 import time, copy
 
 batch_size = 128
-N_iterations = 20
+N_iterations = 2
 lr = 0.5e-5
 weight_decay = 0.05
 images_per_class = 25
@@ -19,7 +18,7 @@ min_delta = 0.0001
 early_stop_path = "D:\\Tesi\\src\\NAS\\"
 seed = 42
 search_threshold = 0.005
-distillation = True
+distillation = False
 T = 4.0
 
 if __name__ == "__main__":
@@ -32,7 +31,7 @@ if __name__ == "__main__":
     test_loader = dataset.get_test_loader()
 
     model = load_model(model_name="vit_small_patch16_224", num_classes=dataset.num_classes,
-                       path="D:\\Tesi\\src\\FineTuning\\best_model.pth")
+                       path="D:\\Tesi\\src\\FineTuning\\vit_small_cifar100.pth")
     teacher_model = None
 
     if distillation:
@@ -48,7 +47,7 @@ if __name__ == "__main__":
     curr_params = initial_params_count
 
     _, initial_acc, _, _ = eval_loop(model, val_loader, loss_fn, device, dataset.classes)
-    pruningReport = createPruningReport(model)
+    pruningReport = PruningReport(model)
 
     print(f"\n{'=' * 60}")
     print(f"AVVIO PIPELINE ITERATIVE NAS (CIFAR-100)")
@@ -75,8 +74,8 @@ if __name__ == "__main__":
                                                      initial_params_count=initial_params_count, depth_limit=depth_limit,
                                                      original_head_dim=64, threshold=search_threshold)
 
-        pruningReport = updatePruningReport(pruningReport, state)
-        savePruningReport(pruningReport, path="D:\\Tesi\\src\\NAS\\ResultsFinal\\pruning_report.json")
+        pruningReport.updatePruningReport(state)
+        pruningReport.savePruningReport(path="D:\\Tesi\\src\\NAS\\ResultsFinal\\pruning_report.json")
 
         # --- METRICHE POST-PRUNING (A Freddo) ---
         _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, dataset.classes)

@@ -6,7 +6,7 @@ from src.Datasets.Cifar100 import Cifar100
 from torch.optim import AdamW, lr_scheduler
 from torch.nn import CrossEntropyLoss
 
-model_name = "vit_small_patch16_224"
+model_name = "vit_base_patch16_224"
 save_path = "D:\\Tesi\\src\\FineTuning"
 img_size = 224
 batch_size = 128
