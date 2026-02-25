@@ -80,7 +80,7 @@ if __name__ == "__main__":
     print("Caricamento modelli in corso...")
     original_model = load_model(model_name="vit_small_patch16_224", num_classes=dataset.num_classes,
                                 path="D:\\Tesi\\src\\FineTuning\\vit_small_cifar100.pth")
-    pruned_model = torch.load("D:\\Tesi\\src\\NAS\\ResultsFinal\\Distil\\pruned_model_89.pth", weights_only=False)
+    pruned_model = torch.load("D:\\Tesi\\src\\NAS\\ResultsFinal\\NoDistil\\pruned_model_89_6.pth", weights_only=False)
 
     # ==========================================
     # 1. MODELLO ORIGINALE

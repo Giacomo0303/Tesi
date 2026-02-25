@@ -31,6 +31,10 @@ class QKPruning(SearchAction):
 
         # calculate importances of every Q_i, K_i in every mhsa
         for b, block in enumerate(model.blocks):
+
+            if getattr(block.attn, "is_empty", False):
+                continue
+
             head_aligned = head_alignment(block.attn)
             Q = head_aligned.Q
             K = head_aligned.K
@@ -95,6 +99,8 @@ class VProjPruning(SearchAction):
 
         # calculate importances of every V_i and proj_i in every mhsa
         for b, block in enumerate(model.blocks):
+            if getattr(block.attn, "is_empty", False):
+                continue
             # head alignment
             head_aligned = head_alignment(block.attn)
             V = head_aligned.V
@@ -158,6 +164,8 @@ class HeadPruning(SearchAction):
         }
 
         for b, block in enumerate(model.blocks):
+            if getattr(block.attn, "is_empty", False):
+                continue
             head_aligned = head_alignment(block.attn)
             Q = head_aligned.Q
             K = head_aligned.K
@@ -212,6 +220,8 @@ class MLPPruning(SearchAction):
         # importance_score takes too much time, so parallelize to speed up
         for b, block in enumerate(model.blocks):
             mlp = block.mlp
+            if getattr(mlp, 'is_empty', False):
+                continue
 
             # importance of fc1 neurons
             imp_fc1_w = torch.sum(mlp.fc1.weight_orig.imp, dim=1)
@@ -274,25 +284,27 @@ class EmbPruning(SearchAction):
         total_dim_importances += model.patch_embed.proj.bias_orig.imp  # bias are [384]
 
         for block in model.blocks:
-            # contribution of LayerNorm1
-            total_dim_importances += block.norm1.weight_orig.imp
-            total_dim_importances += block.norm1.bias_orig.imp
+            if not getattr(block.attn, 'is_empty', False):
+                # contribution of LayerNorm1
+                total_dim_importances += block.norm1.weight_orig.imp
+                total_dim_importances += block.norm1.bias_orig.imp
 
-            # contribution of QKV
-            total_dim_importances += torch.sum(block.attn.qkv.weight_orig.imp, dim=0)
+                # contribution of QKV
+                total_dim_importances += torch.sum(block.attn.qkv.weight_orig.imp, dim=0)
 
-            # contribution of Proj
-            total_dim_importances += torch.sum(block.attn.proj.weight_orig.imp, dim=1)
-            total_dim_importances += block.attn.proj.bias_orig.imp
+                # contribution of Proj
+                total_dim_importances += torch.sum(block.attn.proj.weight_orig.imp, dim=1)
+                total_dim_importances += block.attn.proj.bias_orig.imp
 
-            # contribution of LayerNorm2
-            total_dim_importances += block.norm2.weight_orig.imp
-            total_dim_importances += block.norm2.bias_orig.imp
+            if not getattr(block.mlp, 'is_empty', False):
+                # contribution of LayerNorm2
+                total_dim_importances += block.norm2.weight_orig.imp
+                total_dim_importances += block.norm2.bias_orig.imp
 
-            # contribution of FC
-            total_dim_importances += torch.sum(block.mlp.fc1.weight_orig.imp, dim=0)
-            total_dim_importances += torch.sum(block.mlp.fc2.weight_orig.imp, dim=1)
-            total_dim_importances += block.mlp.fc2.bias_orig.imp
+                # contribution of FC
+                total_dim_importances += torch.sum(block.mlp.fc1.weight_orig.imp, dim=0)
+                total_dim_importances += torch.sum(block.mlp.fc2.weight_orig.imp, dim=1)
+                total_dim_importances += block.mlp.fc2.bias_orig.imp
 
         # contribution of last LayerNorm
         total_dim_importances += model.norm.weight_orig.imp

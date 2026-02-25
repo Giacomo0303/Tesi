@@ -19,11 +19,15 @@ def load_model(model_name, num_classes, path):
     return model
 
 
-def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, depth_limit, original_head_dim, threshold):
+def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, depth_limit, original_head_dim, threshold,
+               actions="guided", search=True):
     nas_start = time.time()
     nas = HybridNAS(model, loss_fn=loss_fn, search_loader=search_loader, device=device,
-                    original_params=initial_params_count, threshold=threshold)
-    state, best_val = nas.search(depth_limit=depth_limit)
+                    original_params=initial_params_count, threshold=threshold, actions=actions)
+    if search:
+        state, best_val = nas.search(depth_limit=depth_limit)
+    else:
+        state, best_val = nas.random_search(depth_limit=depth_limit)
     nas_duration = time.time() - nas_start
     set_initial_masks(model)
     model = nas.apply_pruning(state, model)
@@ -107,7 +111,6 @@ class PruningReport:
             self.updateDim(state["blocks"][block]["qk_pruned_dims"], self.blocks[block]["QK"])
             self.updateDim(state["blocks"][block]["v_proj_pruned_dims"], self.blocks[block]["VProj"])
             self.updateDim(state["blocks"][block]["mlp_pruned_dims"], self.blocks[block]["MLP"])
-
 
     def savePruningReport(self, path):
         export_data = {}

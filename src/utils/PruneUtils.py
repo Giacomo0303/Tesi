@@ -3,6 +3,9 @@ from sklearn.metrics import balanced_accuracy_score
 import torch.nn.utils.prune as pruning
 from math import log2
 
+from src.utils.FineTuneUtils import eval_loop
+
+
 def compute_imp(model, loss_fn, device, dataloader):
     model.eval()
     n_batches = 0
@@ -20,7 +23,7 @@ def compute_imp(model, loss_fn, device, dataloader):
         n_batches += 1
         y_true.append(y.cpu())
 
-        #azzero i gradienti
+        # azzero i gradienti
         model.zero_grad(set_to_none=True)
 
         with torch.amp.autocast(device_type=device, dtype=torch.float16):
@@ -218,10 +221,11 @@ def set_initial_masks(model):
 
         # multi head self attention masks
         attn = block.attn
-        pruning.identity(attn.qkv, name="weight")
-        pruning.identity(attn.qkv, name="bias")
-        pruning.identity(attn.proj, name="weight")
-        pruning.identity(attn.proj, name="bias")
+        if not getattr(attn, 'is_empty', False):
+            pruning.identity(attn.qkv, name="weight")
+            pruning.identity(attn.qkv, name="bias")
+            pruning.identity(attn.proj, name="weight")
+            pruning.identity(attn.proj, name="bias")
 
         # second layer norm mask
         pruning.identity(block.norm2, name="weight")
@@ -229,10 +233,11 @@ def set_initial_masks(model):
 
         # mlp masks
         mlp = block.mlp
-        pruning.identity(mlp.fc1, name="weight")
-        pruning.identity(mlp.fc1, name="bias")
-        pruning.identity(mlp.fc2, name="weight")
-        pruning.identity(mlp.fc2, name="bias")
+        if not getattr(mlp, 'is_empty', False):
+            pruning.identity(mlp.fc1, name="weight")
+            pruning.identity(mlp.fc1, name="bias")
+            pruning.identity(mlp.fc2, name="weight")
+            pruning.identity(mlp.fc2, name="bias")
 
     # final norm mask
     pruning.identity(model.norm, name="weight")
@@ -259,6 +264,7 @@ def reset_masks(model):
     if hasattr(model, 'pos_embed_mask'):
         model.pos_embed_mask.fill_(1.0)
 
+
 def count_parameters(model):
     n_params = 0
 
@@ -273,20 +279,22 @@ def count_parameters(model):
         n_params += torch.sum(block.norm1.bias_mask)
 
         # mhsa
-        n_params += torch.sum(block.attn.qkv.weight_mask)
-        n_params += torch.sum(block.attn.qkv.bias_mask)
-        n_params += torch.sum(block.attn.proj.weight_mask)
-        n_params += torch.sum(block.attn.proj.bias_mask)
+        if not getattr(block.attn, 'is_empty', False):
+            n_params += torch.sum(block.attn.qkv.weight_mask)
+            n_params += torch.sum(block.attn.qkv.bias_mask)
+            n_params += torch.sum(block.attn.proj.weight_mask)
+            n_params += torch.sum(block.attn.proj.bias_mask)
 
         # second layer norm
         n_params += torch.sum(block.norm2.weight_mask)
         n_params += torch.sum(block.norm2.bias_mask)
 
         # mlp
-        n_params += torch.sum(block.mlp.fc1.weight_mask)
-        n_params += torch.sum(block.mlp.fc1.bias_mask)
-        n_params += torch.sum(block.mlp.fc2.weight_mask)
-        n_params += torch.sum(block.mlp.fc2.bias_mask)
+        if not getattr(block.mlp, 'is_empty', False):
+            n_params += torch.sum(block.mlp.fc1.weight_mask)
+            n_params += torch.sum(block.mlp.fc1.bias_mask)
+            n_params += torch.sum(block.mlp.fc2.weight_mask)
+            n_params += torch.sum(block.mlp.fc2.bias_mask)
 
     # last layer norm
     n_params += torch.sum(model.norm.weight_mask)
@@ -307,8 +315,12 @@ def count_params_no_mask(model):
     return float(sum(p.numel() for p in model.parameters()) / 1e6)
 
 
-def compute_obj(model, loss_fn, device, dataloader, original_params, lambda_=1.0):
-    _, accuracy = compute_imp(model=model, dataloader=dataloader, loss_fn=loss_fn, device=device)
+def compute_obj(model, loss_fn, device, dataloader, original_params, lambda_=1.0, imp=True):
+    if imp:
+        _, accuracy = compute_imp(model=model, dataloader=dataloader, loss_fn=loss_fn, device=device)
+    else:
+        _, accuracy, _, _ = eval_loop(model, dataloader, loss_fn, device)
+
     params = count_parameters(model)
 
     return log2(accuracy) - lambda_ * log2(params / original_params), accuracy, params

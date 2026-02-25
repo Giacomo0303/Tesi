@@ -28,6 +28,12 @@ class MultiHeadSelfAttention(nn.Module):
     def __init__(self, qkv_weights, qkv_bias, proj_weights, proj_bias, original_qk_dim: int, qk_dim: int, v_dim: int,
                  num_heads: int):
         super().__init__()
+
+        self.is_empty = num_heads == 0 or qk_dim == 0 or v_dim == 0
+
+        if self.is_empty:
+            return
+
         self.head_dim = qk_dim  # dimensione della singola head
         self.qk_dim = qk_dim
         self.v_dim = v_dim  # come per qk
@@ -46,6 +52,9 @@ class MultiHeadSelfAttention(nn.Module):
             self.proj.bias.data.copy_(proj_bias)
 
     def forward(self, x):
+        if self.is_empty:
+            return torch.zeros_like(x)
+
         qkv = self.qkv(x)  # qkv ha shape [B, N, dimQ + dimK + dimV]
         # devo splittare per ottenere Q, K e V proprio sull'ultima dimensione
         Q, K, V = torch.split(qkv, [self.total_qk, self.total_qk, self.total_v], dim=-1)
@@ -57,13 +66,13 @@ class MultiHeadSelfAttention(nn.Module):
         V = V.reshape(V.shape[0], V.shape[1], self.num_heads, self.v_dim).permute(0, 2, 1, 3)
 
         # [B, H, N, dim] x [B, H, dim, N] -> [B, H, N, N]
-        #attn = torch.softmax(Q @ K.transpose(-2, -1) * self.scale, dim=-1)
+        # attn = torch.softmax(Q @ K.transpose(-2, -1) * self.scale, dim=-1)
 
         # [B, H, N, N] x [B, H, N, v_dim] -> [B, H, N, v_dim]
-        #x = attn @ V
+        # x = attn @ V
 
         # [B, H, N, v_dim] -> [B, N, H*v_dim]
-        #x = x.permute(0, 2, 1, 3).flatten(2)
+        # x = x.permute(0, 2, 1, 3).flatten(2)
 
         x = F.scaled_dot_product_attention(Q, K, V, scale=self.scale)
         # Reshape finale: [B, H, N, V] -> [B, N, H*V]
@@ -77,11 +86,19 @@ class MultiHeadSelfAttention(nn.Module):
 class Mlp(nn.Module):
     def __init__(self, in_features, hidden_features, out_features):
         super().__init__()
+
+        self.is_empty = hidden_features == 0
+        if self.is_empty:
+            return
+
         self.fc1 = nn.Linear(in_features, hidden_features)
         self.act = nn.GELU()
         self.fc2 = nn.Linear(hidden_features, out_features)
 
     def forward(self, x):
+        if self.is_empty:
+            return torch.zeros_like(x)
+
         x = self.fc1(x)
         x = self.act(x)
         x = self.fc2(x)
@@ -105,18 +122,23 @@ class EncoderBlock(nn.Module):
         self.mlp = Mlp(in_features, hidden_features, out_features)
 
         with torch.no_grad():
-            self.mlp.fc1.weight.data.copy_(fc1_weights)
-            self.mlp.fc1.bias.data.copy_(fc1_bias)
-            self.mlp.fc2.weight.data.copy_(fc2_weights)
-            self.mlp.fc2.bias.data.copy_(fc2_bias)
+            if getattr(self.mlp, 'is_empty', False) == False:
+                self.mlp.fc1.weight.data.copy_(fc1_weights)
+                self.mlp.fc1.bias.data.copy_(fc1_bias)
+                self.mlp.fc2.weight.data.copy_(fc2_weights)
+                self.mlp.fc2.bias.data.copy_(fc2_bias)
             self.norm1.weight.data.copy_(norm1_weights)
             self.norm1.bias.data.copy_(norm1_bias)
             self.norm2.weight.data.copy_(norm2_weights)
             self.norm2.bias.data.copy_(norm2_bias)
 
     def forward(self, x):
-        x = x + self.attn(self.norm1(x))
-        x = x + self.mlp(self.norm2(x))
+        if not self.attn.is_empty:
+            x = x + self.attn(self.norm1(x))
+
+        if not self.mlp.is_empty:
+            x = x + self.mlp(self.norm2(x))
+
         return x
 
 
@@ -226,31 +248,39 @@ class CompressedViT(nn.Module):
 
         for i, block in enumerate(blocks_dict):
             current_block_attn = pruned_model.blocks[i].attn
-            original_num_heads = current_block_attn.num_heads
-
-            if hasattr(current_block_attn, 'qk_dim'):
-                original_qk_dim = current_block_attn.qk_dim
-                original_v_dim = current_block_attn.v_dim
-            else:
-                original_qk_dim = current_block_attn.head_dim
-                original_v_dim = current_block_attn.head_dim
-
+            current_block_mlp = pruned_model.blocks[i].mlp
             original_eps = pruned_model.blocks[i].norm1.eps
 
-            qkv_weights, qkv_bias, qk_dim, v_dim, num_heads = get_qkv_weights_bias(
-                pruned_model.blocks[i].attn.qkv.weight,
-                pruned_model.blocks[i].attn.qkv.bias, block,
-                original_num_heads, original_qk_dim, original_v_dim, new_emb_dims)
+            if getattr(current_block_attn, "is_empty", False):
+                mhsa = MultiHeadSelfAttention(None, None, None, None, original_head_dim, qk_dim=0, v_dim=0, num_heads=0)
+            else:
+                original_num_heads = current_block_attn.num_heads
+                if hasattr(current_block_attn, 'qk_dim'):
+                    original_qk_dim = current_block_attn.qk_dim
+                    original_v_dim = current_block_attn.v_dim
+                else:
+                    original_qk_dim = current_block_attn.head_dim
+                    original_v_dim = current_block_attn.head_dim
 
-            proj_weights, proj_bias = get_proj_weights_bias(pruned_model.blocks[i].attn.proj.weight,
-                                                            pruned_model.blocks[i].attn.proj.bias,
-                                                            block, original_num_heads, original_v_dim, new_emb_dims)
+                qkv_weights, qkv_bias, qk_dim, v_dim, num_heads = get_qkv_weights_bias(
+                    pruned_model.blocks[i].attn.qkv.weight,
+                    pruned_model.blocks[i].attn.qkv.bias, block,
+                    original_num_heads, original_qk_dim, original_v_dim, new_emb_dims)
 
-            mhsa = MultiHeadSelfAttention(qkv_weights, qkv_bias, proj_weights, proj_bias, original_head_dim, qk_dim,
-                                          v_dim, num_heads)
+                proj_weights, proj_bias = get_proj_weights_bias(pruned_model.blocks[i].attn.proj.weight,
+                                                                pruned_model.blocks[i].attn.proj.bias,
+                                                                block, original_num_heads, original_v_dim, new_emb_dims)
 
-            fc1_weights, fc1_bias, fc2_weights, fc2_bias = get_mlp_weights_bias(pruned_model.blocks[i].mlp, block,
-                                                                                new_emb_dims)
+                mhsa = MultiHeadSelfAttention(qkv_weights, qkv_bias, proj_weights, proj_bias, original_head_dim, qk_dim,
+                                              v_dim, num_heads)
+
+            if getattr(current_block_mlp, "is_empty", False):
+                dummy_w = torch.empty((0, len(new_emb_dims)))
+                dummy_b = torch.empty((0,))
+                fc1_weights, fc1_bias, fc2_weights, fc2_bias = dummy_w, dummy_b, dummy_w, dummy_b
+            else:
+                fc1_weights, fc1_bias, fc2_weights, fc2_bias = get_mlp_weights_bias(pruned_model.blocks[i].mlp, block,
+                                                                                    new_emb_dims)
 
             norm1_weights = pruned_model.blocks[i].norm1.weight.data[new_emb_dims]
             norm1_bias = pruned_model.blocks[i].norm1.bias.data[new_emb_dims]

@@ -7,7 +7,7 @@ from src.utils.PruneUtils import count_params_no_mask
 import time, copy
 
 batch_size = 128
-N_iterations = 5
+N_iterations = 15
 lr = 0.5e-5
 weight_decay = 0.05
 images_per_class = 25
@@ -18,9 +18,11 @@ min_delta = 0.0001
 early_stop_path = "D:\\Tesi\\src\\NAS\\"
 seed = 42
 search_threshold = 0.005
-distillation = True
+distillation = False
 T = 4.0
-plots = True
+plots = False
+actions = "guided" #guided o random
+search = False
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -73,7 +75,7 @@ if __name__ == "__main__":
         comp_model, nas_duration, state = pruningNAS(model=model, loss_fn=loss_fn, search_loader=search_loader,
                                                      device=device,
                                                      initial_params_count=initial_params_count, depth_limit=depth_limit,
-                                                     original_head_dim=64, threshold=search_threshold)
+                                                     original_head_dim=64, threshold=search_threshold, actions=actions, search=search)
 
         pruningReport.updatePruningReport(state)
         pruningReport.savePruningReport(path="D:\\Tesi\\src\\NAS\\ResultsFinal\\pruning_report.json")
@@ -115,9 +117,10 @@ if __name__ == "__main__":
         print(f"      - Tempo Totale Iter: {(time.time() - iter_start_time):.1f}s")
         print(f"{'-' * 60}")
 
-        #salvataggio dei grafici se abilitato
+        # salvataggio dei grafici se abilitato
         if plots:
-            save_plots(original_model=teacher_model, finetuned_model=model, pruning_report=pruningReport, save_path="D:\\Tesi\\src\\NAS\\Plots", iter=n)
+            save_plots(original_model=teacher_model, finetuned_model=model, pruning_report=pruningReport,
+                       save_path="D:\\Tesi\\src\\NAS\\Plots", iter=n)
 
     print(f"\nVALUTAZIONE FINALE (Test Set)")
     _, final_test_acc, _, _ = eval_loop(model, test_loader, loss_fn, device, dataset.classes, report=True)
