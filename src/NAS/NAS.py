@@ -7,7 +7,7 @@ from src.utils.PruneUtils import count_params_no_mask
 import time, copy
 
 batch_size = 128
-N_iterations = 15
+N_iterations = 1
 lr = 0.5e-5
 weight_decay = 0.05
 images_per_class = 25
@@ -22,7 +22,7 @@ distillation = False
 T = 4.0
 plots = False
 actions = "guided" #guided o random
-search = False
+search = True
 
 if __name__ == "__main__":
     device = "cuda" if torch.cuda.is_available() else "cpu"

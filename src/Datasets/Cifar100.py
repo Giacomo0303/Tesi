@@ -80,5 +80,7 @@ class Cifar100(BaseDataset):
 
             final_indices.extend(selected_indices.tolist())
 
+        gen.shuffle(final_indices)
+
         return DataLoader(Subset(self.search_set, final_indices), batch_size=self.batch_size, shuffle=False,
                           num_workers=1, pin_memory=True)

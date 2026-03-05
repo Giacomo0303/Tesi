@@ -1,6 +1,5 @@
 import os
 import re
-
 import torch
 import time
 import timm
@@ -140,9 +139,6 @@ class PruningReport:
 
         with open(path, 'w') as f:
             f.write(compact_json_str)
-
-
-import os
 
 
 def save_plots(original_model, finetuned_model, pruning_report, save_path, iter):
