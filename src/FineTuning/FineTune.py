@@ -11,6 +11,7 @@ save_path = "D:\\Tesi\\src\\FineTuning"
 img_size = 224
 batch_size = 128
 N_epochs = 30
+backbone_tuning = False
 backbone_lr = 0.5e-5
 head_lr = 0.5e-4
 weight_decay = 0.05
@@ -18,32 +19,42 @@ patience = 5
 min_delta = 0.001
 
 if __name__ == "__main__":
-    #creazione del dataset
-    dataset = Cifar100(root_path="D:\\Tesi\\Data\\CIFAR100", img_size=img_size, batch_size=batch_size, mean_std="imagenet", model_name=model_name)
+    # creazione del dataset
+    dataset = Cifar100(root_path="D:\\Tesi\\Data\\CIFAR100", img_size=img_size, batch_size=batch_size,
+                       mean_std="imagenet", model_name=model_name)
     train_loader = dataset.get_train_loader(num_workers=2)
     val_loader = dataset.get_val_loader()
     test_loader = dataset.get_test_loader()
 
-    #creazione del modello
+    # creazione del modello
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = timm.create_model(model_name=model_name, pretrained=True, num_classes=dataset.num_classes).to(device)
 
-    #discriminative learning rates
+    # discriminative learning rates
 
-    #prelevo i pesi della backbone controllando che non siano quelli della head
+    # prelevo i pesi della backbone controllando che non siano quelli della head
     head_params_pointers = set(p.data_ptr() for p in model.head.parameters())
     backbone_params = [p for p in model.parameters() if p.data_ptr() not in head_params_pointers]
-
-    param_groups = [
-        {
-            "params": backbone_params,
-            "lr": backbone_lr,
-        },
-        {
-            "params": model.head.parameters(),
-            "lr": head_lr,
-        }
-    ]
+    if backbone_tuning:
+        param_groups = [
+            {
+                "params": backbone_params,
+                "lr": backbone_lr,
+            },
+            {
+                "params": model.head.parameters(),
+                "lr": head_lr,
+            }
+        ]
+    else:
+        param_groups = [
+            {
+                "params": model.head.parameters(),
+                "lr": head_lr,
+            }
+        ]
+        for param in backbone_params:
+            param.requires_grad = False
 
     optim = AdamW(param_groups, weight_decay=weight_decay)
     scheduler = lr_scheduler.CosineAnnealingLR(optim, T_max=N_epochs, eta_min=1e-7)
