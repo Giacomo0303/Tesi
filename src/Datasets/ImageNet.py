@@ -1,23 +1,24 @@
+import copy
 import os, shutil
-from timm.data import create_dataset
+import numpy as np
+from torch import Generator
 from torchvision import transforms
 import math
 from src.Datasets.Dataset import BaseDataset
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split, Subset
+from torchvision.datasets import ImageFolder
 
 
 class ImageNet(BaseDataset):
-    def __init__(self, root_path, batch_size, model_name, seed):
+    def __init__(self, root_path, batch_size, model_name, seed=42, train_size=0.95):
         super().__init__(root_path=root_path, img_size=224, batch_size=batch_size, mean_std="imagenet",
                          model_name=model_name, seed=seed)
         self.model_name = model_name
         self.correct_val_structure()
+        self.train_set, self.val_set, self.test_set, self.search_set = self.split_dataset(train_size=train_size)
+        self.classes = self.train_set.dataset.classes
+        self.num_classes = len(self.classes)
         self.class_dict = self.get_classes_dict()
-
-        self.train_dataset = create_dataset(name="", root=root_path, split="train", is_training=True)
-        self.test_dataset = create_dataset(name="", root=root_path, split="val", is_training=False)
-        self.train_dataset.transform = self.get_transform()
-        self.test_dataset.transform = self.get_transform(train=False)
 
     def get_transform(self, train=True):
         if train:
@@ -43,20 +44,65 @@ class ImageNet(BaseDataset):
                 transforms.Normalize(mean=self.mean, std=self.std)
             ])
 
-    def get_train_loader(self, num_workers):
-        pass
+    def split_dataset(self, train_size):
+        train_set = ImageFolder(root=os.path.join(self.root_path, "train"), transform=self.get_transform())
+        test_set = ImageFolder(root=os.path.join(self.root_path, "val"), transform=self.get_transform(train=False))
 
-    def get_test_loader(self):
-        return DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle=False)
+        total_size = len(train_set)
+        train_size = int(train_size * total_size)
+        val_size = total_size - train_size
+
+        generator = Generator().manual_seed(self.seed)
+        train_split, val_split = random_split(train_set, [train_size, val_size], generator=generator)
+
+        val_set = copy.copy(train_set)
+        val_set.transform = self.get_transform(train=False)
+
+        search_set = copy.copy(train_set)
+        search_set.transform = self.get_transform(train=True)
+
+        train_set = Subset(train_set, train_split.indices)
+        val_set = Subset(val_set, val_split.indices)
+        search_set = Subset(search_set, train_split.indices)
+
+        return train_set, val_set, test_set, search_set
+
+    def get_train_loader(self, num_workers):
+        return DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True, num_workers=num_workers,
+                          pin_memory=True)
 
     def get_val_loader(self):
-        return None
+        return DataLoader(self.val_set, batch_size=self.batch_size, shuffle=False)
+
+    def get_test_loader(self):
+        return DataLoader(self.test_set, batch_size=self.batch_size, shuffle=False)
 
     def get_search_loader(self, n_per_classes):
-        pass
+        search_indices = np.arange(len(self.search_set))
+
+        targets = np.array(self.search_set.dataset.targets)
+        search_labels = targets[self.search_set.indices]
+
+        gen = np.random.default_rng()
+        final_indices = []
+
+        for cls in range(self.num_classes):
+            cls_indices = search_indices[search_labels == cls]
+
+            if len(cls_indices) >= n_per_classes:
+                selected_indices = gen.choice(cls_indices, size=n_per_classes, replace=False)
+            else:
+                selected_indices = cls_indices
+
+            final_indices.extend(selected_indices.tolist())
+
+        gen.shuffle(final_indices)
+
+        return DataLoader(Subset(self.search_set, final_indices), batch_size=self.batch_size, shuffle=False,
+                          num_workers=1, pin_memory=True)
 
     def get_classes_dict(self):
-        folder_idx = self.train_dataset.parser.class_to_idx
+        folder_idx = self.train_set.dataset.class_to_idx
         idx_class = {}
         with open(os.path.join(self.root_path, "LOC_synset_mapping.txt"), "r") as f:
             for line in f:
@@ -83,8 +129,3 @@ class ImageNet(BaseDataset):
         for jpeg in jpegs:
             os.makedirs(os.path.join(val_path, mapping[jpeg]), exist_ok=True)
             shutil.move(os.path.join(val_path, jpeg), os.path.join(val_path, mapping[jpeg], jpeg))
-
-
-
-
-
