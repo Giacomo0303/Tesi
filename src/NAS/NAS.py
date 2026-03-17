@@ -1,40 +1,49 @@
-import os
+import os, sys
 import torch
+from Datasets.Imagenet import ImageNet
 from src.Datasets.Cifar100 import Cifar100
+from src.utils.Logger import CleanDualLogger
 from src.utils.FineTuneUtils import eval_loop
 from src.utils.NAS_Utils import load_model, pruningNAS, recoveryFineTune, save_model, PruningReport, save_plots
 from src.utils.PruneUtils import count_params_no_mask
 import time, copy
 
 batch_size = 128
-N_iterations = 1
+N_iterations = 15
 lr = 0.5e-5
 weight_decay = 0.05
-images_per_class = 25
+images_per_class = 20
 depth_limit = 6
-max_epochs = 20
+max_epochs = 10
 patience = 2
 min_delta = 0.0001
-early_stop_path = "D:\\Tesi\\src\\NAS\\"
+early_stop_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\"
+model_name = "vit_small_patch16_224"
 seed = 42
 search_threshold = 0.005
-distillation = False
+distillation = True
 T = 4.0
 plots = False
 actions = "guided" #guided o random
 search = True
+log_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\log.txt"
 
 if __name__ == "__main__":
+    clean_logger = CleanDualLogger(log_path)
+    sys.stdout = clean_logger
+    sys.stderr = clean_logger
+
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    dataset = Cifar100(root_path="D:\\Tesi\\Data\\CIFAR100", img_size=224, batch_size=batch_size, mean_std="imagenet",
-                       model_name="vit_small_patch16_224", seed=seed)
-    train_loader = dataset.get_train_loader(num_workers=2)
+    dataset = ImageNet(root_path="D:\\Lombardo\\ImageNet", batch_size=batch_size,
+                       model_name=model_name, seed=seed, train_size=0.97)
+    train_loader = dataset.get_train_loader(num_workers=6)
     val_loader = dataset.get_val_loader()
     test_loader = dataset.get_test_loader()
 
-    model = load_model(model_name="vit_small_patch16_224", num_classes=dataset.num_classes,
-                       path="D:\\Tesi\\src\\FineTuning\\vit_small_cifar100.pth")
+    model = load_model(model_name=model_name, num_classes=dataset.num_classes,
+                       path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\vit_small_imagenet.pth")
+    #model = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\vit_small_patch16_224_iter1.pth", weights_only=False)
     teacher_model = None
 
     if distillation or plots:
@@ -78,7 +87,7 @@ if __name__ == "__main__":
                                                      original_head_dim=64, threshold=search_threshold, actions=actions, search=search)
 
         pruningReport.updatePruningReport(state)
-        pruningReport.savePruningReport(path="D:\\Tesi\\src\\NAS\\ResultsFinal\\pruning_report.json")
+        pruningReport.savePruningReport(path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\pruning_report.json")
 
         # --- METRICHE POST-PRUNING (A Freddo) ---
         _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, dataset.classes)
@@ -122,6 +131,8 @@ if __name__ == "__main__":
             save_plots(original_model=teacher_model, finetuned_model=model, pruning_report=pruningReport,
                        save_path="D:\\Tesi\\src\\NAS\\Plots", iter=n)
 
+        save_model(model=model, path=f"C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\{model_name}_iter{n}.pth")
+
     print(f"\nVALUTAZIONE FINALE (Test Set)")
     _, final_test_acc, _, _ = eval_loop(model, test_loader, loss_fn, device, dataset.classes, report=True)
 
@@ -138,4 +149,4 @@ if __name__ == "__main__":
     print(f"   - Accuracy Test Set:  {final_test_acc * 100:.2f}%")
     print(f"{'=' * 60}")
 
-    save_model(model=model, path="D:\\Tesi\\src\\NAS\\ResultsFinal\\pruned_model.pth")
+

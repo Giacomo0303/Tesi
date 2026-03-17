@@ -1,6 +1,7 @@
 import torch
 import time
 from src.Datasets.Cifar100 import Cifar100
+from src.Datasets.Imagenet import ImageNet
 from src.utils.FineTuneUtils import eval_loop
 from torch.utils.flop_counter import FlopCounterMode
 from torch.nn.attention import sdpa_kernel, SDPBackend  # Nuovo import corretto
@@ -73,14 +74,14 @@ if __name__ == "__main__":
     dummy_input = torch.randn(1, 3, 224, 224).to(device)
 
     print("Caricamento dataset in corso...")
-    dataset = Cifar100(root_path="D:\\Tesi\\Data\\CIFAR100", img_size=224, batch_size=128, mean_std="imagenet",
-                       model_name="vit_small_patch16_224", seed=42)
+    dataset = ImageNet(root_path="D:\\Lombardo\\ImageNet", batch_size=128,
+             model_name="vit_small_patch16_224", seed=42, train_size=0.97)
     test_loader = dataset.get_test_loader()
 
     print("Caricamento modelli in corso...")
     original_model = load_model(model_name="vit_small_patch16_224", num_classes=dataset.num_classes,
-                                path="D:\\Tesi\\src\\FineTuning\\vit_small_cifar100.pth")
-    pruned_model = torch.load("D:\\Tesi\\src\\NAS\\ResultsFinal\\Distil\\pruned_model_89_86.pth", weights_only=False)
+                                path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\vit_small_imagenet.pth")
+    pruned_model = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\vit_small_patch16_224_iter14.pth", weights_only=False)
 
     # ==========================================
     # 1. MODELLO ORIGINALE
@@ -119,8 +120,8 @@ if __name__ == "__main__":
     # ==========================================
     # CALCOLO DELLE METRICHE DERIVATE
     # ==========================================
-    gflops_orig = original_flops / 1e9
-    gflops_pruned = pruned_flops / 1e9
+    gflops_orig = original_flops / 2e9
+    gflops_pruned = pruned_flops / 2e9
 
     # Calcolo Delta (%)
     delta_flops = (1 - (pruned_flops / original_flops)) * 100

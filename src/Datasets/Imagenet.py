@@ -7,6 +7,7 @@ import math
 from src.Datasets.Dataset import BaseDataset
 from torch.utils.data import DataLoader, random_split, Subset
 from torchvision.datasets import ImageFolder
+from sklearn.model_selection import train_test_split
 
 
 class ImageNet(BaseDataset):
@@ -47,13 +48,15 @@ class ImageNet(BaseDataset):
     def split_dataset(self, train_size):
         train_set = ImageFolder(root=os.path.join(self.root_path, "train"), transform=self.get_transform())
         test_set = ImageFolder(root=os.path.join(self.root_path, "val"), transform=self.get_transform(train=False))
+        targets = train_set.targets
+        indices = np.arange(len(targets))
 
-        total_size = len(train_set)
-        train_size = int(train_size * total_size)
-        val_size = total_size - train_size
-
-        generator = Generator().manual_seed(self.seed)
-        train_split, val_split = random_split(train_set, [train_size, val_size], generator=generator)
+        train_indices, val_indices = train_test_split(
+            indices,
+            train_size=train_size,
+            stratify=targets,
+            random_state=self.seed
+        )
 
         val_set = copy.copy(train_set)
         val_set.transform = self.get_transform(train=False)
@@ -61,9 +64,9 @@ class ImageNet(BaseDataset):
         search_set = copy.copy(train_set)
         search_set.transform = self.get_transform(train=True)
 
-        train_set = Subset(train_set, train_split.indices)
-        val_set = Subset(val_set, val_split.indices)
-        search_set = Subset(search_set, train_split.indices)
+        train_set = Subset(train_set, train_indices)
+        val_set = Subset(val_set, val_indices)
+        search_set = Subset(search_set, train_indices)
 
         return train_set, val_set, test_set, search_set
 
@@ -72,10 +75,10 @@ class ImageNet(BaseDataset):
                           pin_memory=True)
 
     def get_val_loader(self):
-        return DataLoader(self.val_set, batch_size=self.batch_size, shuffle=False)
+        return DataLoader(self.val_set, batch_size=self.batch_size, shuffle=False, num_workers=4, pin_memory=True)
 
     def get_test_loader(self):
-        return DataLoader(self.test_set, batch_size=self.batch_size, shuffle=False)
+        return DataLoader(self.test_set, batch_size=self.batch_size, shuffle=False, num_workers=4, pin_memory=True)
 
     def get_search_loader(self, n_per_classes):
         search_indices = np.arange(len(self.search_set))
@@ -99,7 +102,7 @@ class ImageNet(BaseDataset):
         gen.shuffle(final_indices)
 
         return DataLoader(Subset(self.search_set, final_indices), batch_size=self.batch_size, shuffle=False,
-                          num_workers=1, pin_memory=True)
+                          num_workers=3, pin_memory=True)
 
     def get_classes_dict(self):
         folder_idx = self.train_set.dataset.class_to_idx
