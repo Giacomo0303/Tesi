@@ -247,9 +247,16 @@ def set_initial_masks(model):
     pruning.identity(model.head, name="weight")
     pruning.identity(model.head, name="bias")
 
+    if hasattr(model, 'head_dist'):
+        pruning.identity(model.head_dist, name="weight")
+        pruning.identity(model.head_dist, name="bias")
+
     # masking of external parameters (cls token e position embed)
     pruning.identity(model, name="cls_token")
     pruning.identity(model, name="pos_embed")
+
+    if hasattr(model, "dist_token"):
+        pruning.identity(model, name="dist_token")
 
 
 def reset_masks(model):
@@ -263,6 +270,8 @@ def reset_masks(model):
         model.cls_token_mask.fill_(1.0)
     if hasattr(model, 'pos_embed_mask'):
         model.pos_embed_mask.fill_(1.0)
+    if hasattr(model, 'dist_token_mask'):
+        model.dist_token_mask.fill_(1.0)
 
 
 def count_parameters(model):
@@ -304,9 +313,16 @@ def count_parameters(model):
     n_params += torch.sum(model.head.weight_mask)
     n_params += torch.sum(model.head.bias_mask)
 
+    if hasattr(model, 'head_dist'):
+        n_params += torch.sum(model.head_dist.weight_mask)
+        n_params += torch.sum(model.head_dist.bias_mask)
+
     # cls token and position embedding
     n_params += torch.sum(model.cls_token_mask)
     n_params += torch.sum(model.pos_embed_mask)
+
+    if hasattr(model, 'dist_token'):
+        n_params += torch.sum(model.dist_token_mask)
 
     return float(n_params / 1e6)
 

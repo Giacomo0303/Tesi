@@ -79,6 +79,9 @@ class HybridNAS:
         model.cls_token_mask[:, :, state["embed_pruned_dims"]] = 0.0
         model.pos_embed_mask[:, :, state["embed_pruned_dims"]] = 0.0
 
+        if hasattr(model, "dist_token_mask"):
+            model.dist_token_mask[:, :, state["embed_pruned_dims"]] = 0.0
+
         # pruning of patch embedding
         model.patch_embed.proj.weight_mask[state["embed_pruned_dims"], :, :, :] = 0.0
         model.patch_embed.proj.bias_mask[state["embed_pruned_dims"]] = 0.0
@@ -142,6 +145,9 @@ class HybridNAS:
         model.norm.bias_mask[state["embed_pruned_dims"]] = 0.0
 
         model.head.weight_mask[:, state["embed_pruned_dims"]] = 0.0
+
+        if hasattr(model, "head_dist") and model.head_dist is not None:
+            model.head_dist.weight_mask[:, state["embed_pruned_dims"]] = 0.0
 
         return model
 

@@ -278,6 +278,9 @@ class EmbPruning(SearchAction):
         # contribution of positional embedding
         total_dim_importances += torch.sum(model.pos_embed_orig.imp, dim=(0, 1))
 
+        if hasattr(model, "dist_token_orig"):
+            total_dim_importances += torch.sum(model.dist_token_orig.imp, dim=(0, 1))
+
         # contribution of patch_embedding
         total_dim_importances += torch.sum(model.patch_embed.proj.weight_orig.imp,
                                            dim=(1, 2, 3))  # sum importances for every dim of conv
@@ -312,6 +315,9 @@ class EmbPruning(SearchAction):
 
         # contribution of classification head
         total_dim_importances += torch.sum(model.head.weight_orig.imp, dim=0)
+
+        if hasattr(model, "head_dist"):
+            total_dim_importances += torch.sum(model.head_dist.weight_orig.imp, dim=0)
 
         # Mascheriamo le dimensioni già prunate
         # cls_token_mask shape: [1, 1, dim] -> prendiamo [0,0,:] per avere il vettore [dim]
