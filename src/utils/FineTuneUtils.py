@@ -40,20 +40,11 @@ def train_loop(model, dataloader, loss_fn, optimizer, device, pbar, scaler, teac
     model.train()
     for _, (X, y) in zip(pbar, dataloader):
         X, y = X.to(device), y.to(device)
-
-        with torch.autocast(device_type="cuda", dtype=torch.float16):
-            student_logits = model(X)
-            batch_loss = loss_fn(student_logits, y)
-
-            # distillation with temperature
-            if teacher_model is not None:
-                with torch.inference_mode():
-                    teacher_logits = teacher_model(X)
-
-                distillation_loss = F.kl_div(F.log_softmax(student_logits / T, dim=1),
-                                             F.softmax(teacher_logits / T, dim=1), reduction='batchmean') * (T ** 2)
-
-                batch_loss = (1 - alpha) * batch_loss + alpha * distillation_loss
+        if hasattr(model, "dist_token"):
+            assert teacher_model is not None
+            batch_loss = deit_train_loop(model, X, y, loss_fn, teacher_model)
+        else:
+            batch_loss = vit_train_loop(model, X, y, loss_fn, teacher_model=teacher_model, T=T, alpha=alpha)
 
         epoch_loss += batch_loss.item()
 
@@ -63,6 +54,61 @@ def train_loop(model, dataloader, loss_fn, optimizer, device, pbar, scaler, teac
         scaler.update()
 
     return epoch_loss / num_batches
+
+
+def vit_train_loop(model, X, y, loss_fn, teacher_model=None, T=4.0, alpha=0.9):
+    with torch.autocast(device_type="cuda", dtype=torch.float16):
+        student_logits = model(X)
+        batch_loss = loss_fn(student_logits, y)
+
+        # distillation with temperature
+        if teacher_model is not None:
+            with torch.inference_mode():
+                teacher_logits = teacher_model(X)
+
+            distillation_loss = F.kl_div(F.log_softmax(student_logits / T, dim=1),
+                                         F.softmax(teacher_logits / T, dim=1), reduction='batchmean') * (T ** 2)
+
+            batch_loss = (1 - alpha) * batch_loss + alpha * distillation_loss
+
+    return batch_loss
+
+
+def renormalize_for_teacher(X):
+    # Statistiche del DeiT (Student) - da invertire
+    mean_student = torch.tensor([0.485, 0.456, 0.406], device=X.device).view(1, 3, 1, 1)
+    std_student = torch.tensor([0.229, 0.224, 0.225], device=X.device).view(1, 3, 1, 1)
+
+    # Statistiche del ViT (Teacher) - da applicare
+    mean_teacher = torch.tensor([0.5, 0.5, 0.5], device=X.device).view(1, 3, 1, 1)
+    std_teacher = torch.tensor([0.5, 0.5, 0.5], device=X.device).view(1, 3, 1, 1)
+
+    # 1. De-normalizziamo (riportiamo i pixel nel range originale 0-1)
+    X_orig = X * std_student + mean_student
+
+    # 2. Ri-normalizziamo per il Teacher
+    X_teacher = (X_orig - mean_teacher) / std_teacher
+
+    return X_teacher
+
+
+def deit_train_loop(model, X, y, loss_fn, teacher_model):
+    with torch.autocast(device_type="cuda", dtype=torch.float16):
+        output_tokens = model.forward_features(X)
+        logits_cls = model.head(output_tokens[:, 0])
+        logits_distil = model.head_dist(output_tokens[:, 1])
+
+        with torch.no_grad():
+            X_teacher = renormalize_for_teacher(X)
+            teacher_logits = teacher_model(X_teacher)
+            #hard distillation
+            teacher_labels = teacher_logits.argmax(dim=1)
+
+        cls_loss = loss_fn(logits_cls, y)
+        dist_loss = loss_fn(logits_distil, teacher_labels)
+
+        batch_loss = (cls_loss + dist_loss) / 2
+        return batch_loss
 
 
 def eval_loop(model, dataloader, loss_fn, device, classes=None, report=False):
@@ -76,6 +122,9 @@ def eval_loop(model, dataloader, loss_fn, device, classes=None, report=False):
     with torch.no_grad():
         for X, y in dataloader:
             X, y = X.to(device), y.to(device)
+
+            if not(hasattr(model, "head_dist")):
+                X = renormalize_for_teacher(X)
 
             with torch.autocast(device_type="cuda", dtype=torch.float16):
                 logits = model(X)

@@ -5,7 +5,7 @@ import time
 import timm
 import json
 from src.utils.FineTuneUtils import EarlyStopping, train_model
-from src.utils.CompressedViT import CompressedViT
+from src.utils.Compression import CompressedViT, CompressedDeiT
 from src.NAS.HybridNAS import HybridNAS
 from src.utils.PruneUtils import set_initial_masks
 from src.utils.XAIutils import analize_mlp, analize_qk, analize_vproj, analize_head
@@ -30,7 +30,10 @@ def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, dept
     nas_duration = time.time() - nas_start
     set_initial_masks(model)
     model = nas.apply_pruning(state, model)
-    comp_model = CompressedViT(state, model, original_head_dim=original_head_dim).to(device)
+    if hasattr(model, 'head_dist') and model.head_dist is not None:
+        comp_model = CompressedDeiT(state, model, original_head_dim=original_head_dim).to(device)
+    else:
+        comp_model = CompressedViT(state, model, original_head_dim=original_head_dim).to(device)
 
     return comp_model, nas_duration, state
 
