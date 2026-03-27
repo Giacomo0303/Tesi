@@ -45,12 +45,12 @@ if __name__ == "__main__":
     else:
         raise Exception("Invalid dataset name")
 
-    train_loader = dataset.get_train_loader(num_workers=4)
+    train_loader = dataset.get_train_loader(num_workers=6)
     val_loader = dataset.get_val_loader()
     test_loader = dataset.get_test_loader()
 
     model = load_model(model_name=model_name, num_classes=dataset.num_classes,
-                       path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\deit_small_distil_cifar100.pth")
+                       path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\deit_small_cifar100.pth")
     # model = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\vit_small_patch16_224_iter1.pth", weights_only=False)
     original_head_dim = model.blocks[0].attn.head_dim
     teacher_model = None
