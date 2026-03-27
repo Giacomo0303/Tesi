@@ -5,6 +5,7 @@ from torchvision.datasets import CIFAR100
 from torch import Generator
 from torchvision import transforms
 from src.Datasets.Dataset import BaseDataset
+from timm.data import create_transform
 
 
 class Cifar100(BaseDataset):
@@ -16,17 +17,24 @@ class Cifar100(BaseDataset):
 
     def get_transform(self, train=True):
         if train:
-            return transforms.Compose([
-                transforms.Resize((self.img_size, self.img_size)),
-                transforms.RandomResizedCrop(self.img_size, scale=(0.8, 1.0)),
-                transforms.RandomHorizontalFlip(),
-                transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=self.mean, std=self.std)
-            ])
-        return transforms.Compose(
-            [transforms.Resize((self.img_size, self.img_size)), transforms.ToTensor(),
-             transforms.Normalize(mean=self.mean, std=self.std)])
+            # Replica ESATTA della augmentation di training di NViT/DeiT per downstream
+            return create_transform(
+                input_size=self.img_size,
+                is_training=True,
+                color_jitter=0.4,
+                auto_augment='rand-m9-mstd0.5-inc1',  # La policy RandAugment esatta del paper
+                interpolation='bicubic',  # I ViT amano la bicubica, non la bilineare
+                re_prob=0.0,  # 0.0 = Niente Random Erasing (come da indicazioni di Touvron)
+                mean=self.mean,
+                std=self.std
+            )
+
+        # Per la validation/test, usiamo torchvision ma con l'interpolazione corretta
+        return transforms.Compose([
+            transforms.Resize((self.img_size, self.img_size), interpolation=transforms.InterpolationMode.BICUBIC),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=self.mean, std=self.std)
+        ])
 
     def split_dataset(self, train_size):
         train_set = CIFAR100(root=self.root_path, train=True, download=True, transform=self.get_transform(train=True))

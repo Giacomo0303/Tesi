@@ -6,20 +6,25 @@ from src.Datasets.Cifar100 import Cifar100
 from torch.optim import AdamW, lr_scheduler
 from torch.nn import CrossEntropyLoss
 from src.utils.NAS_Utils import load_model
+from timm.data.mixup import Mixup
+from timm.loss import SoftTargetCrossEntropy
+import torch.optim as optim
 
-model_name = "regnety_160.deit_in1k"
+model_name = "deit_small_distilled_patch16_224"
 teacher_name = None
 teacher_path = "D:\\Tesi\\src\\FineTuning\\vit_base_cifar100.pth"
-save_path = "D:\\Tesi\\src\\FineTuning"
+save_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning"
 dataset_name = "cifar100"
 img_size = 224
-batch_size = 64
+batch_size = 128
 N_epochs = 40
 validation = True
 backbone_tuning = True
+discriminative_lr = False
 backbone_lr = 1e-5
 head_lr = 1e-4
-weight_decay = 0.05
+base_lr = 0.0005 * (batch_size / 512.0)
+weight_decay = 1e-8
 patience = 5
 min_delta = 0.0001
 
@@ -29,7 +34,7 @@ if __name__ == "__main__":
         dataset = ImageNet(root_path="D:\\Lombardo\\ImageNet", batch_size=batch_size, model_name=model_name,
                            train_size=0.97)
     elif dataset_name == "cifar100":
-        dataset = Cifar100(root_path="D:\\Tesi\\Data\\CIFAR100", img_size=img_size,
+        dataset = Cifar100(root_path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\Data\\CIFAR100", img_size=img_size,
                            batch_size=batch_size, model_name=model_name, mean_std="imagenet")
     else:
         raise Exception("Invalid dataset name")
@@ -84,27 +89,42 @@ if __name__ == "__main__":
         for param in backbone_params:
             param.requires_grad = False
 
-    optim = AdamW(param_groups, weight_decay=weight_decay)
-    scheduler = lr_scheduler.CosineAnnealingLR(optim, T_max=N_epochs, eta_min=1e-7)
-    loss_fn = CrossEntropyLoss()
+    mixup_args = {
+        'mixup_alpha': 0.8,
+        'cutmix_alpha': 1.0,
+        'prob': 1.0,
+        'switch_prob': 0.5,
+        'mode': 'batch',
+        'label_smoothing': 0.1,  # Label smoothing al 10% come da paper
+        'num_classes': dataset.num_classes
+    }
+    mixup_fn = Mixup(**mixup_args)
+    train_loss_fn = SoftTargetCrossEntropy()
+    val_loss_fn = CrossEntropyLoss()
+    if discriminative_lr:
+        optim = AdamW(param_groups, weight_decay=weight_decay)
+    else:
+        optim = optim.AdamW(model.parameters(), lr=base_lr, weight_decay=weight_decay)
+
+    scheduler = lr_scheduler.CosineAnnealingLR(optim, T_max=N_epochs, eta_min=1e-6)
     if validation:
         print("validazione...")
-        _, acc, _, _ = eval_loop(model, test_loader, loss_fn, device, dataset.classes)
+        _, acc, _, _ = eval_loop(model, test_loader, val_loss_fn, device, dataset.classes)
         print(f"Top1 accuracy iniziale: {acc * 100:.2f}%")
         if teacher_model is not None:
-            _, acc_teacher, _, _ = eval_loop(teacher_model, test_loader, loss_fn, device, dataset.classes)
+            _, acc_teacher, _, _ = eval_loop(teacher_model, test_loader, val_loss_fn, device, dataset.classes)
             print(f"Top1 accuracy teacher: {acc_teacher * 100:.2f}%")
 
     early_stopping = EarlyStopping(path=save_path, patience=patience, min_delta=min_delta)
 
     train_loss, val_loss, accuracy = train_model(model, N_epochs, optimizer=optim, device=device,
-                                                 train_dataloader=train_loader, loss_fn=loss_fn,
+                                                 train_dataloader=train_loader, loss_fn=train_loss_fn, val_loss_fn=val_loss_fn,
                                                  early_stopping=early_stopping, val_dataloader=val_loader,
-                                                 scheduler=scheduler, teacher_model=teacher_model)
+                                                 scheduler=scheduler, teacher_model=teacher_model, mixup_fn=mixup_fn)
 
     plot_training_results(train_loss, val_loss, accuracy)
 
-    checkpoint = torch.load("D:\\Tesi\\src\\FineTuning\\best_model.pth")
+    checkpoint = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\best_model.pth")
     model.load_state_dict(checkpoint['model_state_dict'])
-    _, _, y_true, y_pred = eval_loop(model, test_loader, loss_fn, device, dataset.classes, report=True)
+    _, _, y_true, y_pred = eval_loop(model, test_loader, val_loss_fn, device, dataset.classes, report=True)
     print(f"Top5 accuracy: {check_top5_accuracy(model, test_loader, device):.2f}%")

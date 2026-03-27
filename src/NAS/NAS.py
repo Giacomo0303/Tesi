@@ -8,17 +8,18 @@ from src.utils.NAS_Utils import load_model, pruningNAS, recoveryFineTune, save_m
 from src.utils.PruneUtils import count_params_no_mask
 import time, copy
 
+dataset_name = "cifar100"
 batch_size = 128
 N_iterations = 15
 lr = 0.5e-5
 weight_decay = 0.05
-images_per_class = 20
+images_per_class = 25
 depth_limit = 6
-max_epochs = 10
+max_epochs = 20
 patience = 2
 min_delta = 0.0001
 early_stop_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\"
-model_name = "vit_small_patch16_224"
+model_name = "deit_small_distilled_patch16_224"
 seed = 42
 search_threshold = 0.005
 distillation = True
@@ -26,7 +27,7 @@ T = 4.0
 plots = False
 actions = "guided"  # guided o random
 search = True
-log_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\log.txt"
+log_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_cifar_deit\\log.txt"
 
 if __name__ == "__main__":
     clean_logger = CleanDualLogger(log_path)
@@ -35,17 +36,23 @@ if __name__ == "__main__":
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    dataset = ImageNet(root_path="D:\\Lombardo\\ImageNet", batch_size=batch_size,
-                       model_name=model_name, seed=seed, train_size=0.97)
-    train_loader = dataset.get_train_loader(num_workers=6)
+    if dataset_name == "imagenet":
+        dataset = ImageNet(root_path="D:\\Lombardo\\ImageNet", batch_size=batch_size, model_name=model_name,
+                           train_size=0.97)
+    elif dataset_name == "cifar100":
+        dataset = Cifar100(root_path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\Data\\CIFAR100", img_size=224,
+                           batch_size=batch_size, model_name=model_name, mean_std="imagenet")
+    else:
+        raise Exception("Invalid dataset name")
+
+    train_loader = dataset.get_train_loader(num_workers=4)
     val_loader = dataset.get_val_loader()
     test_loader = dataset.get_test_loader()
 
     model = load_model(model_name=model_name, num_classes=dataset.num_classes,
-                       path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\vit_small_imagenet.pth")
-
-    original_head_dim = model.blocks[0].attn.head_dim
+                       path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\deit_small_distil_cifar100.pth")
     # model = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\vit_small_patch16_224_iter1.pth", weights_only=False)
+    original_head_dim = model.blocks[0].attn.head_dim
     teacher_model = None
 
     if distillation or plots:
@@ -86,12 +93,12 @@ if __name__ == "__main__":
         comp_model, nas_duration, state = pruningNAS(model=model, loss_fn=loss_fn, search_loader=search_loader,
                                                      device=device,
                                                      initial_params_count=initial_params_count, depth_limit=depth_limit,
-                                                     original_head_dim=original_head_dim, threshold=search_threshold, actions=actions,
-                                                     search=search)
+                                                     original_head_dim=original_head_dim, threshold=search_threshold,
+                                                     actions=actions, search=search)
 
         pruningReport.updatePruningReport(state)
         pruningReport.savePruningReport(
-            path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\pruning_report.json")
+            path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_cifar_deit\\pruning_report.json")
 
         # --- METRICHE POST-PRUNING (A Freddo) ---
         _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, dataset.classes)
@@ -136,7 +143,7 @@ if __name__ == "__main__":
                        save_path="D:\\Tesi\\src\\NAS\\Plots", iter=n)
 
         save_model(model=model,
-                   path=f"C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\{model_name}_iter{n}.pth")
+                   path=f"C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_cifar_deit\\{model_name}_iter{n}.pth")
 
     print(f"\nVALUTAZIONE FINALE (Test Set)")
     _, final_test_acc, _, _ = eval_loop(model, test_loader, loss_fn, device, dataset.classes, report=True)

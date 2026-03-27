@@ -33,7 +33,8 @@ class EarlyStopping:
             save_model(model, current_epoch, f"{self.path}\\best_model.pth")
 
 
-def train_loop(model, dataloader, loss_fn, optimizer, device, pbar, scaler, teacher_model=None, T=4.0, alpha=0.9):
+def train_loop(model, dataloader, loss_fn, optimizer, device, pbar, scaler, teacher_model=None, T=4.0, alpha=0.9,
+               mixup_fn=None):
     num_batches = len(dataloader)
     epoch_loss = 0.0
 
@@ -41,8 +42,7 @@ def train_loop(model, dataloader, loss_fn, optimizer, device, pbar, scaler, teac
     for _, (X, y) in zip(pbar, dataloader):
         X, y = X.to(device), y.to(device)
         if hasattr(model, "dist_token"):
-            assert teacher_model is not None
-            batch_loss = deit_train_loop(model, X, y, loss_fn, teacher_model)
+            batch_loss = deit_train_loop(model, X, y, loss_fn, teacher_model, mixup_fn)
         else:
             batch_loss = vit_train_loop(model, X, y, loss_fn, teacher_model=teacher_model, T=T, alpha=alpha)
 
@@ -74,38 +74,24 @@ def vit_train_loop(model, X, y, loss_fn, teacher_model=None, T=4.0, alpha=0.9):
     return batch_loss
 
 
-def renormalize_for_teacher(X):
-    # Statistiche del DeiT (Student) - da invertire
-    mean_student = torch.tensor([0.485, 0.456, 0.406], device=X.device).view(1, 3, 1, 1)
-    std_student = torch.tensor([0.229, 0.224, 0.225], device=X.device).view(1, 3, 1, 1)
+def deit_train_loop(model, X, y, loss_fn, teacher_model, mixup_fn):
+    if mixup_fn is not None:
+        X, y = mixup_fn(X, y)
 
-    # Statistiche del ViT (Teacher) - da applicare
-    mean_teacher = torch.tensor([0.5, 0.5, 0.5], device=X.device).view(1, 3, 1, 1)
-    std_teacher = torch.tensor([0.5, 0.5, 0.5], device=X.device).view(1, 3, 1, 1)
-
-    # 1. De-normalizziamo (riportiamo i pixel nel range originale 0-1)
-    X_orig = X * std_student + mean_student
-
-    # 2. Ri-normalizziamo per il Teacher
-    X_teacher = (X_orig - mean_teacher) / std_teacher
-
-    return X_teacher
-
-
-def deit_train_loop(model, X, y, loss_fn, teacher_model):
     with torch.autocast(device_type="cuda", dtype=torch.float16):
         output_tokens = model.forward_features(X)
         logits_cls = model.head(output_tokens[:, 0])
         logits_distil = model.head_dist(output_tokens[:, 1])
 
-        with torch.no_grad():
-            X_teacher = renormalize_for_teacher(X)
-            teacher_logits = teacher_model(X_teacher)
-            #hard distillation
-            teacher_labels = teacher_logits.argmax(dim=1)
-
         cls_loss = loss_fn(logits_cls, y)
-        dist_loss = loss_fn(logits_distil, teacher_labels)
+        if teacher_model is not None:
+            with torch.no_grad():
+                teacher_logits = teacher_model(X)
+                # hard distillation
+                teacher_labels = teacher_logits.argmax(dim=1)
+                dist_loss = loss_fn(logits_distil, teacher_labels)
+        else:
+            dist_loss = loss_fn(logits_distil, y)
 
         batch_loss = (cls_loss + dist_loss) / 2
         return batch_loss
@@ -122,9 +108,6 @@ def eval_loop(model, dataloader, loss_fn, device, classes=None, report=False):
     with torch.no_grad():
         for X, y in dataloader:
             X, y = X.to(device), y.to(device)
-
-            if not(hasattr(model, "head_dist")):
-                X = renormalize_for_teacher(X)
 
             with torch.autocast(device_type="cuda", dtype=torch.float16):
                 logits = model(X)
@@ -166,8 +149,8 @@ def check_top5_accuracy(model, dataloader, device):
     return (correct_top5 / samples_count) * 100
 
 
-def train_model(model, epoch, optimizer, device, train_dataloader, loss_fn, early_stopping=None,
-                val_dataloader=None, scheduler=None, teacher_model=None, T=4.0, alpha=0.9):
+def train_model(model, epoch, optimizer, device, train_dataloader, loss_fn, val_loss_fn, early_stopping=None,
+                val_dataloader=None, scheduler=None, teacher_model=None, T=4.0, alpha=0., mixup_fn=None):
     train_loss, val_loss = [], []
     accuracy = []
     scaler = torch.amp.GradScaler()
@@ -178,11 +161,12 @@ def train_model(model, epoch, optimizer, device, train_dataloader, loss_fn, earl
         pbar = trange(num_batches)
         pbar.set_description(desc=f"Epoch {epoch}")
         epoch_loss = train_loop(model=model, dataloader=train_dataloader, loss_fn=loss_fn, optimizer=optimizer,
-                                device=device, pbar=pbar, scaler=scaler, teacher_model=teacher_model, T=T, alpha=alpha)
+                                device=device, pbar=pbar, scaler=scaler, teacher_model=teacher_model, T=T, alpha=alpha,
+                                mixup_fn=mixup_fn)
         train_loss.append(epoch_loss)
 
         if val_dataloader is not None:
-            epoch_val_loss, epoch_accuracy, _, _ = eval_loop(model=model, dataloader=val_dataloader, loss_fn=loss_fn,
+            epoch_val_loss, epoch_accuracy, _, _ = eval_loop(model=model, dataloader=val_dataloader, loss_fn=val_loss_fn,
                                                              device=device)
             val_loss.append(epoch_val_loss)
             accuracy.append(epoch_accuracy)
