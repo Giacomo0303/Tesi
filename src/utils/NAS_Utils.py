@@ -39,7 +39,7 @@ def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, dept
 
 
 def recoveryFineTune(model, lr, weight_decay, max_epochs, early_stop_path, patience, min_delta, device, train_loader,
-                     val_loader, loss_fn, teacher_model=None, T=3.0):
+                     val_loader, loss_fn, val_loss_fn, teacher_model=None, T=3.0):
     ft_start = time.time()
     optim = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optim, T_max=max_epochs)
@@ -49,7 +49,7 @@ def recoveryFineTune(model, lr, weight_decay, max_epochs, early_stop_path, patie
     # Passiamo val_dataloader per vedere i log nel training, ma ignoriamo il return qui
     _, _, _ = train_model(
         model, max_epochs, optimizer=optim, device=device,
-        train_dataloader=train_loader, loss_fn=loss_fn,
+        train_dataloader=train_loader, loss_fn=loss_fn, val_loss_fn=val_loss_fn,
         scheduler=scheduler, val_dataloader=val_loader,
         early_stopping=earlystop, teacher_model=teacher_model, T=T
     )

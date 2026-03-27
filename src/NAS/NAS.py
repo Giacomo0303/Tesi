@@ -11,12 +11,12 @@ import time, copy
 dataset_name = "cifar100"
 batch_size = 128
 N_iterations = 15
-lr = 0.5e-5
-weight_decay = 0.05
+lr = 1e-5
+weight_decay = 1e-8
 images_per_class = 25
 depth_limit = 6
 max_epochs = 20
-patience = 2
+patience = 5
 min_delta = 0.0001
 early_stop_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\"
 model_name = "deit_small_distilled_patch16_224"
@@ -62,12 +62,13 @@ if __name__ == "__main__":
 
     model = model.to(device)
 
-    loss_fn = torch.nn.CrossEntropyLoss()
+    train_loss_fn = torch.nn.CrossEntropyLoss()
+    val_loss_fn = torch.nn.CrossEntropyLoss()
 
     initial_params_count = count_params_no_mask(model)
     curr_params = initial_params_count
 
-    _, initial_acc, _, _ = eval_loop(model, val_loader, loss_fn, device, dataset.classes)
+    _, initial_acc, _, _ = eval_loop(model, val_loader, val_loss_fn, device, dataset.classes)
     pruningReport = PruningReport(model)
 
     print(f"\n{'=' * 60}")
@@ -90,7 +91,7 @@ if __name__ == "__main__":
 
         # 2. HybridNAS Execution
         # Nota: original_head_dim=64 è hardcoded per ViT-Small
-        comp_model, nas_duration, state = pruningNAS(model=model, loss_fn=loss_fn, search_loader=search_loader,
+        comp_model, nas_duration, state = pruningNAS(model=model, loss_fn=train_loss_fn, search_loader=search_loader,
                                                      device=device,
                                                      initial_params_count=initial_params_count, depth_limit=depth_limit,
                                                      original_head_dim=original_head_dim, threshold=search_threshold,
@@ -101,7 +102,7 @@ if __name__ == "__main__":
             path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_cifar_deit\\pruning_report.json")
 
         # --- METRICHE POST-PRUNING (A Freddo) ---
-        _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, dataset.classes)
+        _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, val_loss_fn, device, dataset.classes)
         curr_params = count_params_no_mask(comp_model)
 
         # Statistiche
@@ -120,7 +121,7 @@ if __name__ == "__main__":
         model = comp_model
         ft_duration = recoveryFineTune(model=model, lr=lr, weight_decay=weight_decay, max_epochs=max_epochs,
                                        early_stop_path=early_stop_path, patience=patience, min_delta=min_delta,
-                                       device=device, train_loader=train_loader, val_loader=val_loader, loss_fn=loss_fn,
+                                       device=device, train_loader=train_loader, val_loader=val_loader, loss_fn=train_loss_fn, val_loss_fn=val_loss_fn,
                                        teacher_model=teacher_model, T=T)
 
         best_model_path = os.path.join(early_stop_path, "best_model.pth")
@@ -128,7 +129,7 @@ if __name__ == "__main__":
         model.load_state_dict(checkpoint['model_state_dict'])
 
         # --- METRICHE FINALI ITERAZIONE ---
-        _, acc_final, _, _ = eval_loop(model, val_loader, loss_fn, device, dataset.classes)
+        _, acc_final, _, _ = eval_loop(model, val_loader, val_loss_fn, device, dataset.classes)
         recovered_points = (acc_final - acc_pruned) * 100
 
         print(f"   FINE ITERAZIONE {n + 1}")
@@ -146,7 +147,7 @@ if __name__ == "__main__":
                    path=f"C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_cifar_deit\\{model_name}_iter{n}.pth")
 
     print(f"\nVALUTAZIONE FINALE (Test Set)")
-    _, final_test_acc, _, _ = eval_loop(model, test_loader, loss_fn, device, dataset.classes, report=True)
+    _, final_test_acc, _, _ = eval_loop(model, test_loader, val_loss_fn, device, dataset.classes, report=True)
 
     total_duration = time.time() - total_start_time
     final_reduction = 100 * (1 - (curr_params / initial_params_count))
