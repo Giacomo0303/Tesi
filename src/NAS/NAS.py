@@ -24,7 +24,7 @@ search_threshold = 0.005
 distillation = True
 T = 4.0
 plots = False
-actions = "guided" #guided o random
+actions = "guided"  # guided o random
 search = True
 log_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\log.txt"
 
@@ -43,7 +43,9 @@ if __name__ == "__main__":
 
     model = load_model(model_name=model_name, num_classes=dataset.num_classes,
                        path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\vit_small_imagenet.pth")
-    #model = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\vit_small_patch16_224_iter1.pth", weights_only=False)
+
+    original_head_dim = model.blocks[0].attn.head_dim
+    # model = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\vit_small_patch16_224_iter1.pth", weights_only=False)
     teacher_model = None
 
     if distillation or plots:
@@ -84,10 +86,12 @@ if __name__ == "__main__":
         comp_model, nas_duration, state = pruningNAS(model=model, loss_fn=loss_fn, search_loader=search_loader,
                                                      device=device,
                                                      initial_params_count=initial_params_count, depth_limit=depth_limit,
-                                                     original_head_dim=64, threshold=search_threshold, actions=actions, search=search)
+                                                     original_head_dim=original_head_dim, threshold=search_threshold, actions=actions,
+                                                     search=search)
 
         pruningReport.updatePruningReport(state)
-        pruningReport.savePruningReport(path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\pruning_report.json")
+        pruningReport.savePruningReport(
+            path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\pruning_report.json")
 
         # --- METRICHE POST-PRUNING (A Freddo) ---
         _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, loss_fn, device, dataset.classes)
@@ -131,7 +135,8 @@ if __name__ == "__main__":
             save_plots(original_model=teacher_model, finetuned_model=model, pruning_report=pruningReport,
                        save_path="D:\\Tesi\\src\\NAS\\Plots", iter=n)
 
-        save_model(model=model, path=f"C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\{model_name}_iter{n}.pth")
+        save_model(model=model,
+                   path=f"C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\{model_name}_iter{n}.pth")
 
     print(f"\nVALUTAZIONE FINALE (Test Set)")
     _, final_test_acc, _, _ = eval_loop(model, test_loader, loss_fn, device, dataset.classes, report=True)
@@ -148,5 +153,3 @@ if __name__ == "__main__":
     print(f"   - Riduzione Size:     {final_reduction:.2f}%")
     print(f"   - Accuracy Test Set:  {final_test_acc * 100:.2f}%")
     print(f"{'=' * 60}")
-
-

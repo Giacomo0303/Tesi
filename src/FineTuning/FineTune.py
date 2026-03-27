@@ -1,19 +1,19 @@
 import timm
 import torch
-from Datasets.Imagenet import ImageNet
+from src.Datasets.Imagenet import ImageNet
 from src.utils.FineTuneUtils import EarlyStopping, train_model, eval_loop, check_top5_accuracy, plot_training_results
 from src.Datasets.Cifar100 import Cifar100
 from torch.optim import AdamW, lr_scheduler
 from torch.nn import CrossEntropyLoss
-from utils.NAS_Utils import load_model
+from src.utils.NAS_Utils import load_model
 
-model_name = "deit_tiny_distilled_patch16_224"
-teacher_name = "vit_base_patch16_224"
-teacher_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\vit_base_cifar100.pth"
-save_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning"
+model_name = "regnety_160.deit_in1k"
+teacher_name = None
+teacher_path = "D:\\Tesi\\src\\FineTuning\\vit_base_cifar100.pth"
+save_path = "D:\\Tesi\\src\\FineTuning"
 dataset_name = "cifar100"
 img_size = 224
-batch_size = 128
+batch_size = 64
 N_epochs = 40
 validation = True
 backbone_tuning = True
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         dataset = ImageNet(root_path="D:\\Lombardo\\ImageNet", batch_size=batch_size, model_name=model_name,
                            train_size=0.97)
     elif dataset_name == "cifar100":
-        dataset = Cifar100(root_path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\Data\\CIFAR100", img_size=img_size,
+        dataset = Cifar100(root_path="D:\\Tesi\\Data\\CIFAR100", img_size=img_size,
                            batch_size=batch_size, model_name=model_name, mean_std="imagenet")
     else:
         raise Exception("Invalid dataset name")
@@ -59,7 +59,8 @@ if __name__ == "__main__":
     if hasattr(model, "head_dist"):
         head_params = list(model.head.parameters()) + list(model.head_dist.parameters())
     else:
-        head_params = list(model.head.parameters())
+        head_params = list(model.get_classifier().parameters())
+
     head_params_pointers = set(p.data_ptr() for p in head_params)
     backbone_params = [p for p in model.parameters() if p.data_ptr() not in head_params_pointers]
     if backbone_tuning:
@@ -103,7 +104,7 @@ if __name__ == "__main__":
 
     plot_training_results(train_loss, val_loss, accuracy)
 
-    checkpoint = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\best_model.pth")
+    checkpoint = torch.load("D:\\Tesi\\src\\FineTuning\\best_model.pth")
     model.load_state_dict(checkpoint['model_state_dict'])
     _, _, y_true, y_pred = eval_loop(model, test_loader, loss_fn, device, dataset.classes, report=True)
     print(f"Top5 accuracy: {check_top5_accuracy(model, test_loader, device):.2f}%")
