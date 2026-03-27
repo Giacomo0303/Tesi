@@ -5,7 +5,8 @@ import time
 import timm
 import json
 from src.utils.FineTuneUtils import EarlyStopping, train_model
-from src.utils.Compression import CompressedViT, CompressedDeiT
+from src.utils.CompressedViT import CompressedViT
+from src.utils.CompressedDeiT import CompressedDeiT
 from src.NAS.HybridNAS import HybridNAS
 from src.utils.PruneUtils import set_initial_masks
 from src.utils.XAIutils import analize_mlp, analize_qk, analize_vproj, analize_head
