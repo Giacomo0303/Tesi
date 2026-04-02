@@ -122,7 +122,8 @@ def eval_loop(model, dataloader, loss_fn, device, classes=None, report=False):
 
     if report:
         print(classification_report(y_true, y_pred, target_names=classes, digits=3))
-        print(f"Balanced Accuracy: {accuracy * 100:.2f}%")
+
+    print(f"Balanced Accuracy: {accuracy * 100:.2f}%")
 
     return epoch_loss, accuracy, y_true, y_pred
 

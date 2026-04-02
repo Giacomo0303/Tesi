@@ -10,22 +10,22 @@ from timm.data.mixup import Mixup
 from timm.loss import SoftTargetCrossEntropy
 import torch.optim as optim
 
-model_name = "deit_small_distilled_patch16_224"
+model_name = "deit_small_patch16_224"
 teacher_name = None
 teacher_path = "D:\\Tesi\\src\\FineTuning\\vit_base_cifar100.pth"
 save_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning"
-dataset_name = "cifar100"
+dataset_name = "imagenet"
 img_size = 224
 batch_size = 128
-N_epochs = 40
+N_epochs = 50
 validation = True
-backbone_tuning = True
+backbone_tuning = False
 discriminative_lr = False
-backbone_lr = 1e-5
-head_lr = 1e-4
-base_lr = 0.0005 * (batch_size / 512.0)
+backbone_lr = 1e-5  # used only with discriminative_lr
+head_lr = 1e-4  # used only with discriminative_lr
+base_lr = 1e-6
 weight_decay = 1e-8
-patience = 5
+patience = 10
 min_delta = 0.0001
 
 if __name__ == "__main__":
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     else:
         raise Exception("Invalid dataset name")
 
-    train_loader = dataset.get_train_loader(num_workers=4)
+    train_loader = dataset.get_train_loader(num_workers=6)
     val_loader = dataset.get_val_loader()
     test_loader = dataset.get_test_loader()
     print(f"train set: {len(train_loader.dataset)}")
@@ -89,24 +89,16 @@ if __name__ == "__main__":
         for param in backbone_params:
             param.requires_grad = False
 
-    mixup_args = {
-        'mixup_alpha': 0.8,
-        'cutmix_alpha': 1.0,
-        'prob': 1.0,
-        'switch_prob': 0.5,
-        'mode': 'batch',
-        'label_smoothing': 0.1,  # Label smoothing al 10% come da paper
-        'num_classes': dataset.num_classes
-    }
-    mixup_fn = Mixup(**mixup_args)
-    train_loss_fn = SoftTargetCrossEntropy()
+    train_loss_fn = CrossEntropyLoss()
     val_loss_fn = CrossEntropyLoss()
-    if discriminative_lr:
-        optim = AdamW(param_groups, weight_decay=weight_decay)
-    else:
-        optim = optim.AdamW(model.parameters(), lr=base_lr, weight_decay=weight_decay)
 
-    scheduler = lr_scheduler.CosineAnnealingLR(optim, T_max=N_epochs, eta_min=1e-6)
+    if discriminative_lr:
+        optimizer = AdamW(param_groups, weight_decay=weight_decay)
+    else:
+        active_params = filter(lambda p: p.requires_grad, model.parameters())
+        optimizer = optim.AdamW(active_params, lr=base_lr, weight_decay=weight_decay)
+
+    scheduler = lr_scheduler.CosineAnnealingLR(optimizer, T_max=N_epochs, eta_min=1e-6)
     if validation:
         print("validazione...")
         _, acc, _, _ = eval_loop(model, test_loader, val_loss_fn, device, dataset.classes)
@@ -117,14 +109,15 @@ if __name__ == "__main__":
 
     early_stopping = EarlyStopping(path=save_path, patience=patience, min_delta=min_delta)
 
-    train_loss, val_loss, accuracy = train_model(model, N_epochs, optimizer=optim, device=device,
-                                                 train_dataloader=train_loader, loss_fn=train_loss_fn, val_loss_fn=val_loss_fn,
+    train_loss, val_loss, accuracy = train_model(model, N_epochs, optimizer=optimizer, device=device,
+                                                 train_dataloader=train_loader, loss_fn=train_loss_fn,
+                                                 val_loss_fn=val_loss_fn,
                                                  early_stopping=early_stopping, val_dataloader=val_loader,
-                                                 scheduler=scheduler, teacher_model=teacher_model, mixup_fn=mixup_fn)
+                                                 scheduler=scheduler, teacher_model=teacher_model)
 
     plot_training_results(train_loss, val_loss, accuracy)
 
     checkpoint = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\best_model.pth")
     model.load_state_dict(checkpoint['model_state_dict'])
-    _, _, y_true, y_pred = eval_loop(model, test_loader, val_loss_fn, device, dataset.classes, report=True)
+    _, _, y_true, y_pred = eval_loop(model, test_loader, val_loss_fn, device, dataset.classes, report=False)
     print(f"Top5 accuracy: {check_top5_accuracy(model, test_loader, device):.2f}%")
