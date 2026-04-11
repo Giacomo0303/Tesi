@@ -44,7 +44,7 @@ def train_loop(model, dataloader, loss_fn, optimizer, device, pbar, scaler, teac
         if hasattr(model, "dist_token"):
             batch_loss = deit_train_loop(model, X, y, loss_fn, teacher_model, mixup_fn)
         else:
-            batch_loss = vit_train_loop(model, X, y, loss_fn, teacher_model=teacher_model, T=T, alpha=alpha)
+            batch_loss = vit_train_loop(model, X, y, loss_fn, teacher_model=teacher_model, T=T, alpha=alpha , mixup_fn=mixup_fn)
 
         epoch_loss += batch_loss.item()
 
@@ -56,7 +56,10 @@ def train_loop(model, dataloader, loss_fn, optimizer, device, pbar, scaler, teac
     return epoch_loss / num_batches
 
 
-def vit_train_loop(model, X, y, loss_fn, teacher_model=None, T=4.0, alpha=0.9):
+def vit_train_loop(model, X, y, loss_fn, teacher_model=None, T=4.0, alpha=0.9, mixup_fn=None):
+    if mixup_fn is not None:
+        X, y = mixup_fn(X, y)
+
     with torch.autocast(device_type="cuda", dtype=torch.float16):
         student_logits = model(X)
         batch_loss = loss_fn(student_logits, y)

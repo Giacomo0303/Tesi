@@ -40,7 +40,8 @@ class MultiHeadSelfAttention(nn.Module):
         self.num_heads = num_heads
         self.total_qk = self.num_heads * self.qk_dim
         self.total_v = self.num_heads * self.v_dim
-        self.scale = original_qk_dim ** (-0.5)
+        #self.scale = original_qk_dim ** (-0.5) vecchio metodo che mantiene la divisione per la dimensione originale
+        self.scale = self.head_dim ** -0.5
 
         self.qkv = nn.Linear(in_features=qkv_weights.shape[1], out_features=qkv_weights.shape[0])
         self.proj = nn.Linear(in_features=proj_weights.shape[1], out_features=proj_weights.shape[0])
