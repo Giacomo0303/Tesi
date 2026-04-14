@@ -17,7 +17,6 @@ class Cifar100(BaseDataset):
 
     def get_transform(self, train=True):
         if train:
-            # Replica ESATTA della augmentation di training di NViT/DeiT per downstream
             return create_transform(
                 input_size=self.img_size,
                 is_training=True,

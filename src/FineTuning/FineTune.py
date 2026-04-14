@@ -13,18 +13,18 @@ import torch.optim as optim
 model_name = "deit_small_patch16_224"
 teacher_name = None
 teacher_path = "D:\\Tesi\\src\\FineTuning\\vit_base_cifar100.pth"
-save_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning"
-dataset_name = "imagenet"
+save_path = "D:\\Tesi\\src\\FineTuning"
+dataset_name = "cifar100"
 img_size = 224
 batch_size = 128
 N_epochs = 50
 validation = True
-backbone_tuning = False
-discriminative_lr = False
+backbone_tuning = True
+discriminative_lr = True
 backbone_lr = 1e-5  # used only with discriminative_lr
 head_lr = 1e-4  # used only with discriminative_lr
 base_lr = 1e-6
-weight_decay = 1e-8
+weight_decay = 0.05
 patience = 10
 min_delta = 0.0001
 
@@ -34,7 +34,7 @@ if __name__ == "__main__":
         dataset = ImageNet(root_path="D:\\Lombardo\\ImageNet", batch_size=batch_size, model_name=model_name,
                            train_size=0.97)
     elif dataset_name == "cifar100":
-        dataset = Cifar100(root_path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\Data\\CIFAR100", img_size=img_size,
+        dataset = Cifar100(root_path="D:\\Tesi\\Data\\CIFAR100", img_size=img_size,
                            batch_size=batch_size, model_name=model_name, mean_std="imagenet")
     else:
         raise Exception("Invalid dataset name")
@@ -89,6 +89,17 @@ if __name__ == "__main__":
         for param in backbone_params:
             param.requires_grad = False
 
+    mixup_args = {
+        'mixup_alpha': 0.8,
+        'cutmix_alpha': 1.0,
+        'prob': 1.0,
+        'switch_prob': 0.5,
+        'mode': 'batch',
+        'label_smoothing': 0.1,
+        'num_classes': dataset.num_classes
+    }
+    mixup_fn = Mixup(**mixup_args)
+
     train_loss_fn = CrossEntropyLoss()
     val_loss_fn = CrossEntropyLoss()
 
@@ -117,7 +128,7 @@ if __name__ == "__main__":
 
     plot_training_results(train_loss, val_loss, accuracy)
 
-    checkpoint = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\best_model.pth")
+    checkpoint = torch.load("D:\\Tesi\\src\\FineTuning\\best_model.pth")
     model.load_state_dict(checkpoint['model_state_dict'])
     _, _, y_true, y_pred = eval_loop(model, test_loader, val_loss_fn, device, dataset.classes, report=False)
     print(f"Top5 accuracy: {check_top5_accuracy(model, test_loader, device):.2f}%")

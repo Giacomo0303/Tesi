@@ -5,7 +5,7 @@ import seaborn as sns
 from tkinter import Tk, filedialog, messagebox
 import os
 
-# Stile globale per articoli scientifici
+# Stile globale (ho rimosso 'figure.autolayout': True per gestire a mano i margini)
 plt.rcParams.update({
     'font.size': 12,
     'axes.titlesize': 14,
@@ -15,10 +15,7 @@ plt.rcParams.update({
     'legend.fontsize': 11,
     'legend.frameon': True,
     'legend.edgecolor': 'black',
-    'axes.grid': True,
-    'grid.alpha': 0.4,
-    'grid.linestyle': '--',
-    'figure.autolayout': True,
+    'axes.grid': False,  # Lo gestiamo manualmente asse per asse giù
     'font.family': 'serif'
 })
 
@@ -27,17 +24,14 @@ def parse_nas_log(file_path):
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # Pulizia dai tag/apici sporchi
     clean_content = re.sub(r'\'', '', content)
 
-    # Estrazione Baseline
     baseline_match = re.search(r"Baseline Model:.*?Params:\s*([\d.]+)M.*?Accuracy:\s*([\d.]+)", clean_content,
                                re.IGNORECASE | re.S)
     baseline_params = float(baseline_match.group(1)) if baseline_match else None
     baseline_acc = float(baseline_match.group(2)) if baseline_match else None
 
     data = []
-
     pattern = r"ITERAZIONE\s+(\d+)/\d+(.*?)(?=\s+ITERAZIONE\s+\d+/\d+|\s+VALUTAZIONE FINALE|$)"
     iteration_blocks = re.finditer(pattern, clean_content, re.IGNORECASE | re.S)
 
@@ -45,7 +39,6 @@ def parse_nas_log(file_path):
         iter_num = int(match.group(1))
         iter_text = match.group(2)
 
-        # 1. Nodi esplorati
         total_iters_match = re.search(r"Iterazioni totali:\s*(\d+)", iter_text, re.IGNORECASE)
         if total_iters_match:
             nodes_explored = int(total_iters_match.group(1))
@@ -55,14 +48,12 @@ def parse_nas_log(file_path):
             nodes_explored = int(steps[-1]) if steps else 0
             is_search = False
 
-        # 2. Accuracy Pre/Post
         post_taglio_acc_match = re.search(r"REPORT POST-TAGLIO.*?Accuracy:\s*([\d.]+)", iter_text, re.IGNORECASE | re.S)
         acc_pre_ft = float(post_taglio_acc_match.group(1)) if post_taglio_acc_match else None
 
         recuperata_acc_match = re.search(r"Accuracy Recuperata:\s*([\d.]+)", iter_text, re.IGNORECASE | re.S)
         acc_post_ft = float(recuperata_acc_match.group(1)) if recuperata_acc_match else None
 
-        # 3. Parametri
         params_match = re.search(r"REPORT POST-TAGLIO.*?Params:\s*([\d.]+)", iter_text, re.IGNORECASE | re.S)
         params = float(params_match.group(1)) if params_match else None
 
@@ -97,11 +88,12 @@ def create_dashboard(df, b_acc, b_params, root):
     color_bars = '#4c72b0'
     color_avg = '#e41a1c'
 
-    fig = plt.figure(figsize=(12, 16))
-    gs = fig.add_gridspec(3, 1, height_ratios=[1, 1, 1], hspace=0.3)
+    # 1. Modificato figsize per evitare l'effetto "stirato" (più largo, meno alto)
+    fig = plt.figure(figsize=(14, 9))
+    gs = fig.add_gridspec(3, 1, height_ratios=[1, 1, 1], hspace=0.45)
     sns.set_style("white")
 
-    # --- 1. Grafico Accuracy (Pre vs Post Fine-Tuning) ---
+    # --- 1. Grafico Accuracy ---
     ax1 = fig.add_subplot(gs[0, 0])
 
     if not df['Acc_Pre_FT'].isna().all():
@@ -118,11 +110,16 @@ def create_dashboard(df, b_acc, b_params, root):
     if b_acc:
         ax1.axhline(y=b_acc, color=color_base, linestyle=':', linewidth=2, label=f'Baseline Acc. ({b_acc}%)')
 
-    ax1.set_title("Model Accuracy Evolution Over NAS Iterations", fontweight='bold', pad=10)
     ax1.set_ylabel("Accuracy (%)", fontweight='bold')
     ax1.set_xlabel("Iteration", fontweight='bold')
     ax1.set_xticks(df['Iteration'])
-    ax1.legend(loc='center left', framealpha=1, bbox_to_anchor=(0.96, 0.5))
+
+    # Modificata la posizione della legenda (1.02 invece di 0.96)
+    ax1.legend(loc='center left', framealpha=1, bbox_to_anchor=(1.02, 0.5))
+
+    # 2. Aggiunte solo le linee orizzontali
+    ax1.yaxis.grid(True, linestyle='--', alpha=0.6, color='gray')
+    ax1.xaxis.grid(False)
 
     # --- 2. Grafico Nodi Esplorati ---
     ax2 = fig.add_subplot(gs[1, 0])
@@ -131,21 +128,23 @@ def create_dashboard(df, b_acc, b_params, root):
         avg_nodes = df['Nodes'].mean()
         ax2.axhline(y=avg_nodes, color=color_avg, linestyle='--', linewidth=2.5,
                     label=f'Average Nodes: {avg_nodes:.1f}')
-        ax2.set_title("Explored Nodes per Search Phase", fontweight='bold')
         ax2.set_ylabel("Number of Nodes", fontweight='bold')
         ax2.set_xlabel("Iteration", fontweight='bold')
         ax2.set_xticks(df['Iteration'])
-        ax2.legend(loc='center left', framealpha=1, bbox_to_anchor=(0.96, 0.5))
+        ax2.legend(loc='center left', framealpha=1, bbox_to_anchor=(1.02, 0.5))
+
+        # Linee orizzontali anche qui
+        ax2.yaxis.grid(True, linestyle='--', alpha=0.6, color='gray')
+        ax2.xaxis.grid(False)
     else:
         ax2.text(0.5, 0.5, "Static Sampling\n(No search iterations logged)",
                  ha='center', va='center', fontsize=12, color='gray', style='italic')
-        ax2.set_title("Explored Nodes (N/A)", fontweight='bold')
         ax2.axis('off')
 
     # --- 3. Riduzione Parametri ---
     ax3 = fig.add_subplot(gs[2, 0])
     if not df['Params_M'].isna().all():
-        ax3.plot(df['Iteration'], df['Params_M'], marker='D', linestyle='-', linewidth=2.5,
+        ax3.plot(df['Iteration'], df['Params_M'], marker='o', linestyle='-', linewidth=2.5,
                  color='#2b8cbe', markerfacecolor='white', markeredgewidth=1.5, label='Model Size')
         ax3.fill_between(df['Iteration'], df['Params_M'], color='#2b8cbe', alpha=0.1)
 
@@ -153,22 +152,29 @@ def create_dashboard(df, b_acc, b_params, root):
         ax3.axhline(y=b_params, color='black', linestyle='--', linewidth=1.5, alpha=0.7,
                     label=f'Baseline ({b_params}M)')
 
-    ax3.set_title("Model Complexity Reduction", fontweight='bold')
     ax3.set_ylabel("Parameters (Millions)", fontweight='bold')
     ax3.set_xlabel("Iteration", fontweight='bold')
     ax3.set_xticks(df['Iteration'])
-    ax3.legend(loc='center left', framealpha=1, bbox_to_anchor=(0.96, 0.5))
+    ax3.legend(loc='center left', framealpha=1, bbox_to_anchor=(1.02, 0.5))
+
+    # Linee orizzontali per il terzo grafico
+    ax3.yaxis.grid(True, linestyle='--', alpha=0.6, color='gray')
+    ax3.xaxis.grid(False)
 
     for ax in [ax1, ax2, ax3]:
         if not ax.axis() == (0.0, 1.0, 0.0, 1.0):
             ax.spines['top'].set_visible(False)
             ax.spines['right'].set_visible(False)
 
+    # 3. FIX SPAZIATURA: Riduce lo spazio a sinistra (0.06) e lascia il 20% dello schermo a destra (0.80) per la legenda
+    fig.subplots_adjust(left=0.06, right=0.80, top=0.92, bottom=0.08)
+
     root.attributes('-topmost', True)
     salva = messagebox.askyesno("Salvataggio", "Vuoi salvare il grafico in formato PDF?")
 
     if salva:
         output_pdf = "nas_analysis_plot.pdf"
+        # Manteniamo bbox_inches='tight' solo per il salvataggio così il PDF esce perfetto
         plt.savefig(output_pdf, bbox_inches='tight')
         print(f"Grafico salvato con successo: {output_pdf}")
     else:
