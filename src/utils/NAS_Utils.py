@@ -36,6 +36,24 @@ def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, dept
     else:
         comp_model = CompressedViT(state, model, original_head_dim=original_head_dim).to(device)
 
+    # --- DIAGNOSTICA IMPORTANZE ---
+    print(f"\n{'#' * 30}")
+    print("DIAGNOSTICA IMPORTANZE (Fisher/Taylor)")
+    total_imp = 0.0
+    count = 0
+    for name, p in model.named_parameters():
+        if hasattr(p, 'imp') and p.imp is not None:
+            mean_val = p.imp.mean().item()
+            total_imp += mean_val
+            count += 1
+            # Stampiamo solo i primi 3 per non intasare il log
+            if count <= 3:
+                print(f"Layer: {name} | Mean Imp: {mean_val:.10f}")
+
+    if count > 0:
+        print(f"IMPORTANZA MEDIA TOTALE: {total_imp / count:.10f}")
+    print(f"{'#' * 30}\n")
+
     return comp_model, nas_duration, state
 
 
