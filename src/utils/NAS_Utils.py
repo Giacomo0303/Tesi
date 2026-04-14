@@ -8,7 +8,7 @@ from src.utils.FineTuneUtils import EarlyStopping, train_model
 from src.utils.CompressedViT import CompressedViT
 from src.utils.CompressedDeiT import CompressedDeiT
 from src.NAS.HybridNAS import HybridNAS
-from src.utils.PruneUtils import set_initial_masks
+from src.utils.PruneUtils import set_initial_masks, compute_imp
 from src.utils.XAIutils import analize_mlp, analize_qk, analize_vproj, analize_head
 
 
@@ -21,6 +21,34 @@ def load_model(model_name, num_classes, path):
 
 def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, depth_limit, original_head_dim, threshold,
                actions="guided", search=True):
+    # --- AGGIUNGI QUESTO BLOCCO QUI ---
+    print("\n" + "#" * 40)
+    print("DEBUG: CALCOLO IMPORTANZE BASELINE")
+
+    # Prepariamo il modello (serve che abbia le maschere per count_parameters)
+    set_initial_masks(model)
+
+    # Calcoliamo l'importanza una volta sul modello originale
+    compute_imp(model, loss_fn, device, search_loader)
+
+    total_imp = 0.0
+    count = 0
+    # Stampiamo i valori per i primi layer per vedere se i numeri esistono
+    for name, p in model.named_parameters():
+        if hasattr(p, 'imp') and p.imp is not None:
+            m_val = p.imp.mean().item()
+            total_imp += m_val
+            count += 1
+            if count <= 5:
+                print(f"Layer: {name} | Mean Imp: {m_val:.12f}")
+
+    if count > 0:
+        print(f"IMPORTANZA MEDIA TOTALE BASELINE: {total_imp / count:.12f}")
+    else:
+        print("ERRORE: Attributo .imp non trovato sui parametri!")
+    print("#" * 40 + "\n")
+    model.zero_grad(set_to_none=True)
+
     nas_start = time.time()
     nas = HybridNAS(model, loss_fn=loss_fn, search_loader=search_loader, device=device,
                     original_params=initial_params_count, threshold=threshold, actions=actions)
@@ -35,24 +63,6 @@ def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, dept
         comp_model = CompressedDeiT(state, model, original_head_dim=original_head_dim).to(device)
     else:
         comp_model = CompressedViT(state, model, original_head_dim=original_head_dim).to(device)
-
-    # --- DIAGNOSTICA IMPORTANZE ---
-    print(f"\n{'#' * 30}")
-    print("DIAGNOSTICA IMPORTANZE (Fisher/Taylor)")
-    total_imp = 0.0
-    count = 0
-    for name, p in model.named_parameters():
-        if hasattr(p, 'imp') and p.imp is not None:
-            mean_val = p.imp.mean().item()
-            total_imp += mean_val
-            count += 1
-            # Stampiamo solo i primi 3 per non intasare il log
-            if count <= 3:
-                print(f"Layer: {name} | Mean Imp: {mean_val:.10f}")
-
-    if count > 0:
-        print(f"IMPORTANZA MEDIA TOTALE: {total_imp / count:.10f}")
-    print(f"{'#' * 30}\n")
 
     return comp_model, nas_duration, state
 
