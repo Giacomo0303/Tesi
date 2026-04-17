@@ -21,33 +21,6 @@ def load_model(model_name, num_classes, path):
 
 def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, depth_limit, original_head_dim, threshold,
                actions="guided", search=True):
-    # --- AGGIUNGI QUESTO BLOCCO QUI ---
-    print("\n" + "#" * 40)
-    print("DEBUG: CALCOLO IMPORTANZE BASELINE")
-
-    # Prepariamo il modello (serve che abbia le maschere per count_parameters)
-    set_initial_masks(model)
-
-    # Calcoliamo l'importanza una volta sul modello originale
-    compute_imp(model, loss_fn, device, search_loader)
-
-    total_imp = 0.0
-    count = 0
-    # Stampiamo i valori per i primi layer per vedere se i numeri esistono
-    for name, p in model.named_parameters():
-        if hasattr(p, 'imp') and p.imp is not None:
-            m_val = p.imp.mean().item()
-            total_imp += m_val
-            count += 1
-            if count <= 5:
-                print(f"Layer: {name} | Mean Imp: {m_val:.12f}")
-
-    if count > 0:
-        print(f"IMPORTANZA MEDIA TOTALE BASELINE: {total_imp / count:.12f}")
-    else:
-        print("ERRORE: Attributo .imp non trovato sui parametri!")
-    print("#" * 40 + "\n")
-    model.zero_grad(set_to_none=True)
 
     nas_start = time.time()
     nas = HybridNAS(model, loss_fn=loss_fn, search_loader=search_loader, device=device,

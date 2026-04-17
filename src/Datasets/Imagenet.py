@@ -1,13 +1,13 @@
 import copy
 import os, shutil
 import numpy as np
-from torch import Generator
 from torchvision import transforms
 import math
 from src.Datasets.Dataset import BaseDataset
-from torch.utils.data import DataLoader, random_split, Subset
+from torch.utils.data import DataLoader, Subset
 from torchvision.datasets import ImageFolder
 from sklearn.model_selection import train_test_split
+from timm.data import create_transform
 
 
 class ImageNet(BaseDataset):
@@ -23,17 +23,16 @@ class ImageNet(BaseDataset):
 
     def get_transform(self, train=True):
         if train:
-            return transforms.Compose([
-                transforms.RandomResizedCrop(
-                    size=self.img_size,
-                    scale=(0.8, 1.0),
-                    interpolation=transforms.InterpolationMode.BICUBIC
-                ),
-                transforms.RandomHorizontalFlip(),
-                transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3),
-                transforms.ToTensor(),
-                transforms.Normalize(mean=self.mean, std=self.std)
-            ])
+            return create_transform(
+                input_size=self.img_size,
+                is_training=True,
+                color_jitter=0.4,
+                auto_augment='rand-m9-mstd0.5-inc1',  # La policy RandAugment esatta del paper
+                interpolation='bicubic',  # I ViT amano la bicubica, non la bilineare
+                re_prob=0.0,  # 0.0 = Niente Random Erasing (come da indicazioni di Touvron)
+                mean=self.mean,
+                std=self.std
+            )
         else:
             crop_pct = 0.9
             scale_size = int(math.floor(self.img_size / crop_pct))  # 224 / 0.9 = 248
@@ -72,7 +71,7 @@ class ImageNet(BaseDataset):
 
     def get_train_loader(self, num_workers):
         return DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True, num_workers=num_workers,
-                          pin_memory=True)
+                          pin_memory=True, drop_last=True)
 
     def get_val_loader(self):
         return DataLoader(self.val_set, batch_size=self.batch_size, shuffle=False, num_workers=4, pin_memory=True)

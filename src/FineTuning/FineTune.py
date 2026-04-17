@@ -13,17 +13,17 @@ import torch.optim as optim
 model_name = "deit_small_patch16_224"
 teacher_name = None
 teacher_path = "D:\\Tesi\\src\\FineTuning\\vit_base_cifar100.pth"
-save_path = "D:\\Tesi\\src\\FineTuning"
-dataset_name = "cifar100"
+save_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning"
+dataset_name = "imagenet"
 img_size = 224
 batch_size = 128
-N_epochs = 50
+N_epochs = 0
 validation = True
-backbone_tuning = True
-discriminative_lr = True
+backbone_tuning = False
+discriminative_lr = False
 backbone_lr = 1e-5  # used only with discriminative_lr
 head_lr = 1e-4  # used only with discriminative_lr
-base_lr = 1e-6
+base_lr = 1e-4
 weight_decay = 0.05
 patience = 10
 min_delta = 0.0001
@@ -100,7 +100,7 @@ if __name__ == "__main__":
     }
     mixup_fn = Mixup(**mixup_args)
 
-    train_loss_fn = CrossEntropyLoss()
+    train_loss_fn = SoftTargetCrossEntropy()
     val_loss_fn = CrossEntropyLoss()
 
     if discriminative_lr:
@@ -124,11 +124,11 @@ if __name__ == "__main__":
                                                  train_dataloader=train_loader, loss_fn=train_loss_fn,
                                                  val_loss_fn=val_loss_fn,
                                                  early_stopping=early_stopping, val_dataloader=val_loader,
-                                                 scheduler=scheduler, teacher_model=teacher_model)
+                                                 scheduler=scheduler, teacher_model=teacher_model, mixup_fn=mixup_fn)
 
     plot_training_results(train_loss, val_loss, accuracy)
 
-    checkpoint = torch.load("D:\\Tesi\\src\\FineTuning\\best_model.pth")
+    checkpoint = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\best_model.pth")
     model.load_state_dict(checkpoint['model_state_dict'])
     _, _, y_true, y_pred = eval_loop(model, test_loader, val_loss_fn, device, dataset.classes, report=False)
     print(f"Top5 accuracy: {check_top5_accuracy(model, test_loader, device):.2f}%")
