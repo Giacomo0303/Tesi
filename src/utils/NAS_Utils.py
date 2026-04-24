@@ -25,10 +25,15 @@ def pruningNAS(model, loss_fn, search_loader, device, initial_params_count, dept
     nas_start = time.time()
     nas = HybridNAS(model, loss_fn=loss_fn, search_loader=search_loader, device=device,
                     original_params=initial_params_count, threshold=threshold, actions=actions)
-    if search:
+    if search == "nas":
         state, best_val = nas.search(depth_limit=depth_limit)
-    else:
+    elif search == "random":
         state, best_val = nas.random_search(depth_limit=depth_limit)
+    elif search == "greedy":
+        state, best_val = nas.greedy_search(depth_limit=depth_limit)
+    else:
+        raise Exception("Wrong search type")
+
     nas_duration = time.time() - nas_start
     set_initial_masks(model)
     model = nas.apply_pruning(state, model)

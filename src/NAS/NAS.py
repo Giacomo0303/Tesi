@@ -10,24 +10,24 @@ import time, copy
 
 dataset_name = "cifar100"
 batch_size = 128
-N_iterations = 25
+N_iterations = 15
 lr = 0.5e-5
 weight_decay = 0.05
 images_per_class = 25
-depth_limit = 8
+depth_limit = 6
 max_epochs = 20
-patience = 5
+patience = 2
 min_delta = 0.0001
-early_stop_path = "D:\\Tesi\\src\\NAS\\"
-model_name = "deit_small_patch16_224"
+early_stop_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\"
+model_name = "vit_small_patch16_224"
 seed = 42
-search_threshold = 0.005*2
+search_threshold = 0.005
 distillation = False
 T = 4.0
 plots = False
 actions = "guided"  # guided o random
-search = True
-log_path = "D:\\Tesi\\src\\NAS\\Results_cifar_deit_no_dist\\log.txt"
+search = "greedy"
+log_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\AblationGreedy2.0\\log.txt"
 
 if __name__ == "__main__":
     clean_logger = CleanDualLogger(log_path)
@@ -40,7 +40,7 @@ if __name__ == "__main__":
         dataset = ImageNet(root_path="D:\\Lombardo\\ImageNet", batch_size=batch_size, model_name=model_name,
                            train_size=0.97)
     elif dataset_name == "cifar100":
-        dataset = Cifar100(root_path="D:\\Tesi\\Data\\CIFAR100", img_size=224,
+        dataset = Cifar100(root_path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\Data\\CIFAR100", img_size=224,
                            batch_size=batch_size, model_name=model_name, mean_std="imagenet")
     else:
         raise Exception("Invalid dataset name")
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     test_loader = dataset.get_test_loader()
 
     model = load_model(model_name=model_name, num_classes=dataset.num_classes,
-                       path="D:\\Tesi\\src\\FineTuning\\deit_small_no_distil_cifar100.pth")
+                       path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\vit_small_cifar100.pth")
     # model = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\vit_small_patch16_224_iter1.pth", weights_only=False)
     original_head_dim = model.blocks[0].attn.head_dim
     teacher_model = None
@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
         pruningReport.updatePruningReport(state)
         pruningReport.savePruningReport(
-            path="D:\\Tesi\\src\\NAS\\Results_cifar_deit_no_dist\\pruning_report.json")
+            path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\AblationGreedy2.0\\pruning_report.json")
 
         # --- METRICHE POST-PRUNING (A Freddo) ---
         _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, val_loss_fn, device, dataset.classes)
@@ -144,7 +144,7 @@ if __name__ == "__main__":
                        save_path="D:\\Tesi\\src\\NAS\\Plots", iter=n)
 
         save_model(model=model,
-                   path=f"D:\\Tesi\\src\\NAS\\Results_cifar_deit_no_dist\\{model_name}_iter{n}.pth")
+                   path=f"C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\AblationGreedy2.0\\{model_name}_iter{n}.pth")
 
     print(f"\nVALUTAZIONE FINALE (Test Set)")
     _, final_test_acc, _, _ = eval_loop(model, test_loader, val_loss_fn, device, dataset.classes, report=True)

@@ -204,6 +204,55 @@ class HybridNAS:
 
         return self.best_state, self.best_value
 
+    def greedy_search(self, depth_limit):
+        start_state = self.build_initial_state()
+        current_state = start_state
+
+        search_iterations = 0
+
+        working_model = deepcopy(self.base_model)
+        set_initial_masks(working_model)
+
+        print("--- Inizio algoritmo Greedy ---")
+
+        for step in range(depth_limit):
+            reset_masks(working_model)
+            self.apply_pruning(state=current_state, model=working_model)
+            self.eval_model(working_model, current_state, search_iter=-1)
+
+            next_states = self.branch(current_state, working_model)
+
+            best_local_state = None
+            best_local_val = -float("inf")
+
+            print(f"\n--- Profondità {step + 1}/{depth_limit} ---")
+
+            for state in next_states:
+                state["depth"] = current_state["depth"] + 1
+
+                search_iterations += 1
+                reset_masks(working_model)
+                self.apply_pruning(state=state, model=working_model)
+
+                acc, params = self.eval_model(working_model, state, search_iterations)
+                val = state["obj_val"]
+
+                print(
+                    f"Iter: {search_iterations} | Curr Val: {val:.4f} | Last Action: {state['last_act']} | Acc: {acc:.4f} | Params: {params:.4f}M")
+
+                if val > best_local_val:
+                    best_local_val = val
+                    best_local_state = state
+
+            current_state = best_local_state
+            print(f"--> Selezionato Best Local (Valore: {best_local_val:.4f})")
+
+        print("\n--- Ricerca Completata ---")
+        print(f"Iterazioni totali: {search_iterations}")
+        print(f"Miglior Valore Globale Trovato: {self.best_value:.4f}")
+
+        return self.best_state, self.best_value
+
     def random_search(self, depth_limit=6):
         current_state = self.build_initial_state()
         working_model = deepcopy(self.base_model)
