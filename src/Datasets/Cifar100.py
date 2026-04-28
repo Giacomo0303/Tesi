@@ -19,7 +19,6 @@ class Cifar100(BaseDataset):
 
     def get_transform(self, train=True):
         if train:
-            """
             return create_transform(
                 input_size=self.img_size,
                 is_training=True,
@@ -32,16 +31,17 @@ class Cifar100(BaseDataset):
             )
             """
             return transforms.Compose([
+                transforms.Resize((self.img_size, self.img_size)),
                 transforms.RandomResizedCrop(224, scale=(0.8, 1.0)),
                 transforms.RandomHorizontalFlip(),
                 transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3),
                 transforms.ToTensor(),
                 transforms.Normalize(mean=self.mean, std=self.std)
-            ])
+            ])"""
 
         # Per la validation/test, usiamo torchvision ma con l'interpolazione corretta
         return transforms.Compose([
-            transforms.Resize((self.img_size, self.img_size)),
+            transforms.Resize((self.img_size, self.img_size), interpolation=InterpolationMode.BICUBIC),
             transforms.ToTensor(),
             transforms.Normalize(mean=self.mean, std=self.std)
         ])

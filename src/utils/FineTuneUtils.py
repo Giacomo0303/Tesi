@@ -154,7 +154,7 @@ def check_top5_accuracy(model, dataloader, device):
 
 
 def train_model(model, epoch, optimizer, device, train_dataloader, loss_fn, val_loss_fn, early_stopping=None,
-                val_dataloader=None, scheduler=None, teacher_model=None, T=4.0, alpha=0., mixup_fn=None):
+                val_dataloader=None, scheduler=None, teacher_model=None, T=4.0, alpha=0.9, mixup_fn=None):
     train_loss, val_loss = [], []
     accuracy = []
     scaler = torch.amp.GradScaler()
