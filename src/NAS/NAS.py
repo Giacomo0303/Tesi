@@ -8,26 +8,26 @@ from src.utils.NAS_Utils import load_model, pruningNAS, recoveryFineTune, save_m
 from src.utils.PruneUtils import count_params_no_mask
 import time, copy
 
-dataset_name = "cifar100"
-batch_size = 128
-N_iterations = 25
-lr = 0.5e-5
+dataset_name = "imagenet"
+batch_size = 64
+N_iterations = 5
+lr = 1e-5
 weight_decay = 0.05
-images_per_class = 25
+images_per_class = 20
 depth_limit = 8
-max_epochs = 20
-patience = 5
+max_epochs = 10
+patience = 2
 min_delta = 0.0001
-early_stop_path = "D:\\Tesi\\src\\NAS\\"
+early_stop_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\"
 model_name = "deit_small_patch16_224"
 seed = 42
-search_threshold = 0.005*2
+search_threshold = 0.005 * 2
 distillation = True
-alpha = 0.2
 T = 4.0
+alpha = 0.2
 actions = "guided"  # guided o random
 search = "nas"
-log_path = "D:\\Tesi\\src\\NAS\\Results_cifar_deit_dist\\log.txt"
+log_path = "C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet_deit\\log.txt"
 
 if __name__ == "__main__":
     clean_logger = CleanDualLogger(log_path)
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     test_loader = dataset.get_test_loader()
 
     model = load_model(model_name=model_name, num_classes=dataset.num_classes,
-                       path="D:\\Tesi\\src\\FineTuning\\deit_small_no_distil_cifar100.pth")
+                       path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\FineTuning\\deit_small_no_distill_imagenet.pth")
     # model = torch.load("C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet\\vit_small_patch16_224_iter1.pth", weights_only=False)
     original_head_dim = model.blocks[0].attn.head_dim
     teacher_model = None
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     initial_params_count = count_params_no_mask(model)
     curr_params = initial_params_count
 
-    _, initial_acc, _, _ = eval_loop(model, val_loader, val_loss_fn, device, dataset.classes)
+    _, initial_acc, _, _ = eval_loop(model, test_loader, val_loss_fn, device, dataset.classes)
     pruningReport = PruningReport(model)
 
     print(f"\n{'=' * 60}")
@@ -98,7 +98,7 @@ if __name__ == "__main__":
                                                      actions=actions, search=search)
 
         pruningReport.updatePruningReport(state)
-        pruningReport.savePruningReport(path="D:\\Tesi\\src\\NAS\\Results_cifar_deit_dist\\pruning_report.json")
+        pruningReport.savePruningReport(path="C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet_deit\\pruning_report.json")
 
         # --- METRICHE POST-PRUNING (A Freddo) ---
         _, acc_pruned, _, _ = eval_loop(comp_model, val_loader, val_loss_fn, device, dataset.classes)
@@ -139,8 +139,7 @@ if __name__ == "__main__":
         print(f"{'-' * 60}")
 
         save_model(model=model,
-                   path=f"D:\\Tesi\\src\\NAS\\Results_cifar_deit_dist\\{model_name}_iter{n}.pth")
-
+                   path=f"C:\\Users\\cvip\\Desktop\\Tesi_Lombardo\\src\\NAS\\Results_imagenet_deit\\{model_name}_iter{n}.pth")
 
     print(f"\nVALUTAZIONE FINALE (Test Set)")
     _, final_test_acc, _, _ = eval_loop(model, test_loader, val_loss_fn, device, dataset.classes, report=True)
